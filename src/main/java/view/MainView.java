@@ -26,9 +26,6 @@ public class MainView extends JFrame {
         setVisible(true);
     }
 
-    private void add(TimetableView timetableView, String center) {
-    }
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new MainView());
     }
