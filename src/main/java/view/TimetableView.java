@@ -3,13 +3,10 @@ package view;
 import java.awt.*;
 import javax.swing.*;
 
-public class TimetableView extends JFrame {
+public class TimetableView extends JPanel {
 
     public TimetableView(){
-        setTitle("Weekly Timetable");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-        setSize(1000, 600);
 
         String[] weeklyTimetable = {"Time", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
         JPanel headerPanel = new JPanel(new GridLayout(1,weeklyTimetable.length));
@@ -46,10 +43,6 @@ public class TimetableView extends JFrame {
             }
         }
 
-        setVisible(true);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(TimetableView::new);
-    }
 }
