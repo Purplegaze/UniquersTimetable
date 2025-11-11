@@ -52,10 +52,6 @@ public class SearchPanel extends JPanel {
         resultsPanel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel buttonsPanel = new JPanel(new GridLayout(2, 1, 5, 5));
-        JButton clearButton = new JButton("Clear Timetable");
-        clearButton.setFont(new Font("Arial", Font.PLAIN, 13));
-
-        buttonsPanel.add(clearButton);
 
         JPanel centerPanel = new JPanel(new BorderLayout(5, 10));
         centerPanel.add(searchPanel, BorderLayout.NORTH);
@@ -75,8 +71,6 @@ public class SearchPanel extends JPanel {
                 }
             }
         });
-
-        clearButton.addActionListener(e -> timetableView.clearTimetable());
 
         performSearch();
     }
