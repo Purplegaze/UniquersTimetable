@@ -1,3 +1,5 @@
+package entity;
+
 class TimetableBlock {
     private Timetable timetable;
     private Section section;
@@ -9,7 +11,7 @@ class TimetableBlock {
     private TimetableBlock nextCourse;
     private int nextTime;
 
-    public TimetableCourse(Section section, TimeSlot timeSlot) {
+    public TimetableBlock(Section section, TimeSlot timeSlot) {
         this.timetable = null;
         this.section = section;
         this.course = section.course;
