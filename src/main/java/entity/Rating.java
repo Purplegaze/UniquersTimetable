@@ -27,7 +27,7 @@ public class Rating {
             ratingData.put(key, value);
         }
 
-        public float getavgRating() {
+        public float getAvgRating() {
             if (ratingData.isEmpty()) return 0f;
             float sum = 0f;
             for (Float v : ratingData.values()) {
