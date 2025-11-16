@@ -1,5 +1,9 @@
 package view;
 
+import entity.Course;
+import entity.Section;
+import entity.TimeSlot;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -14,11 +18,10 @@ public class SearchPanel extends JPanel {
     private JButton searchButton;
     private JList<String> resultsList;
     private DefaultListModel<String> listModel;
-    private TimetableView timetableView;
+    private List<Course> filteredCourses;
     private List<Course> courses; // sample data (placeholder)
 
     public SearchPanel(TimetableView timetableView) {
-        this.timetableView = timetableView;
         setLayout(new BorderLayout(10, 10));
         setPreferredSize(new Dimension(350, 0));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -78,23 +81,29 @@ public class SearchPanel extends JPanel {
     private void initializeSampleData() {
         courses = new ArrayList<>();
         // Sample courses - will be replaced with API data later
-        courses.add(new Course("CSC207", "Software Design", "LEC0101",
-                "Learn software design patterns and clean architecture", 2, 10, 2));
-        courses.add(new Course("CSC236", "Theory of Computation", "LEC0101",
-                "Introduction to computational theory and algorithms", 3, 11, 2));
-        courses.add(new Course("MAT237", "Multivariable Calculus", "LEC0101",
-                "Advanced calculus in multiple dimensions", 1, 9, 2));
+        courses.add(new Course("CSC207", "Software Design",
+                "Learn software design patterns and clean architecture",
+                0f, null, "", new ArrayList<>(), null, 0));
+        courses.add(new Course("CSC236", "Theory of Computation",
+                "Introduction to computational theory and algorithms",
+                0f, null, "", new ArrayList<>(), null, 0));
+        courses.add(new Course("MAT237", "Multivariable Calculus",
+                "Advanced calculus in multiple dimensions",
+                0f, null, "", new ArrayList<>(), null, 0));
     }
 
     private void performSearch() {
         String query = searchField.getText().toLowerCase().trim();
         listModel.clear();
+        filteredCourses = new ArrayList<>();
 
         for (Course course : courses) {
-            if (query.isEmpty() ||
-                    course.code.toLowerCase().contains(query) ||
-                    course.name.toLowerCase().contains(query)) {
-                listModel.addElement(course.code + " - " + course.name);
+            String code = course.getCourseCode() != null ? course.getCourseCode() : "";
+            String name = course.getCourseName() != null ? course.getCourseName() : "";
+
+            if (query.isEmpty() || code.toLowerCase().contains(query) || name.toLowerCase().contains(query)) {
+                filteredCourses.add(course);
+                listModel.addElement(code + " - " + name);
             }
         }
 
@@ -105,49 +114,17 @@ public class SearchPanel extends JPanel {
 
     private void openCoursePopup() {
         int selectedIndex = resultsList.getSelectedIndex();
-        if (selectedIndex >= 0 && selectedIndex < courses.size()) {
-            Course selectedCourse = null;
-            String selectedText = listModel.getElementAt(selectedIndex);
+        if (selectedIndex >= 0 && filteredCourses != null && selectedIndex < filteredCourses.size()) {
+            Course selectedCourse = filteredCourses.get(selectedIndex);
+            if (selectedCourse == null) return;
 
-            for (Course course : courses) {
-                if (selectedText.startsWith(course.code)) {
-                    selectedCourse = course;
-                    break;
-                }
-            }
-
-            if (selectedCourse != null) {
-                // TODO: Implement CoursePopup
-                JOptionPane.showMessageDialog(this,
-                        "Course: " + selectedCourse.code + " - " + selectedCourse.name + "\n" +
-                                "Section: " + selectedCourse.section + "\n" +
-                                "Time: Day " + selectedCourse.day + ", " + selectedCourse.startHour + ":00\n\n" +
-                                "CoursePopup will be implemented later.",
-                        "Course Details (Placeholder)",
-                        JOptionPane.INFORMATION_MESSAGE);
-            }
+            // TODO: Implement CoursePopup
+            JOptionPane.showMessageDialog(this,
+                    "Course: " + selectedCourse.getCourseCode() + " - " + selectedCourse.getCourseName() + "\n\n" +
+                            "CoursePopup will be implemented later.",
+                    "Course Details (Placeholder)",
+                    JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
-
-    static class Course {
-        String code;
-        String name;
-        String section;
-        String description;
-        int day; // 1=Mon, 2=Tue, ..., 5=Fri
-        int startHour;
-        int duration; // hours
-
-        Course(String code, String name, String section, String description,
-               int day, int startHour, int duration) {
-            this.code = code;
-            this.name = name;
-            this.section = section;
-            this.description = description;
-            this.day = day;
-            this.startHour = startHour;
-            this.duration = duration;
-        }
-    }
 }
