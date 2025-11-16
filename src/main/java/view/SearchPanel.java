@@ -119,12 +119,28 @@ public class SearchPanel extends JPanel {
             if (selectedCourse == null) return;
 
             // TODO: Implement CoursePopup
-            JOptionPane.showMessageDialog(this,
-                    "Course: " + selectedCourse.getCourseCode() + " - " + selectedCourse.getCourseName() + "\n\n" +
-                            "CoursePopup will be implemented later.",
-                    "Course Details (Placeholder)",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
+            JPanel panel = new JPanel(new GridLayout(0, 1));
+            panel.add(new JLabel("Course: " + selectedCourse.getCourseCode() + " - " + selectedCourse.getCourseName()));
+            panel.add(new JLabel("Sections: " + selectedCourse.getSections()));
+            panel.add(new JLabel(""));
 
+            String[] options = { "Section Details", "Close" };
+
+            int choice = JOptionPane.showOptionDialog(
+                    this, panel, "Course Details",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE,
+                    null,
+                    options,
+                    options[0]
+            );
+
+
+            if (choice == 0) {
+                new SectionView(selectedCourse);
+            }
+
+        }
+
+    }
 }
