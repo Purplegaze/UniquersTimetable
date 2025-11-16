@@ -1,5 +1,7 @@
 package entity;
 
+import view.SearchPanel;
+
 import java.util.ArrayList;
 import java.util.List;
 

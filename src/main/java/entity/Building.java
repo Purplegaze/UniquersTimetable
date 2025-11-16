@@ -1,3 +1,5 @@
+package entity;
+
 public class Building {
     //fields
     private String buildingName;
