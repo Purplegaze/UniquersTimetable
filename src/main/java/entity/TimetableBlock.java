@@ -14,7 +14,7 @@ class TimetableBlock {
     public TimetableBlock(Section section, TimeSlot timeSlot) {
         this.timetable = null;
         this.section = section;
-        this.course = section.course;
+        this.course = section.getCourse();
         this.timeSlot = timeSlot;
         this.prevCourse = null;
         this.prevTime = -1;
@@ -48,5 +48,21 @@ class TimetableBlock {
 
     public int getNextTime() {
         return nextTime;
+    }
+
+    public void setNextCourse(TimetableBlock nextCourse) {
+        this.nextCourse = nextCourse;
+    }
+
+    public void setNextTime(int nextTime) {
+        this.nextTime = nextTime;
+    }
+
+    public void setPrevCourse(TimetableBlock prevCourse) {
+        this.prevCourse = prevCourse;
+    }
+
+    public void setPrevTime(int prevTime) {
+        this.prevTime = prevTime;
     }
 }
