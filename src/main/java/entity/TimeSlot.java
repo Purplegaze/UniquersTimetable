@@ -101,14 +101,25 @@ public class TimeSlot {
     }
 
     /**
-     * Checks if this time slot is immediately consecutive with another time slot
+     * Checks if this time slot is immediately consecutive with another time slot after it.
      * (same day, this ends when other starts, with no gap).
      *
      * @param other the other time slot to check against
      * @return true if the time slots are back-to-back
      */
-    public boolean isConsecutiveWith(TimeSlot other) {
+    public boolean immediatelyPrecedes(TimeSlot other) {
         return this.dayOfWeek == other.dayOfWeek && this.endTime.equals(other.startTime);
+    }
+
+    /**
+     * Checks if this time slot is immediately consecutive with another time slot before it.
+     * (same day, this ends when other starts, with no gap).
+     *
+     * @param other the other time slot to check against
+     * @return true if the time slots are back-to-back
+     */
+    public boolean immediatelyFollows(TimeSlot other) {
+        return this.dayOfWeek == other.dayOfWeek && this.startTime.equals(other.endTime);
     }
 
     /**
