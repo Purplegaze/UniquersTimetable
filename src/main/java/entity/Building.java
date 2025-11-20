@@ -46,4 +46,9 @@ public class Building {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
+
+    public int getTimeTo(Building other) {
+        // TODO: Implement this once DistanceMatrix API stuff is figured out
+        return -1;
+    }
 }

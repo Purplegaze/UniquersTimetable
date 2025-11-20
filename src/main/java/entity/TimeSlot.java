@@ -7,10 +7,11 @@ public class TimeSlot {
     private final int dayOfWeek;
     private final LocalTime startTime;
     private final LocalTime endTime;
+    private final Building building;
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
-    public TimeSlot(int dayOfWeek, LocalTime startTime, LocalTime endTime) {
+    public TimeSlot(int dayOfWeek, LocalTime startTime, LocalTime endTime, Building building) {
         if (dayOfWeek < 1 || dayOfWeek > 7) {
             throw new IllegalArgumentException("dayOfWeek must be between 1 (Monday) and 7 (Sunday)");
         }
@@ -20,6 +21,7 @@ public class TimeSlot {
         this.dayOfWeek = dayOfWeek;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.building = building;
     }
 
     /**
@@ -83,6 +85,10 @@ public class TimeSlot {
             case 7: return "Sun";
             default: return "???";
         }
+    }
+
+    public Building getBuilding() {
+        return building;
     }
 
     /**
