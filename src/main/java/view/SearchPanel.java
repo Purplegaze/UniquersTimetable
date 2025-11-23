@@ -3,6 +3,9 @@ package view;
 import entity.Course;
 import entity.Section;
 import entity.TimeSlot;
+import interface_adapter.CourseFilter;
+import entity.Conflict;
+import entity.Timetable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,14 +17,18 @@ import java.util.List;
  * Displays search bar, results list, and handles interactions
  */
 public class SearchPanel extends JPanel {
+    private final TimetableView timetableView;
     private JTextField searchField;
     private JButton searchButton;
     private JList<String> resultsList;
     private DefaultListModel<String> listModel;
     private List<Course> filteredCourses;
     private List<Course> courses; // sample data (placeholder)
+    private JButton filterButton;
+    private Integer selectedBreadth = null;
 
     public SearchPanel(TimetableView timetableView) {
+        this.timetableView = timetableView;
         setLayout(new BorderLayout(10, 10));
         setPreferredSize(new Dimension(350, 0));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -56,6 +63,11 @@ public class SearchPanel extends JPanel {
 
         JPanel buttonsPanel = new JPanel(new GridLayout(2, 1, 5, 5));
 
+        filterButton = new JButton("Filter by breadth");
+        filterButton.setFont(new Font("Arial", Font.PLAIN, 13));
+        buttonsPanel.add(filterButton);
+        filterButton.addActionListener(e -> openBreadthFilterDialog());
+
         JPanel centerPanel = new JPanel(new BorderLayout(5, 10));
         centerPanel.add(searchPanel, BorderLayout.NORTH);
         centerPanel.add(resultsPanel, BorderLayout.CENTER);
@@ -80,16 +92,37 @@ public class SearchPanel extends JPanel {
 
     private void initializeSampleData() {
         courses = new ArrayList<>();
-        // Sample courses - will be replaced with API data later
+        // TODO: Sample courses... to be replaced with API data later
+        // Breadth 1
+        courses.add(new Course("ENG140", "Literature for Our Time",
+                "Intro to contemporary literature and cultural analysis.",
+                0f, null, "", new ArrayList<>(), null, 1));
+
+        // Breadth 2
+        courses.add(new Course("PSY100", "Intro to Psychology",
+                "Overview of major areas in psychology.",
+                0f, null, "", new ArrayList<>(), null, 2));
+        courses.add(new Course("SOC100", "Intro to Sociology",
+                "Study of society, groups, and institutions.",
+                0f, null, "", new ArrayList<>(), null, 2));
+
+        // Breadth 3
+        courses.add(new Course("POL101", "Politics in the City",
+                "Introduction to political institutions and processes.",
+                0f, null, "", new ArrayList<>(), null, 3));
+
+        // Breadth 4
+        courses.add(new Course("BIO120", "Adaptation and Biodiversity",
+                "Introductory biology focusing on evolution and ecology.",
+                0f, null, "", new ArrayList<>(), null, 4));
+
+        // Breadth 5
         courses.add(new Course("CSC207", "Software Design",
-                "Learn software design patterns and clean architecture",
-                0f, null, "", new ArrayList<>(), null, 0));
-        courses.add(new Course("CSC236", "Theory of Computation",
-                "Introduction to computational theory and algorithms",
-                0f, null, "", new ArrayList<>(), null, 0));
+                "Object-oriented design and clean architecture.",
+                0f, null, "", new ArrayList<>(), null, 5));
         courses.add(new Course("MAT237", "Multivariable Calculus",
-                "Advanced calculus in multiple dimensions",
-                0f, null, "", new ArrayList<>(), null, 0));
+                "Advanced calculus in multiple dimensions.",
+                0f, null, "", new ArrayList<>(), null, 5));
     }
 
     private void performSearch() {
@@ -97,7 +130,14 @@ public class SearchPanel extends JPanel {
         listModel.clear();
         filteredCourses = new ArrayList<>();
 
-        for (Course course : courses) {
+        List<Course> source = courses;
+
+        if (selectedBreadth != null) {
+            CourseFilter filter = new CourseFilter();
+            source = filter.filterByBreadth(courses, selectedBreadth);
+        }
+
+        for (Course course : source) {
             String code = course.getCourseCode() != null ? course.getCourseCode() : "";
             String name = course.getCourseName() != null ? course.getCourseName() : "";
 
@@ -142,5 +182,28 @@ public class SearchPanel extends JPanel {
 
         }
 
+    }
+
+    private void openBreadthFilterDialog() {
+        String[] options = {"All", "1", "2", "3", "4", "5"};
+        String choice = (String) JOptionPane.showInputDialog(
+                this,
+                "Select breadth category:",
+                "Breadth Filter",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                options,
+                selectedBreadth == null ? "All" : selectedBreadth.toString()
+        );
+
+        if (choice == null) {
+            return; // user cancelled
+        }
+        if (choice.equals("All")) {
+            selectedBreadth = null;
+        } else {
+            selectedBreadth = Integer.parseInt(choice);
+        }
+        performSearch(); // re-run search with new filter
     }
 }
