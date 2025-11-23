@@ -133,10 +133,14 @@ public class Timetable {
     }
 
     public void removeCourse(Course course) {
+        ArrayList<TimetableBlock> toRemove = new ArrayList<>();
         for (TimetableBlock tb : blocks) {
             if (tb.getCourse().equals(course)) {
-                removeBlock(tb);
+                toRemove.add(tb);
             }
+        }
+        for (TimetableBlock tb : toRemove) {
+            removeBlock(tb);
         }
     }
 
