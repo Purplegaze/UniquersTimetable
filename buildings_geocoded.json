@@ -1,0 +1,1038 @@
+{"buildings": [
+  {
+    "code": "AB",
+    "address": "Department of Astronomy and Astrophysics University of Toronto",
+    "latitude": 43.66048809999999,
+    "name": "Astronomy and Astrophysics",
+    "longitude": -79.3975585
+  },
+  {
+    "code": "AD",
+    "address": "Enrolment Services University of Toronto",
+    "latitude": 43.6680596,
+    "name": "Enrolment Services",
+    "longitude": -79.400486
+  },
+  {
+    "code": "AH",
+    "address": "Alumni Hall Muzzo Family University of Toronto",
+    "latitude": 43.6669482,
+    "name": "Alumni Hall Muzzo Family",
+    "longitude": -79.39192520000002
+  },
+  {
+    "code": "AN",
+    "address": "Annesley Hall University of Toronto",
+    "latitude": 43.6676633,
+    "name": "Annesley Hall",
+    "longitude": -79.3930147
+  },
+  {
+    "code": "AP",
+    "address": "Anthropology Building University of Toronto",
+    "latitude": 43.65991169999999,
+    "name": "Anthropology Building",
+    "longitude": -79.39842209999999
+  },
+  {
+    "code": "BA",
+    "address": "Bahen Centre for Information Technology University of Toronto",
+    "latitude": 43.653226,
+    "name": "Bahen Centre for Information Technology",
+    "longitude": -79.3831843
+  },
+  {
+    "code": "BC",
+    "address": "Birge Carnegie Library University of Toronto",
+    "latitude": 43.6671086,
+    "name": "Birge Carnegie Library",
+    "longitude": -79.3928699
+  },
+  {
+    "code": "BF",
+    "address": "Bancroft Building University of Toronto",
+    "latitude": 43.6609208,
+    "name": "Bancroft Building",
+    "longitude": -79.3997766
+  },
+  {
+    "code": "BI",
+    "address": "Banting Institute University of Toronto",
+    "latitude": 43.6604812,
+    "name": "Banting Institute",
+    "longitude": -79.3886581
+  },
+  {
+    "code": "BL",
+    "address": "Claude T Bissell Building University of Toronto",
+    "latitude": 43.6649961,
+    "name": "Claude T Bissell Building",
+    "longitude": -79.39907579999999
+  },
+  {
+    "code": "BN",
+    "address": "Clara Benson Building University of Toronto",
+    "latitude": 43.66301110000001,
+    "name": "Clara Benson Building",
+    "longitude": -79.40026850000001
+  },
+  {
+    "code": "BR",
+    "address": "Brennan Hall University of Toronto",
+    "latitude": 43.6663742,
+    "name": "Brennan Hall",
+    "longitude": -79.3897593
+  },
+  {
+    "code": "BS",
+    "address": "St Basils Church University of Toronto",
+    "latitude": 43.6663529,
+    "name": "St Basils Church",
+    "longitude": -79.3891513
+  },
+  {
+    "code": "BT",
+    "address": "Isabel Bader Theatre University of Toronto",
+    "latitude": 43.6673237,
+    "name": "Isabel Bader Theatre",
+    "longitude": -79.3925648
+  },
+  {
+    "code": "BW",
+    "address": "Burwash Hall University of Toronto",
+    "latitude": 43.66740799999999,
+    "name": "Burwash Hall",
+    "longitude": -79.3916126
+  },
+  {
+    "code": "CA",
+    "address": "Campus Coop Day Care University of Toronto",
+    "latitude": 43.663487,
+    "name": "Campus Coop Day Care",
+    "longitude": -79.3958273
+  },
+  {
+    "code": "CG",
+    "address": "Canadiana Gallery University of Toronto",
+    "latitude": 43.66188330000001,
+    "name": "Canadiana Gallery",
+    "longitude": -79.392928
+  },
+  {
+    "code": "CH",
+    "address": "Convocation Hall University of Toronto",
+    "latitude": 43.6609085,
+    "name": "Convocation Hall",
+    "longitude": -79.3952327
+  },
+  {
+    "code": "CN",
+    "address": "89 Chestnut Residence University of Toronto",
+    "latitude": 43.6540972,
+    "name": "89 Chestnut Residence",
+    "longitude": -79.3850073
+  },
+  {
+    "code": "CO",
+    "address": "162 St George St University of Toronto",
+    "latitude": 43.6670495,
+    "name": "162 St George St",
+    "longitude": -79.39992819999999
+  },
+  {
+    "code": "CR",
+    "address": "Carr Hall University of Toronto",
+    "latitude": 43.6652251,
+    "name": "Carr Hall",
+    "longitude": -79.3905796
+  },
+  {
+    "code": "CS",
+    "address": "School of Continuing Studies University of Toronto",
+    "latitude": 43.66671580000001,
+    "name": "School of Continuing Studies",
+    "longitude": -79.3999204
+  },
+  {
+    "code": "CU",
+    "address": "Cumberland House University of Toronto",
+    "latitude": 43.6594151,
+    "name": "Cumberland House",
+    "longitude": -79.39607099999999
+  },
+  {
+    "code": "CX",
+    "address": "Communications House University of Toronto",
+    "latitude": 43.6588999,
+    "name": "Communications House",
+    "longitude": -79.39358179999999
+  },
+  {
+    "code": "DA",
+    "address": "Daniels Building John H Daniels Faculty of Architecture Landscape and Design University of Toronto",
+    "latitude": 43.6597401,
+    "name": "Daniels Building",
+    "longitude": -79.40026999999999
+  },
+  {
+    "code": "DC",
+    "address": "Terrence Donnelly CCBR University of Toronto",
+    "latitude": 43.6600669,
+    "name": "Terrence Donnelly CCBR",
+    "longitude": -79.39307269999999
+  },
+  {
+    "code": "DN",
+    "address": "Dentistry Building Faculty of Dentistry University of Toronto",
+    "latitude": 43.65630489999999,
+    "name": "Dentistry Building",
+    "longitude": -79.3872066
+  },
+  {
+    "code": "DR",
+    "address": "J Robert S Prichard Alumni House University of Toronto",
+    "latitude": 43.6621282,
+    "name": "J Robert S Prichard Alumni House",
+    "longitude": -79.39664859999999
+  },
+  {
+    "code": "EA",
+    "address": "Engineering Annex Faculty of Applied Science and Engineering University of Toronto",
+    "latitude": 43.6596379,
+    "name": "Engineering Annex",
+    "longitude": -79.3953321
+  },
+  {
+    "code": "EH",
+    "address": "Elmsley Hall University of Toronto",
+    "latitude": 43.663487,
+    "name": "Elmsley Hall",
+    "longitude": -79.3958273
+  },
+  {
+    "code": "EJ",
+    "address": "Edward Johnson Building Faculty of Music University of Toronto",
+    "latitude": 43.66651299999999,
+    "name": "Edward Johnson Building",
+    "longitude": -79.39441049999999
+  },
+  {
+    "code": "EM",
+    "address": "Emmanuel College Victoria University in the University of Toronto",
+    "latitude": 43.66662609999999,
+    "name": "Emmanuel College",
+    "longitude": -79.3927645
+  },
+  {
+    "code": "EP",
+    "address": "Stewart Building University of Toronto",
+    "latitude": 43.65930520000001,
+    "name": "Stewart Building",
+    "longitude": -79.3919956
+  },
+  {
+    "code": "ER",
+    "address": "Early Learning Centre University of Toronto",
+    "latitude": 43.6639464,
+    "name": "Early Learning Centre",
+    "longitude": -79.4010211
+  },
+  {
+    "code": "ES",
+    "address": "Earth Sciences Centre University of Toronto",
+    "latitude": 43.6601013,
+    "name": "Earth Sciences Centre",
+    "longitude": -79.3991585
+  },
+  {
+    "code": "EX",
+    "address": "Exam Centre University of Toronto",
+    "latitude": 43.6585451,
+    "name": "Exam Centre",
+    "longitude": -79.39292449999999
+  },
+  {
+    "code": "FA",
+    "address": "Faculty Association University of Toronto",
+    "latitude": 43.6692249,
+    "name": "Faculty Association",
+    "longitude": -79.38970789999999
+  },
+  {
+    "code": "FC",
+    "address": "Faculty Club University of Toronto",
+    "latitude": 43.66112280000001,
+    "name": "Faculty Club",
+    "longitude": -79.400542
+  },
+  {
+    "code": "FE",
+    "address": "371 Bloor St W University of Toronto",
+    "latitude": 43.6667366,
+    "name": "371 Bloor St W",
+    "longitude": -79.40223809999999
+  },
+  {
+    "code": "FG",
+    "address": "FitzGerald Building University of Toronto",
+    "latitude": 43.6601448,
+    "name": "FitzGerald Building",
+    "longitude": -79.3923921
+  },
+  {
+    "code": "FH",
+    "address": "Falconer Hall University of Toronto",
+    "latitude": 43.666691,
+    "name": "Falconer Hall",
+    "longitude": -79.3940143
+  },
+  {
+    "code": "FI",
+    "address": "Fields Institute University of Toronto",
+    "latitude": 43.6587275,
+    "name": "Fields Institute",
+    "longitude": -79.39732219999999
+  },
+  {
+    "code": "GA",
+    "address": "Gage Building University of Toronto",
+    "latitude": 43.663487,
+    "name": "Gage Building",
+    "longitude": -79.3958273
+  },
+  {
+    "code": "GB",
+    "address": "Galbraith Building University of Toronto",
+    "latitude": 43.6598852,
+    "name": "Galbraith Building",
+    "longitude": -79.39635249999999
+  },
+  {
+    "code": "GC",
+    "address": "Goldring Student Centre University of Toronto",
+    "latitude": 43.6676484,
+    "name": "Goldring Student Centre",
+    "longitude": -79.39251639999999
+  },
+  {
+    "code": "GD",
+    "address": "Graduate House University of Toronto",
+    "latitude": 43.6635496,
+    "name": "Graduate House",
+    "longitude": -79.40163129999999
+  },
+  {
+    "code": "GE",
+    "address": "Max Gluskin House University of Toronto",
+    "latitude": 43.6660785,
+    "name": "Max Gluskin House",
+    "longitude": -79.3999042
+  },
+  {
+    "code": "GI",
+    "address": "George Ignatieff Theatre University of Toronto",
+    "latitude": 43.665581,
+    "name": "George Ignatieff Theatre",
+    "longitude": -79.3971596
+  },
+  {
+    "code": "GM",
+    "address": "Luella Massey Studio Theatre University of Toronto",
+    "latitude": 43.6643906,
+    "name": "Luella Massey Studio Theatre",
+    "longitude": -79.4011913
+  },
+  {
+    "code": "GO",
+    "address": "Goldring Centre for High Performance Sport University of Toronto",
+    "latitude": 43.6668989,
+    "name": "Goldring Centre for High Performance Sport",
+    "longitude": -79.3982204
+  },
+  {
+    "code": "GR",
+    "address": "Graham John W Library University of Toronto",
+    "latitude": 43.8020208,
+    "name": "Graham John W Library",
+    "longitude": -79.1514334
+  },
+  {
+    "code": "GS",
+    "address": "School of Graduate Studies University of Toronto",
+    "latitude": 43.6617421,
+    "name": "School of Graduate Studies",
+    "longitude": -79.3970269
+  },
+  {
+    "code": "GU",
+    "address": "Graduate Students Union University of Toronto",
+    "latitude": 43.653226,
+    "name": "Graduate Students Union",
+    "longitude": -79.3831843
+  },
+  {
+    "code": "HA",
+    "address": "Haultain Building University of Toronto",
+    "latitude": 43.6599284,
+    "name": "Haultain Building",
+    "longitude": -79.3936461
+  },
+  {
+    "code": "HH",
+    "address": "Hart House University of Toronto",
+    "latitude": 43.6640136,
+    "name": "Hart House",
+    "longitude": -79.3943321
+  },
+  {
+    "code": "HI",
+    "address": "St Hildas College University of Toronto",
+    "latitude": 43.6651758,
+    "name": "St Hildas College",
+    "longitude": -79.39564659999999
+  },
+  {
+    "code": "HS",
+    "address": "Health Sciences Building University of Toronto",
+    "latitude": 43.6591144,
+    "name": "Health Sciences Building",
+    "longitude": -79.3925372
+  },
+  {
+    "code": "HU",
+    "address": "215 Huron St University of Toronto",
+    "latitude": 43.6592175,
+    "name": "215 Huron St",
+    "longitude": -79.3983375
+  },
+  {
+    "code": "IA",
+    "address": "Internal Audit University of Toronto",
+    "latitude": 43.66090860000001,
+    "name": "Internal Audit",
+    "longitude": -79.39595179999999
+  },
+  {
+    "code": "IN",
+    "address": "Innis College University of Toronto",
+    "latitude": 43.6655322,
+    "name": "Innis College",
+    "longitude": -79.3995474
+  },
+  {
+    "code": "IR",
+    "address": "Centre for Industrial Relations University of Toronto",
+    "latitude": null,
+    "name": "Centre for Industrial Relations",
+    "longitude": null
+  },
+  {
+    "code": "IS",
+    "address": "Innis College Student Residence University of Toronto",
+    "latitude": 43.6657764,
+    "name": "Innis College Student Residence",
+    "longitude": -79.39851000000002
+  },
+  {
+    "code": "JH",
+    "address": "Jackman Humanities Building University of Toronto",
+    "latitude": 43.6677365,
+    "name": "Jackman Humanities Building",
+    "longitude": -79.40028819999999
+  },
+  {
+    "code": "JP",
+    "address": "90 Wellesley St W University of Toronto",
+    "latitude": 43.6641333,
+    "name": "90 Wellesley St W",
+    "longitude": -79.389529
+  },
+  {
+    "code": "KL",
+    "address": "J M Kelly Library University of Toronto",
+    "latitude": 43.6649864,
+    "name": "J M Kelly Library",
+    "longitude": -79.38956710000001
+  },
+  {
+    "code": "KP",
+    "address": "Koffler House University of Toronto",
+    "latitude": 43.66049810000001,
+    "name": "Koffler House",
+    "longitude": -79.40078079999999
+  },
+  {
+    "code": "KS",
+    "address": "Koffler Student Services Centre University of Toronto",
+    "latitude": 43.6589507,
+    "name": "Koffler Student Services Centre",
+    "longitude": -79.3968771
+  },
+  {
+    "code": "KX",
+    "address": "Knox College University of Toronto",
+    "latitude": 43.661336,
+    "name": "Knox College",
+    "longitude": -79.3970976
+  },
+  {
+    "code": "LA",
+    "address": "Gerald Larkin Building University of Toronto",
+    "latitude": 43.6656651,
+    "name": "Gerald Larkin Building",
+    "longitude": -79.39692939999999
+  },
+  {
+    "code": "LB",
+    "address": "Lower Burwash House University of Toronto",
+    "latitude": 43.653226,
+    "name": "Lower Burwash House",
+    "longitude": -79.3831843
+  },
+  {
+    "code": "LC",
+    "address": "Loretto College University of Toronto",
+    "latitude": 43.6759656,
+    "name": "Loretto College",
+    "longitude": -79.4432956
+  },
+  {
+    "code": "LG",
+    "address": "Fasken Martineau Building University of Toronto",
+    "latitude": 43.6640789,
+    "name": "Fasken Martineau Building",
+    "longitude": -79.4020937
+  },
+  {
+    "code": "LI",
+    "address": "Lillian Massey Building University of Toronto",
+    "latitude": 43.668477,
+    "name": "Lillian Massey Building",
+    "longitude": -79.3936736
+  },
+  {
+    "code": "LM",
+    "address": "Lash Miller Chemical Labs University of Toronto",
+    "latitude": 43.66178439999999,
+    "name": "Lash Miller Chemical Labs",
+    "longitude": -79.3977525
+  },
+  {
+    "code": "LW",
+    "address": "Faculty of Law University of Toronto",
+    "latitude": 43.6666568,
+    "name": "Faculty of Law",
+    "longitude": -79.39394329999999
+  },
+  {
+    "code": "M2",
+    "address": "MaRS 2 University of Toronto",
+    "latitude": 43.7467354,
+    "name": "MaRS 2",
+    "longitude": -79.6076313
+  },
+  {
+    "code": "MA",
+    "address": "Massey College University of Toronto",
+    "latitude": 43.6647669,
+    "name": "Massey College",
+    "longitude": -79.39723010000002
+  },
+  {
+    "code": "MB",
+    "address": "Lassonde Mining Building University of Toronto",
+    "latitude": 43.6595391,
+    "name": "Lassonde Mining Building",
+    "longitude": -79.3934143
+  },
+  {
+    "code": "MC",
+    "address": "Mechanical Engineering Building University of Toronto",
+    "latitude": 43.663487,
+    "name": "Mechanical Engineering Building",
+    "longitude": -79.3958273
+  },
+  {
+    "code": "ME",
+    "address": "39 Queens Park Cres East University of Toronto",
+    "latitude": 43.6649863,
+    "name": "39 Queens Park Cres East",
+    "longitude": -79.3939086
+  },
+  {
+    "code": "MG",
+    "address": "Margaret Addison Hall University of Toronto",
+    "latitude": 43.66825559999999,
+    "name": "Margaret Addison Hall",
+    "longitude": -79.3924069
+  },
+  {
+    "code": "MK",
+    "address": "Munk School at the Observatory University of Toronto",
+    "latitude": 43.653226,
+    "name": "Munk School at the Observatory",
+    "longitude": -79.3831843
+  },
+  {
+    "code": "ML",
+    "address": "McLuhan Program University of Toronto",
+    "latitude": 43.6645254,
+    "name": "McLuhan Program",
+    "longitude": -79.3898897
+  },
+  {
+    "code": "MM",
+    "address": "Macdonald Mowat House University of Toronto",
+    "latitude": 43.6617924,
+    "name": "Macdonald Mowat House",
+    "longitude": -79.39704309999999
+  },
+  {
+    "code": "MO",
+    "address": "Morrison Hall University of Toronto",
+    "latitude": 43.663063,
+    "name": "Morrison Hall",
+    "longitude": -79.3976995
+  },
+  {
+    "code": "MP",
+    "address": "McLennan Physical Labs University of Toronto",
+    "latitude": 43.663487,
+    "name": "McLennan Physical Labs",
+    "longitude": -79.3958273
+  },
+  {
+    "code": "MR",
+    "address": "McMurrich Building University of Toronto",
+    "latitude": 43.6610738,
+    "name": "McMurrich Building",
+    "longitude": -79.3928408
+  },
+  {
+    "code": "MS",
+    "address": "Medical Sciences Building University of Toronto",
+    "latitude": 43.66080050000001,
+    "name": "Medical Sciences Building",
+    "longitude": -79.39350089999999
+  },
+  {
+    "code": "MU",
+    "address": "Munk School at Trinity University of Toronto",
+    "latitude": 43.653226,
+    "name": "Munk School at Trinity",
+    "longitude": -79.3831843
+  },
+  {
+    "code": "MY",
+    "address": "Myhal Centre for Engineering Innovation and Entrepreneurship University of Toronto",
+    "latitude": 43.6607349,
+    "name": "Myhal Centre for Engineering Innovation and Entrepreneurship",
+    "longitude": -79.39661219999999
+  },
+  {
+    "code": "NB",
+    "address": "North Borden Building University of Toronto",
+    "latitude": 43.660325,
+    "name": "North Borden Building",
+    "longitude": -79.4001668
+  },
+  {
+    "code": "NC",
+    "address": "New College University of Toronto",
+    "latitude": 43.6620503,
+    "name": "New College",
+    "longitude": -79.39971249999999
+  },
+  {
+    "code": "NF",
+    "address": "Northrop Frye Hall University of Toronto",
+    "latitude": 43.6663869,
+    "name": "Northrop Frye Hall",
+    "longitude": -79.3921484
+  },
+  {
+    "code": "NL",
+    "address": "C David Naylor Building University of Toronto",
+    "latitude": 43.660469,
+    "name": "C David Naylor Building",
+    "longitude": -79.3918499
+  },
+  {
+    "code": "NR",
+    "address": "New College III University of Toronto",
+    "latitude": 43.6620503,
+    "name": "New College III",
+    "longitude": -79.39971249999999
+  },
+  {
+    "code": "OA",
+    "address": "263 McCaul St University of Toronto",
+    "latitude": 43.658779,
+    "name": "263 McCaul St",
+    "longitude": -79.3925086
+  },
+  {
+    "code": "OH",
+    "address": "Odette Hall University of Toronto",
+    "latitude": 43.6663886,
+    "name": "Odette Hall",
+    "longitude": -79.3889265
+  },
+  {
+    "code": "OI",
+    "address": "OISE University of Toronto",
+    "latitude": 43.667979,
+    "name": "OISE",
+    "longitude": -79.3983677
+  },
+  {
+    "code": "PB",
+    "address": "Leslie L Dan Pharmacy Building University of Toronto",
+    "latitude": 43.653226,
+    "name": "Leslie L Dan Pharmacy Building",
+    "longitude": -79.3831843
+  },
+  {
+    "code": "PG",
+    "address": "45 St George St University of Toronto",
+    "latitude": 43.6603962,
+    "name": "45 St George St",
+    "longitude": -79.3965291
+  },
+  {
+    "code": "PI",
+    "address": "59 Queens Park Cres East University of Toronto",
+    "latitude": 43.6652726,
+    "name": "59 Queens Park Cres East",
+    "longitude": -79.3938759
+  },
+  {
+    "code": "PR",
+    "address": "EJ Pratt Library University of Toronto",
+    "latitude": 43.666318,
+    "name": "EJ Pratt Library",
+    "longitude": -79.391286
+  },
+  {
+    "code": "PT",
+    "address": "DL Pratt Building University of Toronto",
+    "latitude": 43.6615415,
+    "name": "DL Pratt Building",
+    "longitude": -79.4008748
+  },
+  {
+    "code": "RB",
+    "address": "Fisher Rare Book Library University of Toronto",
+    "latitude": 43.6640736,
+    "name": "Fisher Rare Book Library",
+    "longitude": -79.3989838
+  },
+  {
+    "code": "RG",
+    "address": "Regis College University of Toronto",
+    "latitude": 43.6639734,
+    "name": "Regis College",
+    "longitude": -79.38997619999999
+  },
+  {
+    "code": "RJ",
+    "address": "Rowell Jackman Hall University of Toronto",
+    "latitude": 43.66756669999999,
+    "name": "Rowell Jackman Hall",
+    "longitude": -79.39086019999999
+  },
+  {
+    "code": "RL",
+    "address": "Robarts Library University of Toronto",
+    "latitude": 43.664486,
+    "name": "Robarts Library",
+    "longitude": -79.39968999999999
+  },
+  {
+    "code": "RM",
+    "address": "254 56 McCaul St University of Toronto",
+    "latitude": 43.6520147,
+    "name": "254 56 McCaul St",
+    "longitude": -79.39068639999999
+  },
+  {
+    "code": "RS",
+    "address": "Rosebrugh Building University of Toronto",
+    "latitude": 43.6600101,
+    "name": "Rosebrugh Building",
+    "longitude": -79.3931363
+  },
+  {
+    "code": "RT",
+    "address": "Rotman School of Management University of Toronto",
+    "latitude": 43.66526169999999,
+    "name": "Rotman School of Management",
+    "longitude": -79.39865619999999
+  },
+  {
+    "code": "RU",
+    "address": "Rehabilitation Sciences Building University of Toronto",
+    "latitude": 43.6554432,
+    "name": "Rehabilitation Sciences Building",
+    "longitude": -79.3891573
+  },
+  {
+    "code": "RW",
+    "address": "Ramsay Wright Laboratories University of Toronto",
+    "latitude": 43.6635542,
+    "name": "Ramsay Wright Laboratories",
+    "longitude": -79.3988725
+  },
+  {
+    "code": "SB",
+    "address": "South Borden Building University of Toronto",
+    "latitude": 43.66009649999999,
+    "name": "South Borden Building",
+    "longitude": -79.3997705
+  },
+  {
+    "code": "SC",
+    "address": "Sussex Court University of Toronto",
+    "latitude": 43.653226,
+    "name": "Sussex Court",
+    "longitude": -79.3831843
+  },
+  {
+    "code": "SD",
+    "address": "Sir Daniel Wilson Residence University of Toronto",
+    "latitude": 43.6625169,
+    "name": "Sir Daniel Wilson Residence",
+    "longitude": -79.3974763
+  },
+  {
+    "code": "SF",
+    "address": "Sandford Fleming Building University of Toronto",
+    "latitude": 43.6600106,
+    "name": "Sandford Fleming Building",
+    "longitude": -79.3948345
+  },
+  {
+    "code": "SI",
+    "address": "Simcoe Hall University of Toronto",
+    "latitude": 43.66090860000001,
+    "name": "Simcoe Hall",
+    "longitude": -79.39595179999999
+  },
+  {
+    "code": "SK",
+    "address": "Factor Inwentash Social Work University of Toronto",
+    "latitude": 43.6682968,
+    "name": "Factor Inwentash Social Work",
+    "longitude": -79.3977184
+  },
+  {
+    "code": "SM",
+    "address": "Gerstein Science Information Centre University of Toronto",
+    "latitude": 43.6620481,
+    "name": "Gerstein Science Information Centre",
+    "longitude": -79.39372190000002
+  },
+  {
+    "code": "SO",
+    "address": "Stewart Observatory University of Toronto",
+    "latitude": null,
+    "name": "Stewart Observatory",
+    "longitude": null
+  },
+  {
+    "code": "SR",
+    "address": "Sam Sorbara Hall Student Residence University of Toronto",
+    "latitude": 43.6657197,
+    "name": "Sam Sorbara Hall Student Residence",
+    "longitude": -79.38896070000001
+  },
+  {
+    "code": "SS",
+    "address": "Sidney Smith Hall University of Toronto",
+    "latitude": 43.662523,
+    "name": "Sidney Smith Hall",
+    "longitude": -79.39854249999999
+  },
+  {
+    "code": "SU",
+    "address": "Student Commons University of Toronto",
+    "latitude": 43.6585682,
+    "name": "Student Commons",
+    "longitude": -79.3978995
+  },
+  {
+    "code": "SX",
+    "address": "40 Sussex Ave University of Toronto",
+    "latitude": 43.6650147,
+    "name": "40 Sussex Ave",
+    "longitude": -79.4018617
+  },
+  {
+    "code": "TC",
+    "address": "Trinity College University of Toronto",
+    "latitude": 43.6651758,
+    "name": "Trinity College",
+    "longitude": -79.39564659999999
+  },
+  {
+    "code": "TF",
+    "address": "Teefy Hall University of Toronto",
+    "latitude": 43.663487,
+    "name": "Teefy Hall",
+    "longitude": -79.3958273
+  },
+  {
+    "code": "TH",
+    "address": "Toronto School of Theology University of Toronto",
+    "latitude": 43.6647132,
+    "name": "Toronto School of Theology",
+    "longitude": -79.3907334
+  },
+  {
+    "code": "TR",
+    "address": "Soldiers Tower University of Toronto",
+    "latitude": 43.6635286,
+    "name": "Soldiers Tower",
+    "longitude": -79.39523729999999
+  },
+  {
+    "code": "TT",
+    "address": "455 Spadina Ave University of Toronto",
+    "latitude": 43.6582102,
+    "name": "455 Spadina Ave",
+    "longitude": -79.3997304
+  },
+  {
+    "code": "UB",
+    "address": "Upper Burwash House University of Toronto",
+    "latitude": 43.653226,
+    "name": "Upper Burwash House",
+    "longitude": -79.3831843
+  },
+  {
+    "code": "UC",
+    "address": "University College University of Toronto",
+    "latitude": 43.6624645,
+    "name": "University College",
+    "longitude": -79.3961984
+  },
+  {
+    "code": "UP",
+    "address": "University College Union University of Toronto",
+    "latitude": 43.653226,
+    "name": "University College Union",
+    "longitude": -79.3831843
+  },
+  {
+    "code": "VA",
+    "address": "Varsity Centre University of Toronto",
+    "latitude": 43.66705289999999,
+    "name": "Varsity Centre",
+    "longitude": -79.3972706
+  },
+  {
+    "code": "VC",
+    "address": "Victoria College University of Toronto",
+    "latitude": 43.6664436,
+    "name": "Victoria College",
+    "longitude": -79.3921208
+  },
+  {
+    "code": "VI",
+    "address": "Nona Macdonald Visitors Centre University of Toronto",
+    "latitude": 43.661216,
+    "name": "Nona Macdonald Visitors Centre",
+    "longitude": -79.3963164
+  },
+  {
+    "code": "VP",
+    "address": "Varsity Pavillion University of Toronto",
+    "latitude": 43.6664392,
+    "name": "Varsity Pavillion",
+    "longitude": -79.39640039999999
+  },
+  {
+    "code": "WA",
+    "address": "123 St George St University of Toronto",
+    "latitude": 43.6669391,
+    "name": "123 St George St",
+    "longitude": -79.3991883
+  },
+  {
+    "code": "WB",
+    "address": "Wallberg Building University of Toronto",
+    "latitude": 43.6591675,
+    "name": "Wallberg Building",
+    "longitude": -79.3952485
+  },
+  {
+    "code": "WE",
+    "address": "Wetmore Hall New College University of Toronto",
+    "latitude": 43.6620503,
+    "name": "Wetmore Hall New College",
+    "longitude": -79.39971249999999
+  },
+  {
+    "code": "WI",
+    "address": "Wilson Hall New College University of Toronto",
+    "latitude": 43.6615415,
+    "name": "Wilson Hall New College",
+    "longitude": -79.40087489999999
+  },
+  {
+    "code": "WO",
+    "address": "Woodsworth College Residence University of Toronto",
+    "latitude": 43.6674139,
+    "name": "Woodsworth College Residence",
+    "longitude": -79.3992146
+  },
+  {
+    "code": "WR",
+    "address": "McCarthy House Jackman Institute of Child Study University of Toronto",
+    "latitude": 43.6696778,
+    "name": "McCarthy House Jackman Institute of Child Study",
+    "longitude": -79.4060677
+  },
+  {
+    "code": "WS",
+    "address": "Warren Stevens Building University of Toronto",
+    "latitude": 43.6630539,
+    "name": "Warren Stevens Building",
+    "longitude": -79.4015228
+  },
+  {
+    "code": "WT",
+    "address": "Whitney Hall University of Toronto",
+    "latitude": 43.663709,
+    "name": "Whitney Hall",
+    "longitude": -79.3978802
+  },
+  {
+    "code": "WW",
+    "address": "Woodsworth College University of Toronto",
+    "latitude": 43.6663161,
+    "name": "Woodsworth College",
+    "longitude": -79.3990297
+  },
+  {
+    "code": "WY",
+    "address": "Wycliffe College University of Toronto",
+    "latitude": 43.6645526,
+    "name": "Wycliffe College",
+    "longitude": -79.3951953
+  },
+  {
+    "code": "XG",
+    "address": "665 Spadina Ave University of Toronto",
+    "latitude": 43.6644095,
+    "name": "665 Spadina Ave",
+    "longitude": -79.4022719
+  },
+  {
+    "code": "ZC",
+    "address": "88 College St University of Toronto",
+    "latitude": 43.66076959999999,
+    "name": "88 College St",
+    "longitude": -79.3877784
+  }
+]}
