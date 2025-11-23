@@ -7,13 +7,6 @@
     "longitude": -79.3975585
   },
   {
-    "code": "AD",
-    "address": "Enrolment Services University of Toronto",
-    "latitude": 43.6680596,
-    "name": "Enrolment Services",
-    "longitude": -79.400486
-  },
-  {
     "code": "AH",
     "address": "Alumni Hall Muzzo Family University of Toronto",
     "latitude": 43.6669482,
@@ -126,13 +119,6 @@
     "longitude": -79.3952327
   },
   {
-    "code": "CN",
-    "address": "89 Chestnut Residence University of Toronto",
-    "latitude": 43.6540972,
-    "name": "89 Chestnut Residence",
-    "longitude": -79.3850073
-  },
-  {
     "code": "CO",
     "address": "162 St George St University of Toronto",
     "latitude": 43.6670495,
@@ -243,13 +229,6 @@
     "latitude": 43.6601013,
     "name": "Earth Sciences Centre",
     "longitude": -79.3991585
-  },
-  {
-    "code": "EX",
-    "address": "Exam Centre University of Toronto",
-    "latitude": 43.6585451,
-    "name": "Exam Centre",
-    "longitude": -79.39292449999999
   },
   {
     "code": "FA",
@@ -488,13 +467,6 @@
     "latitude": 43.653226,
     "name": "Lower Burwash House",
     "longitude": -79.3831843
-  },
-  {
-    "code": "LC",
-    "address": "Loretto College University of Toronto",
-    "latitude": 43.6759656,
-    "name": "Loretto College",
-    "longitude": -79.4432956
   },
   {
     "code": "LG",
@@ -833,13 +805,6 @@
     "longitude": -79.39372190000002
   },
   {
-    "code": "SO",
-    "address": "Stewart Observatory University of Toronto",
-    "latitude": null,
-    "name": "Stewart Observatory",
-    "longitude": null
-  },
-  {
     "code": "SR",
     "address": "Sam Sorbara Hall Student Residence University of Toronto",
     "latitude": 43.6657197,
@@ -852,13 +817,6 @@
     "latitude": 43.662523,
     "name": "Sidney Smith Hall",
     "longitude": -79.39854249999999
-  },
-  {
-    "code": "SU",
-    "address": "Student Commons University of Toronto",
-    "latitude": 43.6585682,
-    "name": "Student Commons",
-    "longitude": -79.3978995
   },
   {
     "code": "SX",
@@ -887,13 +845,6 @@
     "latitude": 43.6647132,
     "name": "Toronto School of Theology",
     "longitude": -79.3907334
-  },
-  {
-    "code": "TR",
-    "address": "Soldiers Tower University of Toronto",
-    "latitude": 43.6635286,
-    "name": "Soldiers Tower",
-    "longitude": -79.39523729999999
   },
   {
     "code": "TT",
@@ -936,13 +887,6 @@
     "latitude": 43.6664436,
     "name": "Victoria College",
     "longitude": -79.3921208
-  },
-  {
-    "code": "VI",
-    "address": "Nona Macdonald Visitors Centre University of Toronto",
-    "latitude": 43.661216,
-    "name": "Nona Macdonald Visitors Centre",
-    "longitude": -79.3963164
   },
   {
     "code": "VP",
