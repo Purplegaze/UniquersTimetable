@@ -1,6 +1,6 @@
 package entity;
 
-class TimetableBlock {
+public class TimetableBlock {
     private Timetable timetable;
     private Section section;
     private Course course;
