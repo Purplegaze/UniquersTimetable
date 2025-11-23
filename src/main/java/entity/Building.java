@@ -2,48 +2,34 @@ package entity;
 
 public class Building {
     //fields
-    private String buildingName;
+    private String code;
+    private String name;
     private String address;
-    private double latitude;
-    private double longitude;
+
 
     //constructor
-    public Building(String buildingName, String address, double latitude, double longitude) {
-        this.buildingName = buildingName;
+    public Building(String code, String name, String address) {
+        this.code = code;
+        this.name= name;
         this.address = address;
-        this.latitude = latitude;
-        this.longitude = longitude;
     }
 
-    public String getBuildingName() {
-        return buildingName;
+    public String getBuildingCode() {
+        return code;
+    }
+    public void setBuildingCode(String buildingName) {
+        this.code = code;
     }
 
-    public void setBuildingName(String buildingName) {
-        this.buildingName = buildingName;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
 
     public String getAddress() {
         return address;
     }
-
     public void setAddress(String address) {
         this.address = address;
     }
 
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
 }
