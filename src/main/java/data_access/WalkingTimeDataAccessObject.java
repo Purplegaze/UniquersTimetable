@@ -1,58 +1,52 @@
 package data_access;
-
 import entity.Building;
-import entity.Timetable;
-import org.json.JSONObject;
 import usecase.calculatewalkingtime.CalculateWalkingDataAccessInterface;
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import org.json.*;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
+
 public class WalkingTimeDataAccessObject implements CalculateWalkingDataAccessInterface {
+    private final Map<String, Map<String, Double>> walkingTimes;
 
-    private final Map<String, Map<String, Double>> walkingTimes = new HashMap<>();
-    private final TimetableDataAccessInterface timetableDataAccess;
-
-    public WalkingTimeDataAccessObject(TimetableDataAccessInterface timetableDataAccess) {
-        this.timetableDataAccess = timetableDataAccess;
-        loadWalkingTimesFromJson();
+    public WalkingTimeDataAccessObject() {
+        walkingTimes = loadWalkingTimesFromJson();
     }
 
-    private void loadWalkingTimesFromJson() {
+    private Map<String, Map<String, Double>> loadWalkingTimesFromJson() {
+        Map<String, Map<String, Double>> result = new HashMap<>();
         try {
-            InputStream is = getClass().getResourceAsStream("/walking_cache_ors.json");
-            if (is == null) throw new RuntimeException("walking_cache_ors.json not found in resources!");
+            InputStream is = getClass().getResourceAsStream("main/src/resources/walking_cache_ors.json");
+            if (is == null) throw new RuntimeException("Walking cache JSON not found");
 
             String jsonText = new Scanner(is, StandardCharsets.UTF_8).useDelimiter("\\A").next();
             JSONObject jsonObject = new JSONObject(jsonText);
 
-            for (String from : jsonObject.keySet()) {
-                JSONObject inner = jsonObject.getJSONObject(from);
+            for (String fromBuilding : jsonObject.keySet()) {
+                JSONObject inner = jsonObject.getJSONObject(fromBuilding);
                 Map<String, Double> innerMap = new HashMap<>();
-                for (String to : inner.keySet()) {
-                    innerMap.put(to, inner.getDouble(to));
+                for (String toBuilding : inner.keySet()) {
+                    innerMap.put(toBuilding, inner.getDouble(toBuilding));
                 }
-                walkingTimes.put(from, innerMap);
+                result.put(fromBuilding, innerMap);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Failed to load walking time data.");
         }
-    }
-
-    @Override
-    public Timetable getTimetable() {
-        return timetableDataAccess.getTimetable();
+        return result;
     }
 
     @Override
     public double calculateWalking(Building building1, Building building2) {
-        return walkingTimes
-                .getOrDefault(building1.getBuildingCode(), Map.of())
-                .getOrDefault(building2.getBuildingCode(), 7.0);
+        return walkingTimes.getOrDefault(building1.getBuildingCode(), Map.of())
+                .getOrDefault(building2.getBuildingCode(), 0.0)
+                .intValue();
     }
 }

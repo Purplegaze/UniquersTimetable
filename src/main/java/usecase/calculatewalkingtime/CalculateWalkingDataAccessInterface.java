@@ -4,11 +4,13 @@ import entity.Building;
 import entity.Timetable;
 
 /**
+ * The DA interface for the Calculate Walking Use Case
  * The Data Access Interface for the Calculate Walking Time Use Case.
  */
 public interface CalculateWalkingDataAccessInterface {
 
     /**
+     * Calculate the walking time between two buildings
      * Calculate the walking time between two buildings.
      */
 
