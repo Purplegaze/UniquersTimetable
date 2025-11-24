@@ -56,4 +56,6 @@ public class Course {
     public float getAvgRating() {
         return courseRating == null ? 0f : courseRating.getAvgRating();
     }
+
+    public Building getLocation() {return location;}
 }
