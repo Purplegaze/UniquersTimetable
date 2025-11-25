@@ -4,29 +4,44 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Timetable on the left and Search panel on the right
+ * Main application window.
  */
 public class MainView extends JFrame {
+
     private TimetableView timetableView;
     private SearchPanel searchPanel;
 
     public MainView() {
         setTitle("UofT Timetable Builder");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(1400, 900);
         setLayout(new BorderLayout(10, 10));
 
-        timetableView = new TimetableView();
-        searchPanel = new SearchPanel(timetableView);
-
-        add(timetableView, BorderLayout.CENTER);
-        add(searchPanel, BorderLayout.EAST);
+        initializeComponents();
+        layoutComponents();
 
         setLocationRelativeTo(null);
-        setVisible(true);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new MainView());
+    private void initializeComponents() {
+        timetableView = new TimetableView();
+        searchPanel = new SearchPanel();
+    }
+
+    private void layoutComponents() {
+        add(timetableView, BorderLayout.CENTER);
+        add(searchPanel, BorderLayout.EAST);
+    }
+
+    public SearchPanel getSearchPanel() {
+        return searchPanel;
+    }
+
+    public TimetableView getTimetableView() {
+        return timetableView;
+    }
+
+    public void display() {
+        setVisible(true);
     }
 }
