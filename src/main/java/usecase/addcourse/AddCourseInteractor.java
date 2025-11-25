@@ -26,6 +26,16 @@ public class AddCourseInteractor implements AddCourseInputBoundary {
             return;
         }
 
+        // Check term compatibility
+        if (!isTermCompatible(inputData.getTerm())) {
+            String currentTerm = timetableDataAccess.getCurrentTerm();
+            String termName = "F".equals(currentTerm) ? "Fall" : "Winter";
+            String courseTermName = "F".equals(inputData.getTerm()) ? "Fall" : "Winter";
+            presenter.presentError("Cannot mix terms: Your timetable has " + termName
+                    + " courses, but this is a " + courseTermName + " course");
+            return;
+        }
+
         // Check for duplicate
         if (isDuplicateSection(inputData)) {
             presenter.presentError("Section " + inputData.getCourseCode() + " "
@@ -39,8 +49,40 @@ public class AddCourseInteractor implements AddCourseInputBoundary {
     }
 
     /**
-     * Check if this exact section already exists.
+     * Check if course term is compatible with current timetable term.
      */
+    private boolean isTermCompatible(String courseCode) {
+        String currentTerm = timetableDataAccess.getCurrentTerm();
+        String courseTerm = extractTerm(courseCode);
+
+        // Empty timetable - any course is fine
+        if (currentTerm == null) {
+            return true;
+        }
+
+        // Year course - always compatible
+        if ("Y".equals(courseTerm)) {
+            return true;
+        }
+
+        // Must match current term
+        return currentTerm.equals(courseTerm);
+    }
+
+    /**
+     * Extract term indicator (F/S/Y) from course code.
+     */
+    private String extractTerm(String courseCode) {
+        if (courseCode == null || courseCode.isEmpty()) {
+            return null;
+        }
+        String lastChar = courseCode.substring(courseCode.length() - 1);
+        if (lastChar.matches("[FSY]")) {
+            return lastChar;
+        }
+        return null;
+    }
+
     private boolean isDuplicateSection(AddCourseInputData inputData) {
         return timetableDataAccess.hasSectionAtTime(
                 inputData.getCourseCode(),

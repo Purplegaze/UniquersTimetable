@@ -47,6 +47,11 @@ public interface TimetableDataAccessInterface {
     void clear();
 
     /**
+     * Get the current term of the timetable (F, S, or null if empty).
+     */
+    String getCurrentTerm();
+
+    /**
      * Represents an entry in the timetable.
      */
     class TimetableEntry {

@@ -1,5 +1,7 @@
 package data_access;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +20,6 @@ public class InMemoryTimetableDataAccess implements TimetableDataAccessInterface
     @Override
     public void addSection(String courseCode, String sectionCode, String day,
                            int startHour, int endHour, String location) {
-        // Don't add duplicates - check at time-slot level, not section level
-        // This allows a section with multiple time slots (e.g., Mon and Wed) to be added
         if (!hasSectionAtTime(courseCode, sectionCode, day, startHour, endHour)) {
             entries.add(new TimetableEntry(courseCode, sectionCode, day, startHour, endHour, location));
         }
@@ -84,5 +84,40 @@ public class InMemoryTimetableDataAccess implements TimetableDataAccessInterface
     @Override
     public void clear() {
         entries.clear();
+    }
+
+    @Override
+    public String getCurrentTerm() {
+        if (entries.isEmpty()) {
+            return null;
+        }
+        // Get term from first non-Y course
+        return getCurrTerm();
+    }
+
+    @Nullable
+    private String getCurrTerm() {
+        for (TimetableEntry entry : entries) {
+            String term = extractTerm(entry.getCourseCode());
+            if (!"Y".equals(term)) {
+                return term;
+            }
+        }
+        // If only Y courses, return null (can add either F or S)
+        return null;
+    }
+
+    /**
+     * Extract term indicator (F/S/Y) from course code.
+     */
+    private String extractTerm(String courseCode) {
+        if (courseCode == null || courseCode.isEmpty()) {
+            return null;
+        }
+        String lastChar = courseCode.substring(courseCode.length() - 1);
+        if (lastChar.matches("[FSY]")) {
+            return lastChar;
+        }
+        return null;
     }
 }
