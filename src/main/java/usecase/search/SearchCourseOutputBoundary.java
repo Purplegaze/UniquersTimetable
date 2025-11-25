@@ -1,4 +1,4 @@
-package usecase.SearchCourse;
+package usecase.search;
 
 /**
  * Output boundary for the Search Course use case.

@@ -1,4 +1,4 @@
-package usecase.SearchCourse;
+package usecase.search;
 
 import data_access.CourseDataAccessInterface;
 import entity.Course;
@@ -8,7 +8,6 @@ import java.util.List;
 
 /**
  * Interactor for the Search Course use case.
- * Contains the business logic for searching courses.
  */
 public class SearchCourseInteractor implements SearchCourseInputBoundary {
 
@@ -28,6 +27,10 @@ public class SearchCourseInteractor implements SearchCourseInputBoundary {
         List<Course> allCourses = courseDataAccess.getAllCourses();
         List<Course> matchingCourses = filterCourses(allCourses, query);
 
+        extracted(matchingCourses);
+    }
+
+    private void extracted(List<Course> matchingCourses) {
         if (matchingCourses.isEmpty()) {
             presenter.presentNoResults();
         } else {

@@ -1,4 +1,4 @@
-package usecase.SearchCourse;
+package usecase.search;
 
 import java.util.List;
 

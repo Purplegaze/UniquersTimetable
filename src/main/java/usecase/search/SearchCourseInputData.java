@@ -1,4 +1,4 @@
-package usecase.SearchCourse;
+package usecase.search;
 
 /**
  * Input data for the Search Course use case.
