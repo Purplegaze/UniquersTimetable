@@ -7,12 +7,12 @@ import java.util.List;
 
 /**
  * SearchPanel - Pure UI component following Clean Architecture.
- *
+ * <p>
  * Responsibilities:
  * - Render the search UI (search bar, results list)
  * - Capture user input and forward to controller
  * - Display data provided by presenter via ViewModels
- *
+ * <p>
  * Does NOT:
  * - Know about domain entities (Course, Section, etc.)
  * - Perform search logic
