@@ -1,5 +1,6 @@
-package interface_adapter.filter_courses;
+package interface_adapter.course_filter;
 
+import interface_adapter.course_filter.FilterCoursesViewModel;
 import use_case.filter_courses.FilterCoursesOutputBoundary;
 import use_case.filter_courses.FilterCoursesOutputData;
 
