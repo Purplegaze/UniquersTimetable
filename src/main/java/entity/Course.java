@@ -57,6 +57,11 @@ public class Course {
         return courseRating == null ? 0f : courseRating.getAvgRating();
     }
 
+
+    public Integer getBreadthCategory() {
+        return breadthCategory;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -73,7 +78,4 @@ public class Course {
         return location;
     }
 
-    public int getBreadthCategory() {
-        return breadthCategory;
-    }
 }
