@@ -64,10 +64,6 @@ public class TimetableApplication {
             @Override
             public void presentSuccess(AddCourseOutputData outputData) {
                 displayCourseOnTimetable(timetableView, outputData, colorHelper, false);
-                timetableView.showSuccessMessage(
-                        outputData.getCourseCode(),
-                        outputData.getSectionCode()
-                );
             }
 
             @Override

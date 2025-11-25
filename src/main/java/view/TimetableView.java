@@ -2,8 +2,8 @@ package view;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.swing.*;
 
@@ -25,25 +25,11 @@ public class TimetableView extends JPanel {
             this.hasConflict = hasConflict;
         }
 
-        public String getCourseCode() {
-            return courseCode;
-        }
-
-        public String getSectionCode() {
-            return sectionCode;
-        }
-
-        public String getLocation() {
-            return location;
-        }
-
-        public Color getColor() {
-            return color;
-        }
-
-        public boolean hasConflict() {
-            return hasConflict;
-        }
+        public String getCourseCode() { return courseCode; }
+        public String getSectionCode() { return sectionCode; }
+        public String getLocation() { return location; }
+        public Color getColor() { return color; }
+        public boolean hasConflict() { return hasConflict; }
     }
 
     private static final int START_TIME = 9;
@@ -52,25 +38,37 @@ public class TimetableView extends JPanel {
 
     private Map<String, JPanel> slotPanels;
 
+    private Map<String, List<TimetableSlotItem>> slotCourses;
+
     public TimetableView() {
         slotPanels = new HashMap<>();
+        slotCourses = new HashMap<>();
         setLayout(new BorderLayout());
 
         initializeComponents();
     }
 
     public void displayCourse(String day, int startHour, int endHour, TimetableSlotItem item) {
-        List<String> slotKeys = generateSlotKeys(day, startHour, endHour);
+        java.util.List<String> slotKeys = generateSlotKeys(day, startHour, endHour);
 
         for (String key : slotKeys) {
             JPanel slot = slotPanels.get(key);
             if (slot != null) {
-                updateSlot(slot, item);
+                // Get or create list of courses for this slot
+                List<TimetableSlotItem> courses = slotCourses.computeIfAbsent(key, k -> new ArrayList<>());
+
+                // Add the new course
+                courses.add(item);
+
+                // Update the slot display
+                updateSlotWithMultipleCourses(slot, courses);
             }
         }
     }
 
     public void clearAll() {
+        slotCourses.clear();
+
         for (JPanel slot : slotPanels.values()) {
             slot.removeAll();
             slot.setBackground(Color.WHITE);
@@ -80,14 +78,6 @@ public class TimetableView extends JPanel {
         }
     }
 
-    public void showSuccessMessage(String courseCode, String sectionCode) {
-        JOptionPane.showMessageDialog(
-                this,
-                courseCode + " " + sectionCode + " added!",
-                "Success",
-                JOptionPane.INFORMATION_MESSAGE
-        );
-    }
 
     public void showConflictWarning(String conflictMessage) {
         JOptionPane.showMessageDialog(
@@ -107,20 +97,66 @@ public class TimetableView extends JPanel {
         );
     }
 
-    private List<String> generateSlotKeys(String day, int startHour, int endHour) {
-        List<String> keys = new ArrayList<>();
+
+    private java.util.List<String> generateSlotKeys(String day, int startHour, int endHour) {
+        java.util.List<String> keys = new ArrayList<>();
         for (int hour = startHour; hour < endHour; hour++) {
             keys.add(day + "-" + hour);
         }
         return keys;
     }
 
+    /**
+     * Update a slot that may contain multiple courses (conflict).
+     * Splits the slot horizontally if there are 2+ courses.
+     */
+    private void updateSlotWithMultipleCourses(JPanel slot, List<TimetableSlotItem> courses) {
+        slot.removeAll();
+
+        if (courses.size() == 1) {
+            // Single course - use entire slot
+            TimetableSlotItem item = courses.get(0);
+            slot.setBackground(item.getColor());
+            slot.setLayout(new BorderLayout());
+
+            JLabel label = createCourseLabel(item);
+            slot.add(label, BorderLayout.CENTER);
+
+            if (item.hasConflict()) {
+                slot.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+            } else {
+                slot.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            }
+        } else {
+            // Multiple courses - split the slot
+            slot.setLayout(new GridLayout(1, courses.size()));
+            slot.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+
+            for (TimetableSlotItem item : courses) {
+                JPanel coursePanel = new JPanel(new BorderLayout());
+                coursePanel.setBackground(item.getColor());
+                coursePanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
+
+                JLabel label = createCourseLabel(item);
+                coursePanel.add(label, BorderLayout.CENTER);
+
+                slot.add(coursePanel);
+            }
+        }
+
+        slot.revalidate();
+        slot.repaint();
+    }
+
+    /**
+     * Update a single slot with course information.
+     */
     private void updateSlot(JPanel slot, TimetableSlotItem item) {
         slot.removeAll();
         slot.setBackground(item.getColor());
         slot.setLayout(new BorderLayout());
 
-        JLabel label = createLabel(item);
+        JLabel label = createCourseLabel(item);
         slot.add(label, BorderLayout.CENTER);
 
         if (item.hasConflict()) {
@@ -133,7 +169,8 @@ public class TimetableView extends JPanel {
         slot.repaint();
     }
 
-    private JLabel createLabel(TimetableSlotItem item) {
+
+    private JLabel createCourseLabel(TimetableSlotItem item) {
         String labelText = "<html><center>" + item.getCourseCode() + "<br>"
                 + item.getSectionCode() + "<br>" + item.getLocation() + "</center></html>";
         JLabel label = new JLabel(labelText, SwingConstants.CENTER);
@@ -145,14 +182,14 @@ public class TimetableView extends JPanel {
         int numRows = END_TIME - START_TIME;
 
         // Create a container for headers (time header + day headers)
-        JPanel headerPanel = new JPanel(new BorderLayout());
+        JPanel headerContainer = new JPanel(new BorderLayout());
 
         // Time header (top-left corner)
         JLabel timeHeader = new JLabel("Time", SwingConstants.CENTER);
         timeHeader.setFont(new Font("Arial", Font.BOLD, 12));
         timeHeader.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         timeHeader.setPreferredSize(new Dimension(60, 25));
-        headerPanel.add(timeHeader, BorderLayout.WEST);
+        headerContainer.add(timeHeader, BorderLayout.WEST);
 
         // Day headers
         JPanel dayHeaderPanel = new JPanel(new GridLayout(1, DAYS.length));
@@ -162,7 +199,7 @@ public class TimetableView extends JPanel {
             label.setBorder(BorderFactory.createLineBorder(Color.GRAY));
             dayHeaderPanel.add(label);
         }
-        headerPanel.add(dayHeaderPanel, BorderLayout.CENTER);
+        headerContainer.add(dayHeaderPanel, BorderLayout.CENTER);
 
         // Time column
         JPanel timePanel = new JPanel(new GridLayout(numRows, 1));
@@ -185,12 +222,13 @@ public class TimetableView extends JPanel {
                 // Store reference with key like "Monday-9"
                 String key = day + "-" + hour;
                 slotPanels.put(key, slot);
+                slotCourses.put(key, new ArrayList<>());
 
                 gridPanel.add(slot);
             }
         }
 
-        add(headerPanel, BorderLayout.NORTH);
+        add(headerContainer, BorderLayout.NORTH);
         add(timePanel, BorderLayout.WEST);
         add(gridPanel, BorderLayout.CENTER);
     }
