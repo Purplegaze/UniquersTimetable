@@ -47,7 +47,8 @@ public class TimetableApplication {
             SearchCourseInputBoundary searchInteractor = createSearchInteractor(
                     courseDataAccess, searchPanel);
 
-            connectSearchPanel(searchPanel, searchInteractor, courseDataAccess, addCourseInteractor);
+            connectSearchPanel(searchPanel, searchInteractor, courseDataAccess, addCourseInteractor,
+                    timetableDataAccess);
 
             searchInteractor.execute(new SearchCourseInputData(""));
 
@@ -112,7 +113,8 @@ public class TimetableApplication {
     private static void connectSearchPanel(SearchPanel searchPanel,
                                            SearchCourseInputBoundary interactor,
                                            CourseDataAccessInterface courseDataAccess,
-                                           AddCourseInputBoundary addCourseInteractor) {
+                                           AddCourseInputBoundary addCourseInteractor,
+                                           TimetableDataAccessInterface timetableDataAccess) {
 
         searchPanel.setListener(new SearchPanel.SearchPanelListener() {
             @Override
@@ -124,7 +126,7 @@ public class TimetableApplication {
             public void onResultSelected(String courseCode) {
                 Course course = courseDataAccess.findByCourseCode(courseCode);
                 if (course != null) {
-                    new SectionView(course, addCourseInteractor);
+                    new SectionView(course, addCourseInteractor, timetableDataAccess);
                 }
             }
         });
