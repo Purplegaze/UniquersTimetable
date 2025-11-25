@@ -18,8 +18,9 @@ public class InMemoryTimetableDataAccess implements TimetableDataAccessInterface
     @Override
     public void addSection(String courseCode, String sectionCode, String day,
                            int startHour, int endHour, String location) {
-        // Don't add duplicates
-        if (!hasSection(courseCode, sectionCode)) {
+        // Don't add duplicates - check at time-slot level, not section level
+        // This allows a section with multiple time slots (e.g., Mon and Wed) to be added
+        if (!hasSectionAtTime(courseCode, sectionCode, day, startHour, endHour)) {
             entries.add(new TimetableEntry(courseCode, sectionCode, day, startHour, endHour, location));
         }
     }
@@ -28,7 +29,7 @@ public class InMemoryTimetableDataAccess implements TimetableDataAccessInterface
     public void removeSection(String courseCode, String sectionCode) {
         entries.removeIf(entry ->
                 entry.getCourseCode().equals(courseCode) &&
-                entry.getSectionCode().equals(sectionCode)
+                        entry.getSectionCode().equals(sectionCode)
         );
     }
 
@@ -53,7 +54,22 @@ public class InMemoryTimetableDataAccess implements TimetableDataAccessInterface
     public boolean hasSection(String courseCode, String sectionCode) {
         for (TimetableEntry entry : entries) {
             if (entry.getCourseCode().equals(courseCode) &&
-                entry.getSectionCode().equals(sectionCode)) {
+                    entry.getSectionCode().equals(sectionCode)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean hasSectionAtTime(String courseCode, String sectionCode, String day,
+                                    int startHour, int endHour) {
+        for (TimetableEntry entry : entries) {
+            if (entry.getCourseCode().equals(courseCode) &&
+                    entry.getSectionCode().equals(sectionCode) &&
+                    entry.getDay().equals(day) &&
+                    entry.getStartHour() == startHour &&
+                    entry.getEndHour() == endHour) {
                 return true;
             }
         }

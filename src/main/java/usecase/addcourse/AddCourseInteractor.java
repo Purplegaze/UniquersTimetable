@@ -26,9 +26,29 @@ public class AddCourseInteractor implements AddCourseInputBoundary {
             return;
         }
 
+        // Check for duplicate
+        if (isDuplicateSection(inputData)) {
+            presenter.presentError("Section " + inputData.getCourseCode() + " "
+                    + inputData.getSectionCode() + " is already in your timetable");
+            return;
+        }
+
         List<String> conflicts = findConflicts(inputData);
         addSectionToTimetable(inputData);
         presentResult(inputData, conflicts);
+    }
+
+    /**
+     * Check if this exact section already exists.
+     */
+    private boolean isDuplicateSection(AddCourseInputData inputData) {
+        return timetableDataAccess.hasSectionAtTime(
+                inputData.getCourseCode(),
+                inputData.getSectionCode(),
+                inputData.getDay(),
+                inputData.getStartHour(),
+                inputData.getEndHour()
+        );
     }
 
     private List<String> findConflicts(AddCourseInputData inputData) {

@@ -31,6 +31,12 @@ public interface TimetableDataAccessInterface {
     boolean hasSection(String courseCode, String sectionCode);
 
     /**
+     * Check if a specific time slot for a section is already in the timetable.
+     */
+    boolean hasSectionAtTime(String courseCode, String sectionCode, String day,
+                             int startHour, int endHour);
+
+    /**
      * Get all sections in the timetable.
      */
     List<TimetableEntry> getAllSections();
