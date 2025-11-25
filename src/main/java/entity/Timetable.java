@@ -144,43 +144,6 @@ public class Timetable {
         }
     }
 
-    public Conflict warnBackToBack(Section newSection, int minMinutes) {
-
-        for (TimeSlot newSlot : newSection.getTimes()) {
-
-            for (TimetableBlock existing : blocks) {
-                TimeSlot existingSlot = existing.getTimeSlot();
-
-                boolean backToBack =
-                        existingSlot.immediatelyPrecedes(newSlot) ||
-                                existingSlot.immediatelyFollows(newSlot);
-
-                if (backToBack) {
-
-                    Building from = existingSlot.getBuilding();
-                    Building to = newSlot.getBuilding();
-
-                    int travel = from.getTimeTo(to);
-
-                    // TODO: Temp until building API works
-                    if (travel == -1) {
-                        travel = 15;   // TODO: assumes 15 min walk if building dont match
-                    }
-
-                    if (travel > minMinutes) {
-                        return new Conflict(
-                                List.of(existing.getCourse(), newSection.getCourse()),
-                                "BACK_TO_BACK",
-                                "Not enough time to walk between these classes"
-                        );
-                    }
-                }
-            }
-        }
-
-        return null; // No issues
-    }
-
     public ArrayList getTravelTimes() {
         // TODO: Decide in what form a list of travel times should be returned.
         return new ArrayList();

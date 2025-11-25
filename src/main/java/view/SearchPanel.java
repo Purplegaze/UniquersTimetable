@@ -11,10 +11,11 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import interface_adapter.filter_courses.FilterCoursesController;
-import interface_adapter.filter_courses.FilterCoursesPresenter;
-import interface_adapter.filter_courses.FilterCoursesViewModel;
+import interface_adapter.course_filter.FilterCoursesController;
+import interface_adapter.course_filter.FilterCoursesPresenter;
+import interface_adapter.course_filter.FilterCoursesViewModel;
 import use_case.filter_courses.FilterCoursesInteractor;
+
 
 /**
  * SearchPanel - right side, search, search result...
@@ -30,23 +31,23 @@ public class SearchPanel extends JPanel {
     private List<Course> courses; // sample data (placeholder)
     private JButton filterButton;
     private Integer selectedBreadth = null;
-
-    private final FilterCoursesController filterController;
     private final FilterCoursesViewModel filterViewModel;
+    private final FilterCoursesController filterController;
+
 
     public SearchPanel(TimetableView timetableView) {
         this.timetableView = timetableView;
-
-        this.filterViewModel = new FilterCoursesViewModel();
-        FilterCoursesPresenter presenter = new FilterCoursesPresenter(filterViewModel);
-        FilterCoursesInteractor interactor = new FilterCoursesInteractor(presenter);
-        this.filterController = new FilterCoursesController(interactor);
-
         setLayout(new BorderLayout(10, 10));
         setPreferredSize(new Dimension(350, 0));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         initializeSampleData();
+
+        this.filterViewModel = new FilterCoursesViewModel();
+        FilterCoursesPresenter presenter = new FilterCoursesPresenter(filterViewModel);
+        FilterCoursesInteractor interactor = new FilterCoursesInteractor(courses, presenter);
+        this.filterController = new FilterCoursesController(interactor);
+
 
         JLabel title = new JLabel("Course Search", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 18));
@@ -141,24 +142,24 @@ public class SearchPanel extends JPanel {
     private void performSearch() {
         String query = searchField.getText();
 
+        filterController.filter(query, selectedBreadth);
+
         listModel.clear();
         filteredCourses = new ArrayList<>();
 
-        filterController.execute(courses, selectedBreadth, query);
+        if (filterViewModel.getCourses() == null || filterViewModel.getCourses().isEmpty()) {
+            listModel.addElement("No results found");
+            return;
+        }
 
-        List<Course> result = filterViewModel.getFilteredCourses();
-        filteredCourses.addAll(result);
-
-        for (Course course : result) {
-            String code = course.getCourseCode() != null ? course.getCourseCode() : "";
-            String name = course.getCourseName() != null ? course.getCourseName() : "";
+        for (Course course : filterViewModel.getCourses()) {
+            filteredCourses.add(course);
+            String code = course.getCourseCode() == null ? "" : course.getCourseCode();
+            String name = course.getCourseName() == null ? "" : course.getCourseName();
             listModel.addElement(code + " - " + name);
         }
-
-        if (listModel.isEmpty()) {
-            listModel.addElement("No results found");
-        }
     }
+
 
     private void openCoursePopup() {
         int selectedIndex = resultsList.getSelectedIndex();
