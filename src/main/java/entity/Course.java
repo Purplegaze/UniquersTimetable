@@ -56,4 +56,24 @@ public class Course {
     public float getAvgRating() {
         return courseRating == null ? 0f : courseRating.getAvgRating();
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public float getCredits() {
+        return credits;
+    }
+
+    public String getTerm() {
+        return term;
+    }
+
+    public Building getLocation() {
+        return location;
+    }
+
+    public int getBreadthCategory() {
+        return breadthCategory;
+    }
 }

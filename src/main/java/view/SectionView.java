@@ -72,6 +72,6 @@ public class SectionView extends JDialog {
 
             setVisible(true);
         }
-}
+    }
 
 

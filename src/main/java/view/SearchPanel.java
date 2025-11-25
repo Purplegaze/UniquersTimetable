@@ -3,7 +3,6 @@ package view;
 import entity.Course;
 import entity.Section;
 import entity.TimeSlot;
-import interface_adapter.CourseFilter;
 import entity.Conflict;
 import entity.Timetable;
 
@@ -11,6 +10,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import interface_adapter.filter_courses.FilterCoursesController;
+import interface_adapter.filter_courses.FilterCoursesPresenter;
+import interface_adapter.filter_courses.FilterCoursesViewModel;
+import use_case.filter_courses.FilterCoursesInteractor;
 
 /**
  * SearchPanel - right side, search, search result...
@@ -27,8 +31,17 @@ public class SearchPanel extends JPanel {
     private JButton filterButton;
     private Integer selectedBreadth = null;
 
+    private final FilterCoursesController filterController;
+    private final FilterCoursesViewModel filterViewModel;
+
     public SearchPanel(TimetableView timetableView) {
         this.timetableView = timetableView;
+
+        this.filterViewModel = new FilterCoursesViewModel();
+        FilterCoursesPresenter presenter = new FilterCoursesPresenter(filterViewModel);
+        FilterCoursesInteractor interactor = new FilterCoursesInteractor(presenter);
+        this.filterController = new FilterCoursesController(interactor);
+
         setLayout(new BorderLayout(10, 10));
         setPreferredSize(new Dimension(350, 0));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -126,25 +139,20 @@ public class SearchPanel extends JPanel {
     }
 
     private void performSearch() {
-        String query = searchField.getText().toLowerCase().trim();
+        String query = searchField.getText();
+
         listModel.clear();
         filteredCourses = new ArrayList<>();
 
-        List<Course> source = courses;
+        filterController.execute(courses, selectedBreadth, query);
 
-        if (selectedBreadth != null) {
-            CourseFilter filter = new CourseFilter();
-            source = filter.filterByBreadth(courses, selectedBreadth);
-        }
+        List<Course> result = filterViewModel.getFilteredCourses();
+        filteredCourses.addAll(result);
 
-        for (Course course : source) {
+        for (Course course : result) {
             String code = course.getCourseCode() != null ? course.getCourseCode() : "";
             String name = course.getCourseName() != null ? course.getCourseName() : "";
-
-            if (query.isEmpty() || code.toLowerCase().contains(query) || name.toLowerCase().contains(query)) {
-                filteredCourses.add(course);
-                listModel.addElement(code + " - " + name);
-            }
+            listModel.addElement(code + " - " + name);
         }
 
         if (listModel.isEmpty()) {
