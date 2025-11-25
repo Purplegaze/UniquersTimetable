@@ -1,7 +1,6 @@
 package use_case.filter_courses;
 
 import entity.Course;
-import interface_adapter.CourseFilter;
 
 import java.util.List;
 
@@ -9,7 +8,6 @@ public class FilterCoursesInteractor implements FilterCoursesInputBoundary {
 
     private final List<Course> allCourses;
     private final FilterCoursesOutputBoundary presenter;
-    private final CourseFilter courseFilter = new CourseFilter();
 
     public FilterCoursesInteractor(List<Course> allCourses,
                                    FilterCoursesOutputBoundary presenter) {
@@ -24,8 +22,12 @@ public class FilterCoursesInteractor implements FilterCoursesInputBoundary {
 
         List<Course> source = allCourses;
         if (breadth != null) {
-            source = courseFilter.filterByBreadth(allCourses, breadth);
+            source = allCourses.stream()
+                    .filter(c -> c.getBreadthCategory() != null
+                            && c.getBreadthCategory() == breadth)
+                    .collect(java.util.stream.Collectors.toList());
         }
+
 
         String q = query == null ? "" : query.toLowerCase().trim();
 
@@ -37,7 +39,7 @@ public class FilterCoursesInteractor implements FilterCoursesInputBoundary {
                             || code.toLowerCase().contains(q)
                             || name.toLowerCase().contains(q);
                 })
-                .toList();
+                .collect(java.util.stream.Collectors.toList());
 
         presenter.present(new FilterCoursesOutputData(result));
     }
