@@ -1,75 +1,143 @@
 package view;
 
-import entity.Course;
-import entity.Section;
-import entity.TimeSlot;
-import entity.Conflict;
-import entity.Timetable;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import interface_adapter.course_filter.FilterCoursesController;
-import interface_adapter.course_filter.FilterCoursesPresenter;
-import interface_adapter.course_filter.FilterCoursesViewModel;
-import use_case.filter_courses.FilterCoursesInteractor;
-
-
 /**
- * SearchPanel - right side, search, search result...
- * Displays search bar, results list, and handles interactions
+ * SearchPanel - Pure UI component following Clean Architecture.
+ * <p>
+ * Responsibilities:
+ * - Render the search UI (search bar, results list)
+ * - Capture user input and forward to controller
+ * - Display data provided by presenter via ViewModels
+ * <p>
+ * Does NOT:
+ * - Know about domain entities (Course, Section, etc.)
+ * - Perform search logic
+ * - Access data sources
  */
 public class SearchPanel extends JPanel {
-    private final TimetableView timetableView;
+
+    // ==================== View Model ====================
+
+    /**
+     * Simple data container for displaying search results.
+     * This is NOT an entity - just what the UI needs to display.
+     */
+    public static class SearchResultItem {
+        private final String id;
+        private final String displayText;
+
+        public SearchResultItem(String id, String displayText) {
+            this.id = id;
+            this.displayText = displayText;
+        }
+
+        public String getId() { return id; }
+        public String getDisplayText() { return displayText; }
+    }
+
+    // ==================== Listener Interface ====================
+
+    /**
+     * Interface for handling user actions from this panel.
+     * The controller implements this.
+     */
+    public interface SearchPanelListener {
+        void onSearchRequested(String query);
+        void onResultSelected(String resultId);
+    }
+
+    // ==================== UI Components ====================
+
     private JTextField searchField;
     private JButton searchButton;
     private JList<String> resultsList;
     private DefaultListModel<String> listModel;
-    private List<Course> filteredCourses;
-    private List<Course> courses; // sample data (placeholder)
-    private JButton filterButton;
-    private Integer selectedBreadth = null;
-    private final FilterCoursesViewModel filterViewModel;
-    private final FilterCoursesController filterController;
 
+    private List<SearchResultItem> currentResults = new ArrayList<>();
+    private SearchPanelListener listener;
 
-    public SearchPanel(TimetableView timetableView) {
-        this.timetableView = timetableView;
+    // ==================== Constructor ====================
+
+    public SearchPanel() {
         setLayout(new BorderLayout(10, 10));
         setPreferredSize(new Dimension(350, 0));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        initializeSampleData();
+        initializeComponents();
+        layoutComponents();
+        setupEventHandlers();
+    }
 
-        this.filterViewModel = new FilterCoursesViewModel();
-        FilterCoursesPresenter presenter = new FilterCoursesPresenter(filterViewModel);
-        FilterCoursesInteractor interactor = new FilterCoursesInteractor(courses, presenter);
-        this.filterController = new FilterCoursesController(interactor);
+    // ==================== Public Methods ====================
 
+    public void setListener(SearchPanelListener listener) {
+        this.listener = listener;
+    }
 
-        JLabel title = new JLabel("Course Search", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 18));
-        add(title, BorderLayout.NORTH);
+    public void displayResults(List<SearchResultItem> results) {
+        this.currentResults = new ArrayList<>(results);
+        listModel.clear();
 
-        JPanel searchPanel = new JPanel(new BorderLayout(5, 5));
+        for (SearchResultItem item : results) {
+            listModel.addElement(item.getDisplayText());
+        }
+    }
+
+    public void displayNoResults() {
+        this.currentResults = new ArrayList<>();
+        listModel.clear();
+        listModel.addElement("No results found");
+    }
+
+    public void displayError(String message) {
+        JOptionPane.showMessageDialog(
+                this,
+                message,
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+        );
+    }
+
+    public void clearSearchField() {
+        searchField.setText("");
+    }
+
+    public String getSearchQuery() {
+        return searchField.getText();
+    }
+
+    // ==================== Private UI Setup ====================
+
+    private void initializeComponents() {
         searchField = new JTextField();
         searchField.setFont(new Font("Arial", Font.PLAIN, 14));
+
         searchButton = new JButton("Search");
         searchButton.setFont(new Font("Arial", Font.BOLD, 14));
-
-        searchPanel.add(searchField, BorderLayout.CENTER);
-        searchPanel.add(searchButton, BorderLayout.EAST);
-
-        JPanel resultsPanel = new JPanel(new BorderLayout(5, 5));
-        JLabel resultsLabel = new JLabel("Results:");
-        resultsLabel.setFont(new Font("Arial", Font.BOLD, 14));
 
         listModel = new DefaultListModel<>();
         resultsList = new JList<>(listModel);
         resultsList.setFont(new Font("Arial", Font.PLAIN, 13));
         resultsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    }
+
+    private void layoutComponents() {
+        JLabel title = new JLabel("Course Search", SwingConstants.CENTER);
+        title.setFont(new Font("Arial", Font.BOLD, 18));
+        add(title, BorderLayout.NORTH);
+
+        JPanel searchBarPanel = new JPanel(new BorderLayout(5, 5));
+        searchBarPanel.add(searchField, BorderLayout.CENTER);
+        searchBarPanel.add(searchButton, BorderLayout.EAST);
+
+        JPanel resultsPanel = new JPanel(new BorderLayout(5, 5));
+        JLabel resultsLabel = new JLabel("Results:");
+        resultsLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
         JScrollPane scrollPane = new JScrollPane(resultsList);
 
         resultsPanel.add(resultsLabel, BorderLayout.NORTH);
@@ -77,142 +145,47 @@ public class SearchPanel extends JPanel {
 
         JPanel buttonsPanel = new JPanel(new GridLayout(2, 1, 5, 5));
 
-        filterButton = new JButton("Filter by breadth");
-        filterButton.setFont(new Font("Arial", Font.PLAIN, 13));
-        buttonsPanel.add(filterButton);
-        filterButton.addActionListener(e -> openBreadthFilterDialog());
-
         JPanel centerPanel = new JPanel(new BorderLayout(5, 10));
-        centerPanel.add(searchPanel, BorderLayout.NORTH);
+        centerPanel.add(searchBarPanel, BorderLayout.NORTH);
         centerPanel.add(resultsPanel, BorderLayout.CENTER);
         centerPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
         add(centerPanel, BorderLayout.CENTER);
+    }
 
-        searchButton.addActionListener(e -> performSearch());
-        searchField.addActionListener(e -> performSearch());
+    private void setupEventHandlers() {
+        searchButton.addActionListener(e -> notifySearchRequested());
+        searchField.addActionListener(e -> notifySearchRequested());
 
         resultsList.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
-                    openCoursePopup();
+                    notifyResultSelected();
                 }
             }
         });
-
-        performSearch();
     }
 
-    private void initializeSampleData() {
-        courses = new ArrayList<>();
-        // TODO: Sample courses... to be replaced with API data later
-        // Breadth 1
-        courses.add(new Course("ENG140", "Literature for Our Time",
-                "Intro to contemporary literature and cultural analysis.",
-                0f, null, "", new ArrayList<>(), null, 1));
+    // ==================== Event Notification ====================
 
-        // Breadth 2
-        courses.add(new Course("PSY100", "Intro to Psychology",
-                "Overview of major areas in psychology.",
-                0f, null, "", new ArrayList<>(), null, 2));
-        courses.add(new Course("SOC100", "Intro to Sociology",
-                "Study of society, groups, and institutions.",
-                0f, null, "", new ArrayList<>(), null, 2));
-
-        // Breadth 3
-        courses.add(new Course("POL101", "Politics in the City",
-                "Introduction to political institutions and processes.",
-                0f, null, "", new ArrayList<>(), null, 3));
-
-        // Breadth 4
-        courses.add(new Course("BIO120", "Adaptation and Biodiversity",
-                "Introductory biology focusing on evolution and ecology.",
-                0f, null, "", new ArrayList<>(), null, 4));
-
-        // Breadth 5
-        courses.add(new Course("CSC207", "Software Design",
-                "Object-oriented design and clean architecture.",
-                0f, null, "", new ArrayList<>(), null, 5));
-        courses.add(new Course("MAT237", "Multivariable Calculus",
-                "Advanced calculus in multiple dimensions.",
-                0f, null, "", new ArrayList<>(), null, 5));
+    private void notifySearchRequested() {
+        if (listener != null) {
+            String query = searchField.getText().trim();
+            listener.onSearchRequested(query);
+        }
     }
 
-    private void performSearch() {
-        String query = searchField.getText();
+    private void notifyResultSelected() {
+        int selectedIndex = resultsList.getSelectedIndex();
 
-        filterController.filter(query, selectedBreadth);
-
-        listModel.clear();
-        filteredCourses = new ArrayList<>();
-
-        if (filterViewModel.getCourses() == null || filterViewModel.getCourses().isEmpty()) {
-            listModel.addElement("No results found");
+        if (selectedIndex < 0 || selectedIndex >= currentResults.size()) {
             return;
         }
 
-        for (Course course : filterViewModel.getCourses()) {
-            filteredCourses.add(course);
-            String code = course.getCourseCode() == null ? "" : course.getCourseCode();
-            String name = course.getCourseName() == null ? "" : course.getCourseName();
-            listModel.addElement(code + " - " + name);
+        if (listener != null) {
+            String selectedId = currentResults.get(selectedIndex).getId();
+            listener.onResultSelected(selectedId);
         }
-    }
-
-
-    private void openCoursePopup() {
-        int selectedIndex = resultsList.getSelectedIndex();
-        if (selectedIndex >= 0 && filteredCourses != null && selectedIndex < filteredCourses.size()) {
-            Course selectedCourse = filteredCourses.get(selectedIndex);
-            if (selectedCourse == null) return;
-
-            // TODO: Implement CoursePopup
-            JPanel panel = new JPanel(new GridLayout(0, 1));
-            panel.add(new JLabel("Course: " + selectedCourse.getCourseCode() + " - " + selectedCourse.getCourseName()));
-            panel.add(new JLabel("Sections: " + selectedCourse.getSections()));
-            panel.add(new JLabel(""));
-
-            String[] options = { "Section Details", "Close" };
-
-            int choice = JOptionPane.showOptionDialog(
-                    this, panel, "Course Details",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE,
-                    null,
-                    options,
-                    options[0]
-            );
-
-
-            if (choice == 0) {
-                new SectionView(selectedCourse);
-            }
-
-        }
-
-    }
-
-    private void openBreadthFilterDialog() {
-        String[] options = {"All", "1", "2", "3", "4", "5"};
-        String choice = (String) JOptionPane.showInputDialog(
-                this,
-                "Select breadth category:",
-                "Breadth Filter",
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                options,
-                selectedBreadth == null ? "All" : selectedBreadth.toString()
-        );
-
-        if (choice == null) {
-            return; // user cancelled
-        }
-        if (choice.equals("All")) {
-            selectedBreadth = null;
-        } else {
-            selectedBreadth = Integer.parseInt(choice);
-        }
-        performSearch(); // re-run search with new filter
     }
 }
