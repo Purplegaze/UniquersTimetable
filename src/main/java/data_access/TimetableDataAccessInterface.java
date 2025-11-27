@@ -1,5 +1,9 @@
 package data_access;
 
+import entity.Course;
+import entity.Section;
+import entity.Timetable;
+
 import java.util.List;
 
 /**
@@ -11,35 +15,37 @@ public interface TimetableDataAccessInterface {
     /**
      * Add a section to the timetable.
      */
-    void addSection(String courseCode, String sectionCode, String day,
-                    int startHour, int endHour, String location);
+    boolean addSection(Section section);
 
     /**
      * Remove a section from the timetable.
      */
-    void removeSection(String courseCode, String sectionCode);
+    boolean removeSection(Section section);
 
     /**
-     * Find conflicts at a given time slot.
-     * @return List of conflicting course-section codes (e.g., ["CSC207-LEC0101"])
+     * Remove all sections of a course from the timetable.
      */
-    List<String> findConflicts(String day, int startHour, int endHour);
+    void removeCourse(Course course);
+
+    /**
+     * Find sections that conflict with the given section.
+     */
+    List<Section> findConflicts(Section section);
 
     /**
      * Check if a section is already in the timetable.
      */
-    boolean hasSection(String courseCode, String sectionCode);
-
-    /**
-     * Check if a specific time slot for a section is already in the timetable.
-     */
-    boolean hasSectionAtTime(String courseCode, String sectionCode, String day,
-                             int startHour, int endHour);
+    boolean hasSection(Section section);
 
     /**
      * Get all sections in the timetable.
      */
-    List<TimetableEntry> getAllSections();
+    List<Section> getAllSections();
+
+    /**
+     * Get the timetable entity.
+     */
+    Timetable getTimetable();
 
     /**
      * Clear the timetable.
@@ -47,36 +53,12 @@ public interface TimetableDataAccessInterface {
     void clear();
 
     /**
-     * Get the current term of the timetable (F, S, or null if empty).
+     * Get the current term of the timetable (F, S, or null if empty/all Y courses).
      */
     String getCurrentTerm();
 
     /**
-     * Represents an entry in the timetable.
+     * Check if a section has any time conflicts with existing sections.
      */
-    class TimetableEntry {
-        private final String courseCode;
-        private final String sectionCode;
-        private final String day;
-        private final int startHour;
-        private final int endHour;
-        private final String location;
-
-        public TimetableEntry(String courseCode, String sectionCode, String day,
-                              int startHour, int endHour, String location) {
-            this.courseCode = courseCode;
-            this.sectionCode = sectionCode;
-            this.day = day;
-            this.startHour = startHour;
-            this.endHour = endHour;
-            this.location = location;
-        }
-
-        public String getCourseCode() { return courseCode; }
-        public String getSectionCode() { return sectionCode; }
-        public String getDay() { return day; }
-        public int getStartHour() { return startHour; }
-        public int getEndHour() { return endHour; }
-        public String getLocation() { return location; }
-    }
+    boolean hasConflicts(Section section);
 }

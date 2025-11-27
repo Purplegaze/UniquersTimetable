@@ -1,6 +1,9 @@
 package data_access;
 
-import org.jetbrains.annotations.Nullable;
+import entity.Course;
+import entity.Section;
+import entity.Timetable;
+import entity.TimeSlot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,38 +14,79 @@ import java.util.List;
  */
 public class InMemoryTimetableDataAccess implements TimetableDataAccessInterface {
 
-    private final List<TimetableEntry> entries;
+    private final Timetable timetable;
 
     public InMemoryTimetableDataAccess() {
-        this.entries = new ArrayList<>();
+        this.timetable = new Timetable();
     }
 
     @Override
-    public void addSection(String courseCode, String sectionCode, String day,
-                           int startHour, int endHour, String location) {
-        if (!hasSectionAtTime(courseCode, sectionCode, day, startHour, endHour)) {
-            entries.add(new TimetableEntry(courseCode, sectionCode, day, startHour, endHour, location));
+    public boolean addSection(Section section) {
+        if (section == null) {
+            throw new IllegalArgumentException("Section cannot be null");
         }
+
+        if (hasSection(section)) {
+            return false;
+        }
+
+        Course course = section.getCourse();
+        if (timetable.getCourses().contains(course)) {
+            // Changing section of existing course
+            timetable.changeSectionOfExistingCourse(section);
+        } else {
+            // Adding section of new course
+            timetable.addSectionOfNewCourse(section);
+        }
+
+        return true;
     }
 
     @Override
-    public void removeSection(String courseCode, String sectionCode) {
-        entries.removeIf(entry ->
-                entry.getCourseCode().equals(courseCode) &&
-                        entry.getSectionCode().equals(sectionCode)
-        );
+    public boolean removeSection(Section section) {
+        if (section == null) {
+            throw new IllegalArgumentException("Section cannot be null");
+        }
+
+        if (!hasSection(section)) {
+            return false;
+        }
+
+        timetable.removeCourse(section.getCourse());
+        return true;
     }
 
     @Override
-    public List<String> findConflicts(String day, int startHour, int endHour) {
-        List<String> conflicts = new ArrayList<>();
+    public void removeCourse(Course course) {
+        if (course == null) {
+            throw new IllegalArgumentException("Course cannot be null");
+        }
+        timetable.removeCourse(course);
+    }
 
-        for (TimetableEntry entry : entries) {
-            // Check if same day and times overlap
-            if (entry.getDay().equals(day)) {
-                boolean overlaps = !(endHour <= entry.getStartHour() || startHour >= entry.getEndHour());
-                if (overlaps) {
-                    conflicts.add(entry.getCourseCode() + "-" + entry.getSectionCode());
+    @Override
+    public List<Section> findConflicts(Section section) {
+        if (section == null) {
+            throw new IllegalArgumentException("Section cannot be null");
+        }
+
+        List<Section> conflicts = new ArrayList<>();
+        List<TimeSlot> sectionTimes = section.getTimes();
+
+        // Check each existing section for conflicts
+        for (Section existingSection : getAllSections()) {
+            // Skip if it's the same section
+            if (existingSection.equals(section)) {
+                continue;
+            }
+
+            // Check for time overlaps
+            for (TimeSlot newTime : sectionTimes) {
+                for (TimeSlot existingTime : existingSection.getTimes()) {
+                    if (newTime.overlapsWith(existingTime)) {
+                        conflicts.add(existingSection);
+                        break; // Already found conflict with this section
+                    }
                 }
             }
         }
@@ -51,10 +95,39 @@ public class InMemoryTimetableDataAccess implements TimetableDataAccessInterface
     }
 
     @Override
-    public boolean hasSection(String courseCode, String sectionCode) {
-        for (TimetableEntry entry : entries) {
-            if (entry.getCourseCode().equals(courseCode) &&
-                    entry.getSectionCode().equals(sectionCode)) {
+    public boolean hasConflicts(Section section) {
+        if (section == null) {
+            throw new IllegalArgumentException("Section cannot be null");
+        }
+
+        List<TimeSlot> sectionTimes = section.getTimes();
+
+        // Check each existing section for conflicts
+        for (Section existingSection : getAllSections()) {
+            if (existingSection.equals(section)) {
+                continue;
+            }
+
+            for (TimeSlot newTime : sectionTimes) {
+                for (TimeSlot existingTime : existingSection.getTimes()) {
+                    if (newTime.overlapsWith(existingTime)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean hasSection(Section section) {
+        if (section == null) {
+            return false;
+        }
+
+        for (Section existingSection : getAllSections()) {
+            if (existingSection.equals(section)) {
                 return true;
             }
         }
@@ -62,62 +135,50 @@ public class InMemoryTimetableDataAccess implements TimetableDataAccessInterface
     }
 
     @Override
-    public boolean hasSectionAtTime(String courseCode, String sectionCode, String day,
-                                    int startHour, int endHour) {
-        for (TimetableEntry entry : entries) {
-            if (entry.getCourseCode().equals(courseCode) &&
-                    entry.getSectionCode().equals(sectionCode) &&
-                    entry.getDay().equals(day) &&
-                    entry.getStartHour() == startHour &&
-                    entry.getEndHour() == endHour) {
-                return true;
+    public List<Section> getAllSections() {
+        List<Section> sections = new ArrayList<>();
+
+        // Extract sections from timetable blocks
+        for (entity.TimetableBlock block : timetable.getBlocks()) {
+            Section section = block.getSection();
+            if (!sections.contains(section)) {
+                sections.add(section);
             }
         }
-        return false;
+
+        return sections;
     }
 
     @Override
-    public List<TimetableEntry> getAllSections() {
-        return new ArrayList<>(entries);
+    public Timetable getTimetable() {
+        return timetable;
     }
 
     @Override
     public void clear() {
-        entries.clear();
+        List<Course> coursesToRemove = new ArrayList<>(timetable.getCourses());
+        for (Course course : coursesToRemove) {
+            timetable.removeCourse(course);
+        }
     }
 
     @Override
     public String getCurrentTerm() {
-        if (entries.isEmpty()) {
+        List<Course> courses = timetable.getCourses();
+
+        if (courses.isEmpty()) {
             return null;
         }
-        // Get term from first non-Y course
-        return getCurrTerm();
-    }
 
-    @Nullable
-    private String getCurrTerm() {
-        for (TimetableEntry entry : entries) {
-            String term = extractTerm(entry.getCourseCode());
+        // Get term from first non-Y course
+        for (Course course : courses) {
+            String term = course.getTerm();
             if (!"Y".equals(term)) {
                 return term;
             }
         }
-        // If only Y courses, return null (can add either F or S)
-        return null;
-    }
 
-    /**
-     * Extract term indicator (F/S/Y) from course code.
-     */
-    private String extractTerm(String courseCode) {
-        if (courseCode == null || courseCode.isEmpty()) {
-            return null;
-        }
-        String lastChar = courseCode.substring(courseCode.length() - 1);
-        if (lastChar.matches("[FSY]")) {
-            return lastChar;
-        }
+        // If only Y courses, return null (can add either F or S)
         return null;
     }
 }
