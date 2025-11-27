@@ -197,8 +197,6 @@ public class SectionView extends JDialog {
             // Call Controller (View → Controller - Clean Architecture!)
             controller.addCourse(
                     course.getCourseCode(),
-                    course.getCourseName(),
-                    course.getTerm(),
                     section.getSectionId(),
                     instructor,
                     timeDatas
