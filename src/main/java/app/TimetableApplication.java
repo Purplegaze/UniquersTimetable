@@ -3,6 +3,13 @@ package app;
 import data_access.CourseDataAccessInterface;
 import data_access.InMemoryCourseDataAccess;
 import entity.Course;
+
+import interface_adapter.returntosearch.ReturnToSearchController;
+import interface_adapter.returntosearch.ReturnToSearchPresenter;
+import usecase.returntosearch.ReturnToSearchInputBoundary;
+import usecase.returntosearch.ReturnToSearchInteractor;
+import usecase.returntosearch.ReturnToSearchOutputBoundary;
+
 import usecase.search.SearchCourseInputBoundary;
 import usecase.search.SearchCourseInputData;
 import usecase.search.SearchCourseOutputBoundary;
@@ -11,6 +18,7 @@ import usecase.search.SearchCourseInteractor;
 import view.MainView;
 import view.SearchPanel;
 import view.SectionView;
+import view.TimetableView;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -26,15 +34,23 @@ public class TimetableApplication {
 
             MainView mainView = new MainView();
             SearchPanel searchPanel = mainView.getSearchPanel();
+            TimetableView timetableView = mainView.getTimetableView();
 
-            // Data Access
             CourseDataAccessInterface courseDataAccess = new InMemoryCourseDataAccess();
 
-            SearchCourseInputBoundary interactor = createSearchCourseInteractor(searchPanel, courseDataAccess);
 
-            connectSearchPanel(searchPanel, interactor, courseDataAccess);
+            SearchCourseInputBoundary searchInteractor = createSearchCourseInteractor(searchPanel, courseDataAccess);
+            connectSearchPanel(searchPanel, searchInteractor, courseDataAccess);
 
-            interactor.execute(new SearchCourseInputData(""));
+            searchInteractor.execute(new SearchCourseInputData(""));
+
+            ReturnToSearchOutputBoundary returnPresenter = new ReturnToSearchPresenter(searchPanel);
+
+            ReturnToSearchInputBoundary returnInteractor = new ReturnToSearchInteractor(returnPresenter);
+
+            ReturnToSearchController returnController = new ReturnToSearchController(returnInteractor);
+
+            timetableView.setSlotClickListener(courseCode -> returnController.execute(courseCode));
 
             mainView.display();
         });

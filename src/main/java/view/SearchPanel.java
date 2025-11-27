@@ -188,4 +188,12 @@ public class SearchPanel extends JPanel {
             listener.onResultSelected(selectedId);
         }
     }
+
+    public void setSearchQuery(String query) {
+        searchField.setText(query);
+    }
+
+    public void performSearch() {
+        notifySearchRequested();
+    }
 }
