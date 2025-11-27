@@ -92,6 +92,13 @@ public class AddCourseController {
      * Create a TimeSlot entity from primitive data.
      */
     private TimeSlot createTimeSlot(TimeSlotData timeData) {
+        if (timeData.getStartHour() >= timeData.getEndHour()) {
+            throw new IllegalArgumentException(
+                    "Invalid time range: start hour (" + timeData.getStartHour() +
+                            ") must be before end hour (" + timeData.getEndHour() + ")"
+            );
+        }
+        
         Building building = getOrCreateBuilding(timeData.getLocation());
         
         int dayValue = convertDayNameToDayValue(timeData.getDay());
