@@ -21,14 +21,14 @@ public class AddCoursePresenter implements AddCourseOutputBoundary {
     private int colorIndex;
 
     private static final Color[] COLOR_PALETTE = {
-            new Color(161, 191, 232),
+            new Color(189, 195, 255),
             new Color(175, 255, 175),
             new Color(255, 201, 208),
             new Color(255, 218, 185),
             new Color(243, 198, 243),
-            new Color(184, 232, 248),
+            new Color(194, 242, 255),
             new Color(255, 255, 153),
-            new Color(161, 241, 197),
+            new Color(169, 255, 207),
     };
 
     public AddCoursePresenter(TimetableViewInterface view) {
