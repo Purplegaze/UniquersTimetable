@@ -1,10 +1,11 @@
 package usecase.addcourse;
 
 /**
- * Output boundary for the Add Course use case.
+ * Output Boundary for Add Course Use Case.
  */
 public interface AddCourseOutputBoundary {
+
     void presentSuccess(AddCourseOutputData outputData);
-    void presentConflict(AddCourseOutputData outputData);
+
     void presentError(String errorMessage);
 }

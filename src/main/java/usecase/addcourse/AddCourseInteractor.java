@@ -1,12 +1,11 @@
 package usecase.addcourse;
 
 import data_access.TimetableDataAccessInterface;
-
-import java.util.List;
+import entity.Course;
+import entity.Section;
 
 /**
  * Interactor for the Add Course use case.
- * Contains the business logic for adding courses to timetable.
  */
 public class AddCourseInteractor implements AddCourseInputBoundary {
 
@@ -15,130 +14,84 @@ public class AddCourseInteractor implements AddCourseInputBoundary {
 
     public AddCourseInteractor(TimetableDataAccessInterface timetableDataAccess,
                                AddCourseOutputBoundary presenter) {
+        if (timetableDataAccess == null || presenter == null) {
+            throw new IllegalArgumentException("Dependencies cannot be null");
+        }
         this.timetableDataAccess = timetableDataAccess;
         this.presenter = presenter;
     }
 
     @Override
     public void execute(AddCourseInputData inputData) {
-        if (!isValidInput(inputData)) {
-            presenter.presentError("Invalid input: Please check course details");
+        if (inputData == null) {
+            presenter.presentError("Invalid input: No section provided");
+            return;
+        }
+
+        Section section = inputData.getSection();
+        Course course = section.getCourse();
+
+        // Validate section has time slots
+        if (section.getTimes().isEmpty()) {
+            presenter.presentError("Invalid input: Section has no time slots");
             return;
         }
 
         // Check term compatibility
-        if (!isTermCompatible(inputData.getTerm())) {
+        if (!isTermCompatible(course)) {
             String currentTerm = timetableDataAccess.getCurrentTerm();
             String termName = "F".equals(currentTerm) ? "Fall" : "Winter";
-            String courseTermName = "F".equals(inputData.getTerm()) ? "Fall" : "Winter";
+            String courseTermName = "F".equals(course.getTerm()) ? "Fall" : "Winter";
             presenter.presentError("Cannot mix terms: Your timetable has " + termName
                     + " courses, but this is a " + courseTermName + " course");
             return;
         }
 
         // Check for duplicate
-        if (isDuplicateSection(inputData)) {
-            presenter.presentError("Section " + inputData.getCourseCode() + " "
-                    + inputData.getSectionCode() + " is already in your timetable");
+        if (timetableDataAccess.hasSection(section)) {
+            presenter.presentError("Section " + section.getSectionId()
+                    + " is already in your timetable");
             return;
         }
 
-        List<String> conflicts = findConflicts(inputData);
-        addSectionToTimetable(inputData);
-        presentResult(inputData, conflicts);
+        // Check if there are any conflicts
+        boolean hasConflict = timetableDataAccess.hasConflicts(section);
+
+        if (hasConflict) {
+            presenter.presentError("Cannot add section: Time conflict with existing courses");
+            return;
+        }
+
+        // Only add if NO conflicts
+        boolean added = timetableDataAccess.addSection(section);
+
+        if (!added) {
+            presenter.presentError("Failed to add section to timetable");
+            return;
+        }
+
+        AddCourseOutputData outputData = new AddCourseOutputData(section, false);
+        presenter.presentSuccess(outputData);
     }
 
     /**
      * Check if course term is compatible with current timetable term.
      */
-    private boolean isTermCompatible(String courseCode) {
+    private boolean isTermCompatible(Course course) {
         String currentTerm = timetableDataAccess.getCurrentTerm();
-        String courseTerm = extractTerm(courseCode);
+        String courseTerm = course.getTerm();
 
-        // Empty timetable - any course is fine
+        // Empty timetable
         if (currentTerm == null) {
             return true;
         }
 
-        // Year course - always compatible
-        if ("Y".equals(courseTerm)) {
+        // Year course
+        if (course.isYearLong()) {
             return true;
         }
 
         // Must match current term
         return currentTerm.equals(courseTerm);
-    }
-
-    /**
-     * Extract term indicator (F/S/Y) from course code.
-     */
-    private String extractTerm(String courseCode) {
-        if (courseCode == null || courseCode.isEmpty()) {
-            return null;
-        }
-        String lastChar = courseCode.substring(courseCode.length() - 1);
-        if (lastChar.matches("[FSY]")) {
-            return lastChar;
-        }
-        return null;
-    }
-
-    private boolean isDuplicateSection(AddCourseInputData inputData) {
-        return timetableDataAccess.hasSectionAtTime(
-                inputData.getCourseCode(),
-                inputData.getSectionCode(),
-                inputData.getDay(),
-                inputData.getStartHour(),
-                inputData.getEndHour()
-        );
-    }
-
-    private List<String> findConflicts(AddCourseInputData inputData) {
-        return timetableDataAccess.findConflicts(
-                inputData.getDay(),
-                inputData.getStartHour(),
-                inputData.getEndHour()
-        );
-    }
-
-    private void addSectionToTimetable(AddCourseInputData inputData) {
-        timetableDataAccess.addSection(
-                inputData.getCourseCode(),
-                inputData.getSectionCode(),
-                inputData.getDay(),
-                inputData.getStartHour(),
-                inputData.getEndHour(),
-                inputData.getLocation()
-        );
-    }
-
-    private void presentResult(AddCourseInputData inputData, List<String> conflicts) {
-        AddCourseOutputData outputData = new AddCourseOutputData(
-                inputData,
-                !conflicts.isEmpty(),
-                conflicts
-        );
-
-        if (!conflicts.isEmpty()) {
-            presenter.presentConflict(outputData);
-        } else {
-            presenter.presentSuccess(outputData);
-        }
-    }
-
-    private boolean isValidInput(AddCourseInputData inputData) {
-        return isValidString(inputData.getCourseCode())
-                && isValidString(inputData.getSectionCode())
-                && isValidString(inputData.getDay())
-                && isValidTimeRange(inputData.getStartHour(), inputData.getEndHour());
-    }
-
-    private boolean isValidString(String value) {
-        return value != null && !value.trim().isEmpty();
-    }
-
-    private boolean isValidTimeRange(int startHour, int endHour) {
-        return startHour >= 0 && endHour >= 0 && endHour <= 24
-                && startHour < endHour;
     }
 }

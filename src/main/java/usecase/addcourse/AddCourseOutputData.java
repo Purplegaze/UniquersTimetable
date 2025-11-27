@@ -1,29 +1,21 @@
 package usecase.addcourse;
 
-import java.util.List;
+import entity.Section;
 
 /**
  * Output data from the Add Course use case.
  */
 public class AddCourseOutputData {
-    private final AddCourseInputData inputData;
-    private final boolean hasConflict;
-    private final List<String> conflictingCourses;
+    private final Section section;
 
-    public AddCourseOutputData(AddCourseInputData inputData,
-                               boolean hasConflict,
-                               List<String> conflictingCourses) {
-        this.inputData = inputData;
-        this.hasConflict = hasConflict;
-        this.conflictingCourses = conflictingCourses;
+    public AddCourseOutputData(Section section, boolean hasConflict) {
+        if (section == null) {
+            throw new IllegalArgumentException("Section cannot be null");
+        }
+        this.section = section;
     }
 
-    public String getCourseCode() { return inputData.getCourseCode(); }
-    public String getSectionCode() { return inputData.getSectionCode(); }
-    public String getDay() { return inputData.getDay(); }
-    public int getStartHour() { return inputData.getStartHour(); }
-    public int getEndHour() { return inputData.getEndHour(); }
-    public String getLocation() { return inputData.getLocation(); }
-    public boolean hasConflict() { return hasConflict; }
-    public List<String> getConflictingCourses() { return conflictingCourses; }
+    public Section getSection() {
+        return section;
+    }
 }
