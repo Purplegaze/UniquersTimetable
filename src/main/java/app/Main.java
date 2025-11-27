@@ -59,7 +59,7 @@ public class Main {
 
                 // Create use case interactors
                 AddCourseInputBoundary addCourseInteractor =
-                        new AddCourseInteractor(timetableDataAccess, addCoursePresenter);
+                        new AddCourseInteractor(timetableDataAccess, courseDataAccess, addCoursePresenter);
                 SearchCourseInputBoundary searchCourseInteractor =
                         new SearchCourseInteractor(courseDataAccess, searchCoursePresenter);
 
