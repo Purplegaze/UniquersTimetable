@@ -132,6 +132,8 @@ public class Section {
 
     @Override
     public int hashCode() {
-        return section_id.hashCode();
+        int result = section_id.hashCode();
+        result = 31 * result + course.getCourseCode().hashCode();
+        return result;
     }
 }
