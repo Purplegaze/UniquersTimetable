@@ -1,7 +1,7 @@
-package interface_adapter.view;
+package view;
 
+import interface_adapter.presenter.TimetableViewInterface;
 import interface_adapter.viewmodel.TimetableSlotViewModel;
-import view.TimetableView;
 
 /**
  * Adapter to bridge the existing TimetableView with TimetableViewInterface.

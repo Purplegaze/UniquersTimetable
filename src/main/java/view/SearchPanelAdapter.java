@@ -1,7 +1,7 @@
-package interface_adapter.view;
+package view;
 
+import interface_adapter.presenter.SearchPanelInterface;
 import interface_adapter.viewmodel.SearchResultViewModel;
-import view.SearchPanel;
 
 import java.util.ArrayList;
 import java.util.List;

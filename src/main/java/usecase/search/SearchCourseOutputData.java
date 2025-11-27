@@ -1,5 +1,7 @@
 package usecase.search;
 
+import entity.Course;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,26 +9,21 @@ import java.util.List;
  */
 public class SearchCourseOutputData {
 
-    public static class ResultItem {
-        private final String courseCode;
-        private final String courseName;
+    private final List<Course> courses;
 
-        public ResultItem(String courseCode, String courseName) {
-            this.courseCode = courseCode;
-            this.courseName = courseName;
-        }
-
-        public String getCourseCode() { return courseCode; }
-        public String getCourseName() { return courseName; }
+    public SearchCourseOutputData(List<Course> courses) {
+        this.courses = courses != null ? new ArrayList<>(courses) : new ArrayList<>();
     }
 
-    private final List<ResultItem> results;
-
-    public SearchCourseOutputData(List<ResultItem> results) {
-        this.results = results;
+    public List<Course> getCourses() {
+        return new ArrayList<>(courses);
     }
 
-    public List<ResultItem> getResults() {
-        return results;
+    public int getResultCount() {
+        return courses.size();
+    }
+
+    public boolean hasResults() {
+        return !courses.isEmpty();
     }
 }

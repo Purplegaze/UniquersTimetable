@@ -2,7 +2,6 @@ package interface_adapter.presenter;
 
 import entity.Course;
 import entity.Section;
-import interface_adapter.view.SearchPanelInterface;
 import interface_adapter.viewmodel.SearchResultViewModel;
 import usecase.search.SearchCourseOutputBoundary;
 import usecase.search.SearchCourseOutputData;
