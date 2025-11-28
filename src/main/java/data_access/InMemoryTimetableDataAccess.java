@@ -30,29 +30,18 @@ public class InMemoryTimetableDataAccess implements TimetableDataAccessInterface
             return false;
         }
 
-        Course course = section.getCourse();
-        if (timetable.getCourses().contains(course)) {
-            // Changing section of existing course
-            timetable.changeSectionOfExistingCourse(section);
-        } else {
-            // Adding section of new course
-            timetable.addSectionOfNewCourse(section);
-        }
+        timetable.addSectionOfNewCourse(section);
 
         return true;
     }
 
     @Override
     public boolean removeSection(Section section) {
-        if (section == null) {
-            throw new IllegalArgumentException("Section cannot be null");
-        }
-
         if (!hasSection(section)) {
             return false;
         }
 
-        timetable.removeCourse(section.getCourse());
+        timetable.removeSection(section);
         return true;
     }
 
