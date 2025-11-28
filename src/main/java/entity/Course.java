@@ -56,4 +56,12 @@ public class Course {
     public float getAvgRating() {
         return courseRating == null ? 0f : courseRating.getAvgRating();
     }
+
+    public String getTerm() { return term; }
+
+    public boolean isYearLong() { return "Y".equals(term); }
+
+    public boolean isFall() { return "F".equals(term); }
+
+    public boolean isWinter() { return "S".equals(term); }
 }
