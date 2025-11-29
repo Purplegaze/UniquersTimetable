@@ -5,6 +5,7 @@ import usecase.deletecourse.DeleteCourseInputData;
 
 /**
  * Controller for Delete Course use case.
+ * Handles requests to remove a course section from the timetable.
  */
 public class DeleteCourseController {
     
