@@ -1,46 +1,72 @@
 package usecase.calculatewalkingtime;
+
 import entity.Building;
 import entity.Timetable;
 import entity.TimetableBlock;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
- * The Calculate Walking Interactor.
+ * The Calculate Walking Time Interactor.
+ * Uses stored walking distance data to determine walking time between back-to-back classes.
  */
 public class CalculateWalkingInteractor implements CalculateWalkingInputBoundary {
+
     private final CalculateWalkingDataAccessInterface dataAccess;
     private final CalculateWalkingOutputBoundary presenter;
 
-
     public CalculateWalkingInteractor(CalculateWalkingDataAccessInterface dataAccess,
-                                          CalculateWalkingOutputBoundary presenter) {
+                                      CalculateWalkingOutputBoundary presenter) {
         this.dataAccess = dataAccess;
         this.presenter = presenter;
     }
-
-
     @Override
-    public void execute(CalculateWalkingInputData calculateWalkingInputData) {
-        Timetable timetable = calculateWalkingInputData.getTimetable();
-        Map<String, Integer> walkingTimes = new HashMap<>();
+    public void execute(CalculateWalkingInputData inputData) {
 
-        for (TimetableBlock block : timetable.getBlocks()) {
-            TimetableBlock next = block.getNextCourse();
-            if  (next != null) {
-                if (block.getTimeSlot().immediatelyPrecedes(block.getNextCourse().getTimeSlot())) {
-                    double walkingTime = dataAccess.calculateWalking(block.getCourse().getLocation(),
-                            block.getNextCourse().getCourse().getLocation());
+        // get the most updated timetable info
+        Timetable timetable = dataAccess.getTimetable();
 
-                    walkingTimes.put(block.getNextCourse().getCourse().getCourseName(), (int) walkingTime);
-                }
-            }
-
+        if (timetable == null || timetable.getBlocks().isEmpty()) {
+            presenter.prepareFailView("No courses found in timetable.");
+            return;
         }
 
-        presenter.prepareSuccessView(new CalculateWalkingOutputData(walkingTimes));
+        Map<String, Integer> walkingTimes = new HashMap<>();
+
+        for (TimetableBlock current : timetable.getBlocks()) {
+
+            TimetableBlock next = current.getNextCourse();
+
+            if (next != null && current.getTimeSlot().immediatelyPrecedes(next.getTimeSlot())) {
+
+                Building from = current.getTimeSlot().getBuilding();
+                Building to = next.getTimeSlot().getBuilding();
+
+                String key = current.getTimeSlot().getDayName() + ": " +
+                        current.getCourse().getCourseCode()
+                        + " → "
+                        + next.getCourse().getCourseCode();
+
+
+                if (from.getBuildingCode() == null || to.getBuildingCode() == null ||
+                        from.getBuildingCode().equalsIgnoreCase("TBD") || to.getBuildingCode().equalsIgnoreCase("TBD")) {
+                    walkingTimes.put(key, -1);
+                    continue;
+                }
+
+                double rawTime = dataAccess.calculateWalking(from, to);
+
+                int roundedTime = (int) Math.round(rawTime);
+
+                walkingTimes.put(key, roundedTime);
+            }
+        }
+
+        if (walkingTimes.isEmpty()) {
+            presenter.prepareFailView("No back-to-back classes found.");
+        } else {
+            presenter.prepareSuccessView(new CalculateWalkingOutputData(walkingTimes));
+        }
     }
 }
