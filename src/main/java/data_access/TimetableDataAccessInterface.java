@@ -1,6 +1,5 @@
 package data_access;
 
-import entity.Course;
 import entity.Section;
 import entity.Timetable;
 
