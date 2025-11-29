@@ -47,6 +47,10 @@ public class SearchPanel extends JPanel {
      */
     public interface SearchPanelListener {
         void onSearchRequested(String query);
+        void onCustomTimeFilterRequested(String query,
+                                         String dayOfWeek,
+                                         String startTime,
+                                         String endTime);
         void onResultSelected(String resultId);
     }
 
@@ -56,6 +60,11 @@ public class SearchPanel extends JPanel {
     private JButton searchButton;
     private JList<String> resultsList;
     private DefaultListModel<String> listModel;
+    //  components for custom time filter
+    private JComboBox<String> dayComboBox;
+    private JTextField startTimeField;
+    private JTextField endTimeField;
+    private JButton timeFilterButton;
 
     private List<SearchResultItem> currentResults = new ArrayList<>();
     private SearchPanelListener listener;
@@ -123,6 +132,19 @@ public class SearchPanel extends JPanel {
         resultsList = new JList<>(listModel);
         resultsList.setFont(new Font("Arial", Font.PLAIN, 13));
         resultsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
+        dayComboBox = new JComboBox<>(days);
+        dayComboBox.setFont(new Font("Arial", Font.PLAIN, 12));
+
+        startTimeField = new JTextField("13:00");  // default example
+        startTimeField.setFont(new Font("Arial", Font.PLAIN, 12));
+
+        endTimeField = new JTextField("14:00");
+        endTimeField.setFont(new Font("Arial", Font.PLAIN, 12));
+
+        timeFilterButton = new JButton("Filter by Time");
+        timeFilterButton.setFont(new Font("Arial", Font.BOLD, 12));
     }
 
     private void layoutComponents() {
@@ -133,6 +155,25 @@ public class SearchPanel extends JPanel {
         JPanel searchBarPanel = new JPanel(new BorderLayout(5, 5));
         searchBarPanel.add(searchField, BorderLayout.CENTER);
         searchBarPanel.add(searchButton, BorderLayout.EAST);
+
+        // === New time filter panel ===
+        JPanel timeFilterPanel = new JPanel(new GridLayout(2, 2, 5, 5));
+
+        // First row — day + start
+        timeFilterPanel.add(new JLabel("Day:"));
+        timeFilterPanel.add(dayComboBox);
+
+        // Second row — start + end time fields
+        JPanel timeInputs = new JPanel(new GridLayout(1, 2, 5, 5));
+        timeInputs.add(startTimeField);
+        timeInputs.add(endTimeField);
+
+        timeFilterPanel.add(new JLabel("Time Range:"));
+        timeFilterPanel.add(timeInputs);
+
+        // Add time filter button below
+        JPanel timeFilterButtonPanel = new JPanel(new BorderLayout());
+        timeFilterButtonPanel.add(timeFilterButton, BorderLayout.CENTER);
 
         JPanel resultsPanel = new JPanel(new BorderLayout(5, 5));
         JLabel resultsLabel = new JLabel("Results:");
@@ -146,7 +187,17 @@ public class SearchPanel extends JPanel {
         JPanel buttonsPanel = new JPanel(new GridLayout(2, 1, 5, 5));
 
         JPanel centerPanel = new JPanel(new BorderLayout(5, 10));
-        centerPanel.add(searchBarPanel, BorderLayout.NORTH);
+        // A new panel to stack search bar + time filter vertically
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+
+        topPanel.add(searchBarPanel);
+        topPanel.add(Box.createRigidArea(new Dimension(0, 8)));  // small spacing
+        topPanel.add(timeFilterPanel);
+        topPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        topPanel.add(timeFilterButton);
+
+        centerPanel.add(topPanel, BorderLayout.NORTH);
         centerPanel.add(resultsPanel, BorderLayout.CENTER);
         centerPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
@@ -156,7 +207,8 @@ public class SearchPanel extends JPanel {
     private void setupEventHandlers() {
         searchButton.addActionListener(e -> notifySearchRequested());
         searchField.addActionListener(e -> notifySearchRequested());
-
+        // New: time filter button
+        timeFilterButton.addActionListener(e -> notifyCustomTimeFilterRequested());
         resultsList.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -165,6 +217,16 @@ public class SearchPanel extends JPanel {
                 }
             }
         });
+    }
+    private void notifyCustomTimeFilterRequested() {
+        if (listener != null) {
+            String query = searchField.getText().trim();
+            String day = (String) dayComboBox.getSelectedItem();
+            String start = startTimeField.getText().trim();
+            String end = endTimeField.getText().trim();
+
+            listener.onCustomTimeFilterRequested(query, day, start, end);
+        }
     }
 
     // ==================== Event Notification ====================

@@ -7,6 +7,7 @@ import entity.TimeSlot;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,11 +121,24 @@ public class CustomTimeFilterInteractor implements CustomTimeFilterInputBoundary
 
         int dayInt = mapDayToInt(day);
         if (dayInt == -1) {
+            presenter.presentError("Invalid day of week: " + day);
             return matches; // invalid day input
         }
 
-        LocalTime rangeStart = LocalTime.parse(start, TIME_FORMATTER);
-        LocalTime rangeEnd   = LocalTime.parse(end, TIME_FORMATTER);
+        LocalTime rangeStart;
+        LocalTime rangeEnd;
+
+        try {
+            rangeStart = LocalTime.parse(start, TIME_FORMATTER);
+            rangeEnd   = LocalTime.parse(end, TIME_FORMATTER);
+        } catch (DateTimeParseException e) {
+            presenter.presentError("Invalid time format. Please use HH:mm, e.g., 10:00.");
+            return matches;
+        }
+        if (!rangeStart.isBefore(rangeEnd)) {
+            presenter.presentError("Start time must be before end time.");
+            return matches;
+        }
 
         for (Course course : courses) {
             boolean courseMatches = false;
