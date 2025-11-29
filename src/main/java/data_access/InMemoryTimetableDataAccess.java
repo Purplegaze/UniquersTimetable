@@ -50,44 +50,6 @@ public class InMemoryTimetableDataAccess implements TimetableDataAccessInterface
     }
 
     @Override
-    public void removeCourse(Course course) {
-        if (course == null) {
-            throw new IllegalArgumentException("Course cannot be null");
-        }
-        timetable.removeCourse(course);
-    }
-
-    @Override
-    public List<Section> findConflicts(Section section) {
-        if (section == null) {
-            throw new IllegalArgumentException("Section cannot be null");
-        }
-
-        List<Section> conflicts = new ArrayList<>();
-        List<TimeSlot> sectionTimes = section.getTimes();
-
-        // Check each existing section for conflicts
-        for (Section existingSection : getAllSections()) {
-            // Skip if it's the same section
-            if (existingSection.equals(section)) {
-                continue;
-            }
-
-            // Check for time overlaps
-            for (TimeSlot newTime : sectionTimes) {
-                for (TimeSlot existingTime : existingSection.getTimes()) {
-                    if (newTime.overlapsWith(existingTime)) {
-                        conflicts.add(existingSection);
-                        break; // Already found conflict with this section
-                    }
-                }
-            }
-        }
-
-        return conflicts;
-    }
-
-    @Override
     public boolean hasConflicts(Section section) {
         if (section == null) {
             throw new IllegalArgumentException("Section cannot be null");
