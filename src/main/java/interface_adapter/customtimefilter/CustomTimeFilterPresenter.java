@@ -1,36 +1,63 @@
 package interface_adapter.customtimefilter;
 
+import interface_adapter.presenter.SearchPanelInterface;
+import interface_adapter.viewmodel.SearchResultViewModel;
 import usecase.customtimefilter.CustomTimeFilterOutputBoundary;
 import usecase.customtimefilter.CustomTimeFilterOutputData;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Presenter for Use Case 3: Custom Time Filter.
- * Converts OutputData into ViewModel updates.
+ * Converts OutputData into SearchResultViewModel and updates the SearchPanel via SearchPanelInterface.
  */
 public class CustomTimeFilterPresenter implements CustomTimeFilterOutputBoundary {
 
-    // TODO: later inject a ViewModel here
-    // private final CustomTimeFilterViewModel viewModel;
+    private final SearchPanelInterface view;
 
-    public CustomTimeFilterPresenter() {
-        // this.viewModel = viewModel;
+    public CustomTimeFilterPresenter(SearchPanelInterface view) {
+        if (view == null) {
+            throw new IllegalArgumentException("View cannot be null");
+        }
+        this.view = view;
     }
 
     @Override
     public void presentResults(CustomTimeFilterOutputData outputData) {
-        // TODO: Update ViewModel instead of printing
-        System.out.println("Presenter: showing " + outputData.getResults().size() + " result(s)");
+        if (outputData == null || outputData.getResults() == null) {
+            presentNoResults();
+            return;
+        }
+
+        List<SearchResultViewModel> viewModels = new ArrayList<>();
+
+        for (CustomTimeFilterOutputData.ResultItem item : outputData.getResults()) {
+            // term and hasAvailableSections are not provided in this use case,
+            // so we can fill them with reasonable placeholder values.
+            String courseCode = item.getCourseCode();
+            String courseName = item.getCourseName();
+            String term = "";              // or "N/A"
+            boolean hasAvailableSections = true;
+
+            viewModels.add(new SearchResultViewModel(
+                    courseCode,
+                    courseName,
+                    term,
+                    hasAvailableSections
+            ));
+        }
+
+        view.displaySearchResults(viewModels);
     }
 
     @Override
     public void presentNoResults() {
-        // TODO: Update ViewModel for "no results"
-        System.out.println("Presenter: No results found.");
+        view.clearResults();
+        view.showNoResultsMessage();
     }
 
     @Override
     public void presentError(String errorMessage) {
-        // TODO: Update ViewModel with error message
-        System.out.println("Presenter Error: " + errorMessage);
+        view.showError(errorMessage);
     }
 }
