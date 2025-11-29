@@ -37,6 +37,10 @@ public class InMemoryTimetableDataAccess implements TimetableDataAccessInterface
 
     @Override
     public boolean removeSection(Section section) {
+        if (section == null) {
+            throw new IllegalArgumentException("Section cannot be null");
+        }
+
         if (!hasSection(section)) {
             return false;
         }
