@@ -54,6 +54,8 @@ public class MainView extends JFrame {
         return timetableView;
     }
 
+    public WalkingTimeView getWalkingTimeView() {return walkingTimeView;}
+
     public void display() {
         setVisible(true);
     }

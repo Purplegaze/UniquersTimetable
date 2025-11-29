@@ -1,5 +1,6 @@
 package view;
 
+import entity.Timetable;
 import interface_adapter.calculatewalkingtime.CalculateWalkingController;
 import interface_adapter.calculatewalkingtime.CalculateWalkingState;
 import interface_adapter.calculatewalkingtime.CalculateWalkingViewModel;
@@ -17,6 +18,9 @@ public class WalkingTimeView extends JPanel implements ActionListener, PropertyC
 
     private final CalculateWalkingViewModel walkingViewModel;
     private CalculateWalkingController walkingController;
+
+    // The timetable currently displayed in the app
+    private Timetable currentTimetable;
 
     private final JTextArea walkingTimesArea = new JTextArea(12, 20);
     private final JLabel errorLabel = new JLabel("");
@@ -53,10 +57,21 @@ public class WalkingTimeView extends JPanel implements ActionListener, PropertyC
         this.add(calculateButton);
     }
 
+    /**
+     * Set the current timetable so the controller can run the use case.
+     */
+    public void setTimetable(Timetable timetable) {
+        this.currentTimetable = timetable;
+    }
+
     @Override
     public void actionPerformed(ActionEvent evt) {
         if (evt.getSource().equals(calculateButton)) {
-            System.out.println("Calculating walking time");
+            if (walkingController != null && currentTimetable != null) {
+                walkingController.execute(currentTimetable);
+            } else if (currentTimetable == null) {
+                errorLabel.setText("No timetable loaded.");
+            }
         }
     }
 
@@ -82,4 +97,19 @@ public class WalkingTimeView extends JPanel implements ActionListener, PropertyC
     public void setWalkingController(CalculateWalkingController controller) {
         this.walkingController = controller;
     }
+
+    public void displayWalkingTimes(String text) {
+        walkingTimesArea.setText(text);
+    }
+
+    public void showErrorMessage(String message) {
+        errorLabel.setText(message);
+    }
+
+    public void clear() {
+        walkingTimesArea.setText("");
+        errorLabel.setText("");
+    }
 }
+
+

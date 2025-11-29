@@ -8,6 +8,7 @@ import java.util.Map;
 
 /**
  * The Calculate Walking Time Interactor.
+ * Uses stored walking distance data to determine walking time between back-to-back classes.
  */
 public class CalculateWalkingInteractor implements CalculateWalkingInputBoundary {
 
@@ -23,9 +24,9 @@ public class CalculateWalkingInteractor implements CalculateWalkingInputBoundary
     @Override
     public void execute(CalculateWalkingInputData inputData) {
 
-        Timetable timetable = inputData.getTimetable();
+        //get the most updated timetable info
+        Timetable timetable = dataAccess.getTimetable();
 
-        // Check if timetable is empty or null
         if (timetable == null || timetable.getBlocks().isEmpty()) {
             presenter.prepareFailView("No courses found in timetable.");
             return;
@@ -33,23 +34,25 @@ public class CalculateWalkingInteractor implements CalculateWalkingInputBoundary
 
         Map<String, Integer> walkingTimes = new HashMap<>();
 
-        for (TimetableBlock block : timetable.getBlocks()) {
+        for (TimetableBlock current : timetable.getBlocks()) {
 
-            TimetableBlock next = block.getNextCourse();
+            TimetableBlock next = current.getNextCourse();
 
-            // only calculate if back-to-back
-            if (next != null && block.getTimeSlot().immediatelyPrecedes(next.getTimeSlot())) {
+            if (next != null && current.getTimeSlot().immediatelyPrecedes(next.getTimeSlot())) {
 
-                double walkingTime = dataAccess.calculateWalking(
-                        block.getCourse().getLocation(),
-                        next.getCourse().getLocation());
+                double rawTime = dataAccess.calculateWalking(
+                        current.getTimeSlot().getBuilding(),
+                        next.getTimeSlot().getBuilding()
+                );
 
-                String key = block.getTimeSlot().getDayOfWeek() + " "
-                        + block.getCourse().getCourseCode()
+                int roundedTime = (int) Math.round(rawTime);
+
+                String key = current.getTimeSlot().getDayName() + ": " +
+                        current.getCourse().getCourseCode()
                         + " → "
                         + next.getCourse().getCourseCode();
 
-                walkingTimes.put(key, (int) walkingTime);
+                walkingTimes.put(key, roundedTime);
             }
         }
 

@@ -1,47 +1,38 @@
 package interface_adapter.calculatewalkingtime;
 
-import interface_adapter.ViewManagerModel;
 import usecase.calculatewalkingtime.CalculateWalkingOutputBoundary;
 import usecase.calculatewalkingtime.CalculateWalkingOutputData;
 
+/**
+ * Presenter for Calculate Walking Time use case.
+ */
 public class CalculateWalkingPresenter implements CalculateWalkingOutputBoundary {
 
-    private final CalculateWalkingViewModel calculateWalkingViewModel;
-    private final ViewManagerModel viewManagerModel;
+    private final CalculateWalkingInterface view;
 
-    public CalculateWalkingPresenter(ViewManagerModel viewManagerModel,
-                                     CalculateWalkingViewModel calculateWalkingViewModel) {
-        this.viewManagerModel = viewManagerModel;
-        this.calculateWalkingViewModel = calculateWalkingViewModel;
+    public CalculateWalkingPresenter(CalculateWalkingInterface view) {
+        if (view == null) {
+            throw new IllegalArgumentException("View cannot be null");
+        }
+        this.view = view;
     }
 
     @Override
     public void prepareSuccessView(CalculateWalkingOutputData outputData) {
-
-        // Build display text
         StringBuilder sb = new StringBuilder();
-        for (String key : outputData.getWalkingTimes().keySet()) {
+
+        outputData.getWalkingTimes().forEach((key, value) -> {
             sb.append(key)
                     .append(": ")
-                    .append(outputData.getWalkingTimes().get(key))
+                    .append(value)
                     .append(" min\n");
-        }
+        });
 
-        CalculateWalkingState state = calculateWalkingViewModel.getState();
-        state.setWalkingTimesText(sb.toString());
-        state.setErrorMessage(null);
-
-        calculateWalkingViewModel.firePropertyChange("walkingTime");
+        view.displayWalkingTimes(sb.toString());
     }
 
     @Override
-    public void prepareFailView(String error) {
-
-        // Update error state
-        CalculateWalkingState state = calculateWalkingViewModel.getState();
-        state.setErrorMessage(error);
-
-        // Notify the view
-        calculateWalkingViewModel.firePropertyChange("walkingTime");
+    public void prepareFailView(String errorMessage) {
+        view.showError(errorMessage);
     }
 }
