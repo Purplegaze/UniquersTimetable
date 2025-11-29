@@ -1,16 +1,16 @@
 package interface_adapter.presenter;
 
-import usecase.deletecourse.DeleteCourseOutputBoundary;
-import usecase.deletecourse.DeleteCourseOutputData;
+import usecase.deletesection.DeleteSectionOutputBoundary;
+import usecase.deletesection.DeleteSectionOutputData;
 
 /**
  * Presenter for Delete Course use case.
  */
-public class DeleteCoursePresenter implements DeleteCourseOutputBoundary {
+public class DeleteSectionPresenter implements DeleteSectionOutputBoundary {
     
     private final interface_adapter.presenter.TimetableViewInterface view;
     
-    public DeleteCoursePresenter(interface_adapter.presenter.TimetableViewInterface view) {
+    public DeleteSectionPresenter(interface_adapter.presenter.TimetableViewInterface view) {
         if (view == null) {
             throw new IllegalArgumentException("View cannot be null");
         }
@@ -18,7 +18,7 @@ public class DeleteCoursePresenter implements DeleteCourseOutputBoundary {
     }
 
     @Override
-    public void presentSuccess(DeleteCourseOutputData outputData) {
+    public void presentSuccess(DeleteSectionOutputData outputData) {
         // Just remove the deleted course
         view.removeCourse(
                 outputData.getDeletedCourseCode(),

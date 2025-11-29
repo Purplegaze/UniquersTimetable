@@ -1,6 +1,6 @@
 package view;
 
-import interface_adapter.controller.DeleteCourseController;
+import interface_adapter.controller.DeleteSectionController;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -42,7 +42,7 @@ public class TimetableView extends JPanel {
 
     private Map<String, JPanel> slotPanels;
     private Map<String, String> slotCourseKeys;
-    private DeleteCourseController deleteCourseController;
+    private DeleteSectionController deleteSectionController;
 
     public TimetableView() {
         slotPanels = new HashMap<>();
@@ -51,8 +51,8 @@ public class TimetableView extends JPanel {
         initializeComponents();
     }
 
-    public void setDeleteController(DeleteCourseController controller) {
-        this.deleteCourseController = controller;
+    public void setDeleteController(DeleteSectionController controller) {
+        this.deleteSectionController = controller;
     }
 
     public void displayCourse(String day, int startHour, int endHour, TimetableSlotItem item) {
@@ -187,7 +187,7 @@ public class TimetableView extends JPanel {
 
         // Delete action
         deleteButton.addActionListener(e -> {
-            if (deleteCourseController != null) {
+            if (deleteSectionController != null) {
                 int confirm = JOptionPane.showConfirmDialog(
                         this,
                         "Delete " + courseCode + " " + sectionCode + " from timetable?",
@@ -197,7 +197,7 @@ public class TimetableView extends JPanel {
                 );
 
                 if (confirm == JOptionPane.YES_OPTION) {
-                    deleteCourseController.deleteSection(courseCode, sectionCode);
+                    deleteSectionController.deleteSection(courseCode, sectionCode);
                 }
             }
         });

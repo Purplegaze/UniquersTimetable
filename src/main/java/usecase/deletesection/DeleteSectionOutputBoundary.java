@@ -1,13 +1,13 @@
-package usecase.deletecourse;
+package usecase.deletesection;
 
 /**
  * Output Boundary for Delete Course use case.
  */
-public interface DeleteCourseOutputBoundary {
+public interface DeleteSectionOutputBoundary {
     /**
      * Present successful deletion result.
      */
-    void presentSuccess(DeleteCourseOutputData outputData);
+    void presentSuccess(DeleteSectionOutputData outputData);
     
     /**
      * Present error message.

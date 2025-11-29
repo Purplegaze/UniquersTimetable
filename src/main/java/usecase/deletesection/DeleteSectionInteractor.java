@@ -1,4 +1,4 @@
-package usecase.deletecourse;
+package usecase.deletesection;
 
 import data_access.TimetableDataAccessInterface;
 import entity.Section;
@@ -8,13 +8,13 @@ import java.util.List;
 /**
  * Interactor for Delete Course use case.
  */
-public class DeleteCourseInteractor implements DeleteCourseInputBoundary {
+public class DeleteSectionInteractor implements DeleteSectionInputBoundary {
     
     private final TimetableDataAccessInterface timetableDataAccess;
-    private final DeleteCourseOutputBoundary presenter;
+    private final DeleteSectionOutputBoundary presenter;
     
-    public DeleteCourseInteractor(TimetableDataAccessInterface timetableDataAccess,
-                                 DeleteCourseOutputBoundary presenter) {
+    public DeleteSectionInteractor(TimetableDataAccessInterface timetableDataAccess,
+                                   DeleteSectionOutputBoundary presenter) {
         if (timetableDataAccess == null) {
             throw new IllegalArgumentException("TimetableDataAccess cannot be null");
         }
@@ -27,7 +27,7 @@ public class DeleteCourseInteractor implements DeleteCourseInputBoundary {
     }
     
     @Override
-    public void execute(DeleteCourseInputData inputData) {
+    public void execute(DeleteSectionInputData inputData) {
         try {
             String courseCode = inputData.getCourseCode();
             String sectionCode = inputData.getSectionCode();
@@ -49,7 +49,7 @@ public class DeleteCourseInteractor implements DeleteCourseInputBoundary {
             }
             
             // Create output data with entities
-            DeleteCourseOutputData outputData = new DeleteCourseOutputData(
+            DeleteSectionOutputData outputData = new DeleteSectionOutputData(
                 courseCode,
                 sectionCode
             );

@@ -1,14 +1,14 @@
-package usecase.deletecourse;
+package usecase.deletesection;
 
 /**
  * Input Data for Delete Course use case.
  */
-public class DeleteCourseInputData {
+public class DeleteSectionInputData {
     
     private final String courseCode;
     private final String sectionCode;
     
-    public DeleteCourseInputData(String courseCode, String sectionCode) {
+    public DeleteSectionInputData(String courseCode, String sectionCode) {
         if (courseCode == null || courseCode.trim().isEmpty()) {
             throw new IllegalArgumentException("Course code cannot be empty");
         }

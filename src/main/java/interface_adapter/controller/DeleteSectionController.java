@@ -1,21 +1,21 @@
 package interface_adapter.controller;
 
-import usecase.deletecourse.DeleteCourseInputBoundary;
-import usecase.deletecourse.DeleteCourseInputData;
+import usecase.deletesection.DeleteSectionInputBoundary;
+import usecase.deletesection.DeleteSectionInputData;
 
 /**
  * Controller for Delete Course use case.
  * Handles requests to remove a course section from the timetable.
  */
-public class DeleteCourseController {
+public class DeleteSectionController {
     
-    private final DeleteCourseInputBoundary deleteCourseInteractor;
+    private final DeleteSectionInputBoundary deleteSectionInteractor;
     
-    public DeleteCourseController(DeleteCourseInputBoundary deleteCourseInteractor) {
-        if (deleteCourseInteractor == null) {
+    public DeleteSectionController(DeleteSectionInputBoundary deleteSectionInteractor) {
+        if (deleteSectionInteractor == null) {
             throw new IllegalArgumentException("Interactor cannot be null");
         }
-        this.deleteCourseInteractor = deleteCourseInteractor;
+        this.deleteSectionInteractor = deleteSectionInteractor;
     }
     
     /**
@@ -24,9 +24,9 @@ public class DeleteCourseController {
     public void deleteSection(String courseCode, String sectionCode) {
         try {
             // Create input data from primitives
-            DeleteCourseInputData inputData = new DeleteCourseInputData(courseCode, sectionCode);
+            DeleteSectionInputData inputData = new DeleteSectionInputData(courseCode, sectionCode);
 
-            deleteCourseInteractor.execute(inputData);
+            deleteSectionInteractor.execute(inputData);
             
         } catch (IllegalArgumentException e) {
             // Input validation failed

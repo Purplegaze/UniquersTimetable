@@ -7,10 +7,10 @@ import data_access.TimetableDataAccessInterface;
 import entity.Course;
 import interface_adapter.controller.AddCourseController;
 import interface_adapter.controller.SearchCourseController;
-import interface_adapter.controller.DeleteCourseController;
+import interface_adapter.controller.DeleteSectionController;
 import interface_adapter.presenter.AddCoursePresenter;
 import interface_adapter.presenter.SearchCoursePresenter;
-import interface_adapter.presenter.DeleteCoursePresenter;
+import interface_adapter.presenter.DeleteSectionPresenter;
 import view.SearchPanelAdapter;
 import interface_adapter.presenter.SearchPanelInterface;
 import view.TimetableViewAdapter;
@@ -21,9 +21,9 @@ import usecase.addcourse.AddCourseOutputBoundary;
 import usecase.search.SearchCourseInputBoundary;
 import usecase.search.SearchCourseInteractor;
 import usecase.search.SearchCourseOutputBoundary;
-import usecase.deletecourse.DeleteCourseInputBoundary;
-import usecase.deletecourse.DeleteCourseInteractor;
-import usecase.deletecourse.DeleteCourseOutputBoundary;
+import usecase.deletesection.DeleteSectionInputBoundary;
+import usecase.deletesection.DeleteSectionInteractor;
+import usecase.deletesection.DeleteSectionOutputBoundary;
 import view.MainView;
 import view.SearchPanel;
 import view.SectionView;
@@ -61,22 +61,22 @@ public class Main {
                 // Create presenters
                 AddCourseOutputBoundary addCoursePresenter = new AddCoursePresenter(timetableViewAdapter);
                 SearchCourseOutputBoundary searchCoursePresenter = new SearchCoursePresenter(searchViewAdapter);
-                DeleteCourseOutputBoundary deleteCoursePresenter = new DeleteCoursePresenter(timetableViewAdapter);
+                DeleteSectionOutputBoundary deleteSectionPresenter = new DeleteSectionPresenter(timetableViewAdapter);
 
                 // Create use case interactors
                 AddCourseInputBoundary addCourseInteractor =
                         new AddCourseInteractor(timetableDataAccess, courseDataAccess, addCoursePresenter);
                 SearchCourseInputBoundary searchCourseInteractor =
                         new SearchCourseInteractor(courseDataAccess, searchCoursePresenter);
-                DeleteCourseInputBoundary deleteCourseInteractor =
-                        new DeleteCourseInteractor(timetableDataAccess, deleteCoursePresenter);
+                DeleteSectionInputBoundary deleteCourseInteractor =
+                        new DeleteSectionInteractor(timetableDataAccess, deleteSectionPresenter);
 
                 // Create controllers
                 AddCourseController addCourseController = new AddCourseController(addCourseInteractor);
                 SearchCourseController searchCourseController = new SearchCourseController(searchCourseInteractor);
-                DeleteCourseController deleteCourseController = new DeleteCourseController(deleteCourseInteractor);
+                DeleteSectionController deleteSectionController = new DeleteSectionController(deleteCourseInteractor);
 
-                timetableView.setDeleteController(deleteCourseController);
+                timetableView.setDeleteController(deleteSectionController);
 
                 // Wire UI events to controllers
                 searchPanel.setListener(new SearchPanel.SearchPanelListener() {

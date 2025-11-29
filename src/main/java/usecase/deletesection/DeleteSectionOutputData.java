@@ -1,15 +1,15 @@
-package usecase.deletecourse;
+package usecase.deletesection;
 
 /**
  * Output Data for Delete Course use case.
  */
-public class DeleteCourseOutputData {
+public class DeleteSectionOutputData {
 
     private final String deletedCourseCode;
     private final String deletedSectionCode;
 
-    public DeleteCourseOutputData(String deletedCourseCode,
-                                 String deletedSectionCode) {
+    public DeleteSectionOutputData(String deletedCourseCode,
+                                   String deletedSectionCode) {
         this.deletedCourseCode = deletedCourseCode;
         this.deletedSectionCode = deletedSectionCode;
     }
