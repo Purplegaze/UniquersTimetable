@@ -6,11 +6,22 @@ import data_access.InMemoryTimetableDataAccess;
 import data_access.JSONCourseDataAccess;
 import data_access.TimetableDataAccessInterface;
 import entity.Course;
+import entity.Timetable;
+import interface_adapter.calculatewalkingtime.CalculateWalkingController;
+import interface_adapter.calculatewalkingtime.CalculateWalkingInterface;
+import interface_adapter.calculatewalkingtime.CalculateWalkingPresenter;
+import interface_adapter.calculatewalkingtime.CalculateWalkingViewModel;
 import interface_adapter.controller.AddCourseController;
 import interface_adapter.controller.SearchCourseController;
 import interface_adapter.controller.ViewCourseController;
 import interface_adapter.presenter.AddCoursePresenter;
 import interface_adapter.presenter.SearchCoursePresenter;
+import view.SearchPanelAdapter;
+import usecase.calculatewalkingtime.CalculateWalkingDataAccessInterface;
+import usecase.calculatewalkingtime.CalculateWalkingInputBoundary;
+import usecase.calculatewalkingtime.CalculateWalkingInteractor;
+import usecase.calculatewalkingtime.CalculateWalkingOutputBoundary;
+import view.*;
 import interface_adapter.presenter.SearchPanelInterface;
 import interface_adapter.presenter.TimetableViewInterface;
 import interface_adapter.presenter.ViewCoursePresenter;
@@ -27,15 +38,17 @@ import view.*;
 
 import javax.swing.*;
 
-/**
- * Main entry point for the Timetable Application.
- *
- * This is the Composition Root: wires all layers together
- * - Creates all components
- * - Wires dependencies
- * - Connects UI events to controllers
- * - Starts the application
- */
+import view.WalkingTimeView;
+import view.WalkingTimeViewAdapter;
+import interface_adapter.calculatewalkingtime.CalculateWalkingInterface;
+import interface_adapter.calculatewalkingtime.CalculateWalkingPresenter;
+import usecase.calculatewalkingtime.CalculateWalkingOutputBoundary;
+import usecase.calculatewalkingtime.CalculateWalkingDataAccessInterface;
+import usecase.calculatewalkingtime.CalculateWalkingInteractor;
+import usecase.calculatewalkingtime.CalculateWalkingInputBoundary;
+import interface_adapter.calculatewalkingtime.CalculateWalkingController;
+import data_access.WalkingTimeDataAccessObject;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -52,14 +65,17 @@ public class Main {
                 MainView mainView = new MainView();
                 TimetableView timetableView = mainView.getTimetableView();
                 SearchPanel searchPanel = mainView.getSearchPanel();
+                WalkingTimeView walkingTimeView = mainView.getWalkingTimeView();
 
                 // Create view adapters
                 TimetableViewInterface timetableViewAdapter = new TimetableViewAdapter(timetableView);
                 SearchPanelInterface searchViewAdapter = new SearchPanelAdapter(searchPanel);
+                CalculateWalkingInterface walkingViewAdapter = new WalkingTimeViewAdapter(walkingTimeView);
 
                 // Create presenters
                 AddCourseOutputBoundary addCoursePresenter = new AddCoursePresenter(timetableViewAdapter);
                 SearchCourseOutputBoundary searchCoursePresenter = new SearchCoursePresenter(searchViewAdapter);
+                CalculateWalkingOutputBoundary walkingPresenter = new CalculateWalkingPresenter(walkingViewAdapter);
 
                 // View Model and Presenter for ViewCourse Use Case
                 ViewCourseViewModel viewCourseViewModel = new ViewCourseViewModel();
@@ -70,6 +86,10 @@ public class Main {
                         new AddCourseInteractor(timetableDataAccess, courseDataAccess, addCoursePresenter);
                 SearchCourseInputBoundary searchCourseInteractor =
                         new SearchCourseInteractor(courseDataAccess, searchCoursePresenter);
+                CalculateWalkingDataAccessInterface walkingDataAccess = new WalkingTimeDataAccessObject();
+                CalculateWalkingInputBoundary walkingInteractor =
+                        new CalculateWalkingInteractor(walkingDataAccess, walkingPresenter);
+
 
                 // Interactor for ViewCourse, injecting the rating reader
                 ViewCourseInputBoundary viewCourseInteractor =
@@ -78,6 +98,12 @@ public class Main {
                 // Create controllers
                 AddCourseController addCourseController = new AddCourseController(addCourseInteractor);
                 SearchCourseController searchCourseController = new SearchCourseController(searchCourseInteractor);
+
+                CalculateWalkingController walkingController = new CalculateWalkingController(walkingInteractor);
+
+                walkingTimeView.setWalkingController(walkingController);
+
+                walkingTimeView.setTimetable(timetableDataAccess.getTimetable());
 
                 // Controller for ViewCourse
                 ViewCourseController viewCourseController = new ViewCourseController(viewCourseInteractor);
@@ -107,6 +133,17 @@ public class Main {
 
                     @Override
                     public void onResultSelected(String resultId) {
+                        Course course = courseDataAccess.findByCourseCode(resultId);
+
+                        if (course != null) {
+                            new SectionView(course, addCourseController).display();
+                            walkingTimeView.setTimetable(timetableDataAccess.getTimetable());
+                        } else {
+                            JOptionPane.showMessageDialog(mainView,
+                                    "Course not found: " + resultId,
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
                         viewCourseController.execute(resultId);
                     }
                 });
