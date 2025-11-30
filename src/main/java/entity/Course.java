@@ -15,13 +15,13 @@ public class Course {
     private int breadthCategory;
 
     public Course(String courseCode, String courseName, String description,
-                  float credits, Rating courseRating, String term,
+                  float credits, String term,
                   List<Section> sections, Building location, int breadthCategory) {
         this.courseCode = courseCode;
         this.courseName = courseName;
         this.description = description;
         this.credits = credits;
-        this.courseRating = courseRating;
+        this.courseRating = null;
         this.term = term;
         this.sections = sections;
         this.location = location;
@@ -51,6 +51,10 @@ public class Course {
 
     public Rating getCourseRating() {
         return courseRating;
+    }
+
+    public void setCourseRating(Rating courseRating) {
+        this.courseRating = courseRating;
     }
 
     public float getAvgRating() {
