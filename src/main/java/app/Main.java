@@ -23,6 +23,10 @@ import view.MainView;
 import view.SearchPanel;
 import view.SectionView;
 import view.TimetableView;
+import view.TimetableClickListener;
+import interface_adapter.customtimefilter.CustomTimeFilterController;
+import interface_adapter.customtimefilter.CustomTimeFilterPresenter;
+import usecase.customtimefilter.CustomTimeFilterInteractor;
 
 import javax.swing.*;
 
@@ -66,7 +70,31 @@ public class Main {
                 // Create controllers
                 AddCourseController addCourseController = new AddCourseController(addCourseInteractor);
                 SearchCourseController searchCourseController = new SearchCourseController(searchCourseInteractor);
+                // ==========================
+                // Custom Time Filter Use Case (Use Case #3)
+                // ==========================
 
+                // Create presenter
+                CustomTimeFilterPresenter customTimeFilterPresenter =
+                        new CustomTimeFilterPresenter(searchViewAdapter);
+
+                // Create interactor
+                CustomTimeFilterInteractor customTimeFilterInteractor =
+                        new CustomTimeFilterInteractor(courseDataAccess, customTimeFilterPresenter);
+
+                // Create controller
+                CustomTimeFilterController customTimeFilterController =
+                        new CustomTimeFilterController(customTimeFilterInteractor);
+
+                // Wire timetable empty-slot clicks to Custom Time Filter use case
+                timetableView.setClickListener(new TimetableClickListener() {
+                    @Override
+                    public void onEmptySlotClicked(String day, String startTime, String endTime) {
+                        // Use the current search query so it combines with existing filters
+                        String query = searchPanel.getSearchQuery();
+                        customTimeFilterController.execute(query, day, startTime, endTime);
+                    }
+                });
                 // Wire UI events to controllers
                 searchPanel.setListener(new SearchPanel.SearchPanelListener() {
                     @Override
@@ -86,6 +114,14 @@ public class Main {
                                     "Error",
                                     JOptionPane.ERROR_MESSAGE);
                         }
+                    }
+                    @Override
+                    public void onCustomTimeFilterRequested(String query,
+                                                            String dayOfWeek,
+                                                            String startTime,
+                                                            String endTime) {
+
+                        customTimeFilterController.execute(query, dayOfWeek, startTime, endTime);
                     }
                 });
 
