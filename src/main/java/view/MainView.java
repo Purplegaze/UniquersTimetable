@@ -29,7 +29,7 @@ public class MainView extends JFrame {
     private void initializeComponents() {
         timetableView = new TimetableView();
         searchPanel = new SearchPanel();
-        walkingTimeView = new WalkingTimeView(new CalculateWalkingViewModel());
+        walkingTimeView = new WalkingTimeView();
     }
 
     private void layoutComponents() {

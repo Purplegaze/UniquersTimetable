@@ -21,11 +21,12 @@ public class CalculateWalkingInteractor implements CalculateWalkingInputBoundary
         this.dataAccess = dataAccess;
         this.presenter = presenter;
     }
+
     @Override
     public void execute(CalculateWalkingInputData inputData) {
 
-        // get the most updated timetable info
-        Timetable timetable = dataAccess.getTimetable();
+        // Use the timetable passed in from the controller
+        Timetable timetable = inputData.getTimetable();
 
         if (timetable == null || timetable.getBlocks().isEmpty()) {
             presenter.prepareFailView("No courses found in timetable.");
@@ -48,15 +49,14 @@ public class CalculateWalkingInteractor implements CalculateWalkingInputBoundary
                         + " → "
                         + next.getCourse().getCourseCode();
 
-
                 if (from.getBuildingCode() == null || to.getBuildingCode() == null ||
-                        from.getBuildingCode().equalsIgnoreCase("TBD") || to.getBuildingCode().equalsIgnoreCase("TBD")) {
+                        from.getBuildingCode().equalsIgnoreCase("TBD") ||
+                        to.getBuildingCode().equalsIgnoreCase("TBD")) {
                     walkingTimes.put(key, -1);
                     continue;
                 }
 
                 double rawTime = dataAccess.calculateWalking(from, to);
-
                 int roundedTime = (int) Math.round(rawTime);
 
                 walkingTimes.put(key, roundedTime);
@@ -69,4 +69,5 @@ public class CalculateWalkingInteractor implements CalculateWalkingInputBoundary
             presenter.prepareSuccessView(new CalculateWalkingOutputData(walkingTimes));
         }
     }
+
 }
