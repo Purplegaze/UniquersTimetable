@@ -10,6 +10,7 @@ public class MainView extends JFrame {
 
     private TimetableView timetableView;
     private SearchPanel searchPanel;
+    private ExportImportPanel exportImportPanel;
 
     public MainView() {
         setTitle("UofT Timetable Builder");
@@ -26,11 +27,13 @@ public class MainView extends JFrame {
     private void initializeComponents() {
         timetableView = new TimetableView();
         searchPanel = new SearchPanel();
+        exportImportPanel = new ExportImportPanel();
     }
 
     private void layoutComponents() {
         add(timetableView, BorderLayout.CENTER);
         add(searchPanel, BorderLayout.EAST);
+        add(exportImportPanel, BorderLayout.NORTH);
     }
 
     public SearchPanel getSearchPanel() {
@@ -39,6 +42,10 @@ public class MainView extends JFrame {
 
     public TimetableView getTimetableView() {
         return timetableView;
+    }
+
+    public ExportImportPanel getExportImportPanel() {
+        return exportImportPanel;
     }
 
     public void display() {

@@ -7,22 +7,15 @@ import data_access.TimetableDataAccessInterface;
 import entity.Course;
 import interface_adapter.controller.AddCourseController;
 import interface_adapter.controller.SearchCourseController;
-import interface_adapter.presenter.AddCoursePresenter;
-import interface_adapter.presenter.SearchCoursePresenter;
-import view.SearchPanelAdapter;
-import interface_adapter.presenter.SearchPanelInterface;
-import view.TimetableViewAdapter;
-import interface_adapter.presenter.TimetableViewInterface;
+import interface_adapter.presenter.*;
+import usecase.export.ExportTimetableOutputBoundary;
+import view.*;
 import usecase.addcourse.AddCourseInputBoundary;
 import usecase.addcourse.AddCourseInteractor;
 import usecase.addcourse.AddCourseOutputBoundary;
 import usecase.search.SearchCourseInputBoundary;
 import usecase.search.SearchCourseInteractor;
 import usecase.search.SearchCourseOutputBoundary;
-import view.MainView;
-import view.SearchPanel;
-import view.SectionView;
-import view.TimetableView;
 
 import javax.swing.*;
 
@@ -48,6 +41,7 @@ public class Main {
                 MainView mainView = new MainView();
                 TimetableView timetableView = mainView.getTimetableView();
                 SearchPanel searchPanel = mainView.getSearchPanel();
+                ExportImportPanel exportImportPanel = mainView.getExportImportPanel();
 
                 // Create view adapters
                 TimetableViewInterface timetableViewAdapter = new TimetableViewAdapter(timetableView);
@@ -56,6 +50,7 @@ public class Main {
                 // Create presenters
                 AddCourseOutputBoundary addCoursePresenter = new AddCoursePresenter(timetableViewAdapter);
                 SearchCourseOutputBoundary searchCoursePresenter = new SearchCoursePresenter(searchViewAdapter);
+                ExportTimetableOutputBoundary exportTimetablePresenter = new ExportTimetablePresenter();
 
                 // Create use case interactors
                 AddCourseInputBoundary addCourseInteractor =
