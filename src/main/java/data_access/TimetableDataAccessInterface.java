@@ -1,5 +1,6 @@
 package data_access;
 
+import entity.Course;
 import entity.Section;
 import entity.Timetable;
 
@@ -20,6 +21,16 @@ public interface TimetableDataAccessInterface {
      * Remove a section from the timetable.
      */
     boolean removeSection(Section section);
+
+    /**
+     * Remove all sections of a course from the timetable.
+     */
+    void removeCourse(Course course);
+
+    /**
+     * Find sections that conflict with the given section.
+     */
+    List<Section> findConflicts(Section section);
 
     /**
      * Check if a section is already in the timetable.
