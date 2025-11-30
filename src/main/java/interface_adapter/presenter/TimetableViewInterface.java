@@ -14,6 +14,4 @@ public interface TimetableViewInterface {
     void showConflictWarning(String message);
 
     void clearTimetable();
-
-    void removeCourse(String courseCode, String sectionCode);
 }

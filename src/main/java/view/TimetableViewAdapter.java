@@ -19,6 +19,7 @@ public class TimetableViewAdapter implements TimetableViewInterface {
 
     @Override
     public void displayCourse(TimetableSlotViewModel viewModel) {
+        // Convert ViewModel to the format expected by the existing view
         TimetableView.TimetableSlotItem item = new TimetableView.TimetableSlotItem(
                 viewModel.getCourseCode(),
                 viewModel.getSectionCode(),
@@ -48,8 +49,7 @@ public class TimetableViewAdapter implements TimetableViewInterface {
     @Override
     public void clearTimetable() { timetableView.clearAll(); }
 
-    @Override
-    public void removeCourse(String courseCode, String sectionCode) {
-        timetableView.removeCourse(courseCode, sectionCode);
+    public TimetableView getTimetableView() {
+        return timetableView;
     }
 }

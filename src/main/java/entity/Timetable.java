@@ -36,9 +36,7 @@ public class Timetable {
             return;
         } // TODO: Add custom exception for conflict.
 
-        if (!courses.contains(section.getCourse())) {
-            courses.add(section.getCourse());
-        }
+        courses.add(section.getCourse());
 
         addSection(section);
     }
@@ -143,38 +141,6 @@ public class Timetable {
         }
         for (TimetableBlock tb : toRemove) {
             removeBlock(tb);
-        }
-    }
-
-    /**
-     * Remove a specific section from the timetable.
-     */
-    public void removeSection(Section section) {
-        ArrayList<TimetableBlock> toRemove = new ArrayList<>();
-
-        // Find all blocks belonging to this specific section
-        for (TimetableBlock tb : blocks) {
-            if (tb.getSection().equals(section)) {
-                toRemove.add(tb);
-            }
-        }
-
-        // Remove the blocks
-        for (TimetableBlock tb : toRemove) {
-            removeBlock(tb);
-        }
-
-        // If no more sections of this course remain, remove the course
-        boolean courseHasMoreSections = false;
-        for (TimetableBlock tb : blocks) {
-            if (tb.getCourse().equals(section.getCourse())) {
-                courseHasMoreSections = true;
-                break;
-            }
-        }
-
-        if (!courseHasMoreSections) {
-            courses.remove(section.getCourse());
         }
     }
 
