@@ -3,6 +3,7 @@ package view;
 import interface_adapter.controller.AddCourseController;
 import interface_adapter.controller.AddCourseController.TimeSlotData;
 import entity.Course;
+import entity.Rating;
 import entity.Section;
 import entity.TimeSlot;
 
@@ -43,6 +44,31 @@ public class SectionView extends JDialog {
         courseHeader.setAlignmentX(Component.LEFT_ALIGNMENT);
         panel.add(courseHeader);
         panel.add(Box.createVerticalStrut(5));
+
+        // Ratings Display
+        Rating rating = course.getCourseRating();
+        if (rating != null) {
+            Float recommend = rating.getRating("Recommendation");
+            Float workload = rating.getRating("Workload");
+
+            // Default to 0.0 if value is missing
+            float recVal = recommend != null ? recommend : 0.0f;
+            float workVal = workload != null ? workload : 0.0f;
+
+            JLabel ratingLabel = new JLabel(String.format("Ratings: Recommendation: %.1f/5.0 | Workload: %.1f/5.0", recVal, workVal));
+            ratingLabel.setFont(new Font(ratingLabel.getFont().getFontName(), Font.BOLD, 12));
+            ratingLabel.setForeground(new Color(0, 100, 0));
+            ratingLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            panel.add(ratingLabel);
+            panel.add(Box.createVerticalStrut(5));
+        } else {
+            JLabel noRatingLabel = new JLabel("No ratings available for this course.");
+            noRatingLabel.setFont(new Font(noRatingLabel.getFont().getFontName(), Font.ITALIC, 12));
+            noRatingLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            panel.add(noRatingLabel);
+            panel.add(Box.createVerticalStrut(5));
+        }
+        // ----------------------------
 
         JLabel subHeader = new JLabel("Section Information");
         subHeader.setFont(new Font(subHeader.getFont().getFontName(), Font.PLAIN, 12));
