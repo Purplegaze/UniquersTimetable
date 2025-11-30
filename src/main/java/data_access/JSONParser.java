@@ -54,9 +54,6 @@ public class JSONParser {
 
                 String courseCode = courseData.getString("code");
 
-
-                // TODO: Rating, credits are unimplemented.
-                Rating sampleRating = new Rating("N/A", "N/A", new HashMap());
                 float courseCredits = 0.0F;
 
                 int breadthCategory = 0;
@@ -74,7 +71,8 @@ public class JSONParser {
                 String courseDescription = courseData.getString("courseDescription");
 
                 List<Section> courseSections = new ArrayList<Section>();
-                Course course = new Course(courseCode, courseName, courseDescription, courseCredits, sampleRating, term, courseSections, null, breadthCategory);
+
+                Course course = new Course(courseCode, courseName, courseDescription, courseCredits, term, courseSections, null, breadthCategory);
 
                 JSONObject sectionsData = courseData.getJSONObject("meetings");
                 for (Object sectionKey : sectionsData.keySet()) {
