@@ -57,25 +57,11 @@ public class Course {
         return courseRating == null ? 0f : courseRating.getAvgRating();
     }
 
+    public String getTerm() { return term; }
 
-    public Integer getBreadthCategory() {
-        return breadthCategory;
-    }
+    public boolean isYearLong() { return "Y".equals(term); }
 
-    public String getDescription() {
-        return description;
-    }
+    public boolean isFall() { return "F".equals(term); }
 
-    public float getCredits() {
-        return credits;
-    }
-
-    public String getTerm() {
-        return term;
-    }
-
-    public Building getLocation() {
-        return location;
-    }
-
+    public boolean isWinter() { return "S".equals(term); }
 }

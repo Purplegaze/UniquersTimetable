@@ -126,11 +126,14 @@ public class Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return section_id.equals(section.section_id);
+        return section_id.equals(section.section_id) &&
+                course.getCourseCode().equals(section.course.getCourseCode());
     }
 
     @Override
     public int hashCode() {
-        return section_id.hashCode();
+        int result = section_id.hashCode();
+        result = 31 * result + course.getCourseCode().hashCode();
+        return result;
     }
 }

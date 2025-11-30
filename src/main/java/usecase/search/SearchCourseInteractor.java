@@ -16,38 +16,43 @@ public class SearchCourseInteractor implements SearchCourseInputBoundary {
 
     public SearchCourseInteractor(CourseDataAccessInterface courseDataAccess,
                                   SearchCourseOutputBoundary presenter) {
+        if (courseDataAccess == null || presenter == null) {
+            throw new IllegalArgumentException("Dependencies cannot be null");
+        }
         this.courseDataAccess = courseDataAccess;
         this.presenter = presenter;
     }
 
     @Override
     public void execute(SearchCourseInputData inputData) {
-        String query = inputData.getQuery().toLowerCase().trim();
+        if (inputData == null) {
+            presenter.presentError("Invalid input: No search query provided");
+            return;
+        }
 
-        List<Course> allCourses = courseDataAccess.getAllCourses();
-        List<Course> matchingCourses = filterCourses(allCourses, query);
+        String query = inputData.getQuery();
+        if (query == null) {
+            query = "";
+        }
+        query = query.toLowerCase().trim();
 
-        extracted(matchingCourses);
-    }
+        try {
+            List<Course> allCourses = courseDataAccess.getAllCourses();
 
-    private void extracted(List<Course> matchingCourses) {
-        if (matchingCourses.isEmpty()) {
-            presenter.presentNoResults();
-        } else {
-            List<SearchCourseOutputData.ResultItem> resultItems = new ArrayList<>();
-            for (Course course : matchingCourses) {
-                resultItems.add(new SearchCourseOutputData.ResultItem(
-                        course.getCourseCode(),
-                        course.getCourseName()
-                ));
+            List<Course> matchingCourses = filterCourses(allCourses, query);
+
+            // Present results
+            if (matchingCourses.isEmpty()) {
+                presenter.presentNoResults();
+            } else {
+                SearchCourseOutputData outputData = new SearchCourseOutputData(matchingCourses);
+                presenter.presentSearchResults(outputData);
             }
-            presenter.presentSearchResults(new SearchCourseOutputData(resultItems));
+        } catch (Exception e) {
+            presenter.presentError("Error searching courses: " + e.getMessage());
         }
     }
 
-    /**
-     * Filter courses matching the query against code, subject, or name.
-     */
     private List<Course> filterCourses(List<Course> courses, String query) {
         if (query.isEmpty()) {
             return new ArrayList<>(courses);
@@ -55,16 +60,19 @@ public class SearchCourseInteractor implements SearchCourseInputBoundary {
 
         List<Course> matches = new ArrayList<>();
         for (Course course : courses) {
-            String code = course.getCourseCode() != null
-                    ? course.getCourseCode().toLowerCase() : "";
-            String name = course.getCourseName() != null
-                    ? course.getCourseName().toLowerCase() : "";
-
-            if (code.contains(query) || name.contains(query)) {
+            if (matchesCourse(course, query)) {
                 matches.add(course);
             }
         }
         return matches;
     }
-}
 
+    private boolean matchesCourse(Course course, String query) {
+        String code = course.getCourseCode() != null
+                ? course.getCourseCode().toLowerCase() : "";
+        String name = course.getCourseName() != null
+                ? course.getCourseName().toLowerCase() : "";
+
+        return code.contains(query) || name.contains(query);
+    }
+}
