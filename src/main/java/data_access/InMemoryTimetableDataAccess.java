@@ -1,9 +1,7 @@
 package data_access;
 
-import entity.Course;
-import entity.Section;
-import entity.Timetable;
-import entity.TimeSlot;
+import entity.*;
+import usecase.calculatewalkingtime.CalculateWalkingDataAccessInterface;
 
 import java.util.ArrayList;
 import java.util.List;
