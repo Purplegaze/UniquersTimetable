@@ -10,6 +10,7 @@ public class TimetableBlock {
     private int prevTime;
     private TimetableBlock nextCourse;
     private int nextTime;
+    private int time;
 
     public TimetableBlock(Section section, TimeSlot timeSlot) {
         this.timetable = null;
