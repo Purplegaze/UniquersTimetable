@@ -1,13 +1,14 @@
 package app;
 
-import data_access.CourseDataAccessInterface;
-import data_access.InMemoryTimetableDataAccess;
-import data_access.JSONCourseDataAccess;
-import data_access.TimetableDataAccessInterface;
+import data_access.*;
 import entity.Course;
 import interface_adapter.controller.AddCourseController;
+import interface_adapter.controller.ExportTimetableController;
 import interface_adapter.controller.SearchCourseController;
 import interface_adapter.presenter.*;
+import usecase.export.ExportTimetableDataAccessInterface;
+import usecase.export.ExportTimetableInputBoundary;
+import usecase.export.ExportTimetableInteractor;
 import usecase.export.ExportTimetableOutputBoundary;
 import view.*;
 import usecase.addcourse.AddCourseInputBoundary;
@@ -36,6 +37,7 @@ public class Main {
                 // Create data access
                 CourseDataAccessInterface courseDataAccess = new JSONCourseDataAccess();
                 TimetableDataAccessInterface timetableDataAccess = new InMemoryTimetableDataAccess();
+                ExportTimetableDataAccessInterface exportDataAccess = new ExportDataAccess();
 
                 // Create UI views
                 MainView mainView = new MainView();
@@ -57,10 +59,13 @@ public class Main {
                         new AddCourseInteractor(timetableDataAccess, courseDataAccess, addCoursePresenter);
                 SearchCourseInputBoundary searchCourseInteractor =
                         new SearchCourseInteractor(courseDataAccess, searchCoursePresenter);
+                ExportTimetableInputBoundary exportTimetableInteractor =
+                        new ExportTimetableInteractor(exportTimetablePresenter, timetableDataAccess, courseDataAccess, exportDataAccess);
 
                 // Create controllers
                 AddCourseController addCourseController = new AddCourseController(addCourseInteractor);
                 SearchCourseController searchCourseController = new SearchCourseController(searchCourseInteractor);
+                ExportTimetableController exportTimetableController = new ExportTimetableController(exportTimetableInteractor);
 
                 // Wire UI events to controllers
                 searchPanel.setListener(new SearchPanel.SearchPanelListener() {
@@ -83,6 +88,8 @@ public class Main {
                         }
                     }
                 });
+
+                exportImportPanel.setController(exportTimetableController);
 
                 searchCourseController.search("");
                 mainView.display();

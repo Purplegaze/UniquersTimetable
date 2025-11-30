@@ -33,7 +33,7 @@ public class MainView extends JFrame {
     private void layoutComponents() {
         add(timetableView, BorderLayout.CENTER);
         add(searchPanel, BorderLayout.EAST);
-        add(exportImportPanel, BorderLayout.NORTH);
+        add(exportImportPanel, BorderLayout.WEST);
     }
 
     public SearchPanel getSearchPanel() {

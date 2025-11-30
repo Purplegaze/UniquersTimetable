@@ -14,8 +14,8 @@ public class ExportTimetableController {
 
     }
 
-    public void ExportTimetable() {
-        ExportTimetableInputData inputData = new ExportTimetableInputData("./testExport.json");
+    public void ExportTimetable(String filepath) {
+        ExportTimetableInputData inputData = new ExportTimetableInputData(filepath);
         try {
             exportInteractor.execute(inputData);
         } catch (Exception e) {
