@@ -1,5 +1,8 @@
 package view;
 
+import interface_adapter.presenter.SearchPanelInterface;
+import interface_adapter.viewmodel.SearchResultViewModel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -7,37 +10,9 @@ import java.util.List;
 
 /**
  * SearchPanel - Pure UI component following Clean Architecture.
- * <p>
- * Responsibilities:
- * - Render the search UI (search bar, results list)
- * - Capture user input and forward to controller
- * - Display data provided by presenter via ViewModels
- * <p>
- * Does NOT:
- * - Know about domain entities (Course, Section, etc.)
- * - Perform search logic
- * - Access data sources
+ * Implements SearchPanelInterface to receive data from presenter.
  */
-public class SearchPanel extends JPanel {
-
-    // ==================== View Model ====================
-
-    /**
-     * Simple data container for displaying search results.
-     * This is NOT an entity - just what the UI needs to display.
-     */
-    public static class SearchResultItem {
-        private final String id;
-        private final String displayText;
-
-        public SearchResultItem(String id, String displayText) {
-            this.id = id;
-            this.displayText = displayText;
-        }
-
-        public String getId() { return id; }
-        public String getDisplayText() { return displayText; }
-    }
+public class SearchPanel extends JPanel implements SearchPanelInterface {
 
     // ==================== Listener Interface ====================
 
@@ -57,7 +32,7 @@ public class SearchPanel extends JPanel {
     private JList<String> resultsList;
     private DefaultListModel<String> listModel;
 
-    private List<SearchResultItem> currentResults = new ArrayList<>();
+    private List<SearchResultViewModel> currentResults = new ArrayList<>();
     private SearchPanelListener listener;
 
     // ==================== Constructor ====================
@@ -78,22 +53,33 @@ public class SearchPanel extends JPanel {
         this.listener = listener;
     }
 
-    public void displayResults(List<SearchResultItem> results) {
+    // ==================== Interface Implementation ====================
+
+    @Override
+    public void displaySearchResults(List<SearchResultViewModel> results) {
         this.currentResults = new ArrayList<>(results);
         listModel.clear();
 
-        for (SearchResultItem item : results) {
-            listModel.addElement(item.getDisplayText());
+        for (SearchResultViewModel vm : results) {
+            listModel.addElement(vm.getDisplayText());
         }
     }
 
-    public void displayNoResults() {
+    @Override
+    public void showNoResultsMessage() {
         this.currentResults = new ArrayList<>();
         listModel.clear();
         listModel.addElement("No results found");
     }
 
-    public void displayError(String message) {
+    @Override
+    public void clearResults() {
+        this.currentResults = new ArrayList<>();
+        listModel.clear();
+    }
+
+    @Override
+    public void showError(String message) {
         JOptionPane.showMessageDialog(
                 this,
                 message,
@@ -101,6 +87,8 @@ public class SearchPanel extends JPanel {
                 JOptionPane.ERROR_MESSAGE
         );
     }
+
+    // ==================== Additional Helper Methods ====================
 
     public void clearSearchField() {
         searchField.setText("");
@@ -184,7 +172,7 @@ public class SearchPanel extends JPanel {
         }
 
         if (listener != null) {
-            String selectedId = currentResults.get(selectedIndex).getId();
+            String selectedId = currentResults.get(selectedIndex).getCourseCode();
             listener.onResultSelected(selectedId);
         }
     }

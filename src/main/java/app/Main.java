@@ -16,15 +16,10 @@ import interface_adapter.controller.ViewCourseController;
 import interface_adapter.presenter.AddCoursePresenter;
 import interface_adapter.presenter.SearchCoursePresenter;
 import interface_adapter.presenter.DeleteSectionPresenter;
-import view.SearchPanelAdapter;
 import usecase.calculatewalkingtime.CalculateWalkingDataAccessInterface;
 import usecase.calculatewalkingtime.CalculateWalkingInputBoundary;
 import usecase.calculatewalkingtime.CalculateWalkingInteractor;
 import usecase.calculatewalkingtime.CalculateWalkingOutputBoundary;
-import view.*;
-import interface_adapter.presenter.SearchPanelInterface;
-import view.TimetableViewAdapter;
-import interface_adapter.presenter.TimetableViewInterface;
 import interface_adapter.presenter.ViewCoursePresenter;
 import interface_adapter.viewmodel.ViewCourseViewModel;
 import usecase.addcourse.AddCourseInputBoundary;
@@ -42,7 +37,6 @@ import view.SectionView;
 import view.TimetableView;
 import usecase.viewcourse.ViewCourseInputBoundary;
 import usecase.viewcourse.ViewCourseInteractor;
-import view.*;
 
 import javax.swing.*;
 
@@ -78,15 +72,12 @@ public class Main {
                 SearchPanel searchPanel = mainView.getSearchPanel();
                 WalkingTimeView walkingTimeView = mainView.getWalkingTimeView();
 
-                // Create view adapters
-                TimetableViewInterface timetableViewAdapter = new TimetableViewAdapter(timetableView);
-                SearchPanelInterface searchViewAdapter = new SearchPanelAdapter(searchPanel);
                 CalculateWalkingInterface walkingViewAdapter = new WalkingTimeViewAdapter(walkingTimeView);
 
                 // Create presenters
-                AddCourseOutputBoundary addCoursePresenter = new AddCoursePresenter(timetableViewAdapter);
-                SearchCourseOutputBoundary searchCoursePresenter = new SearchCoursePresenter(searchViewAdapter);
-                DeleteSectionOutputBoundary deleteSectionPresenter = new DeleteSectionPresenter(timetableViewAdapter);
+                AddCourseOutputBoundary addCoursePresenter = new AddCoursePresenter(timetableView);
+                SearchCourseOutputBoundary searchCoursePresenter = new SearchCoursePresenter(searchPanel);
+                DeleteSectionOutputBoundary deleteSectionPresenter = new DeleteSectionPresenter(timetableView);
                 CalculateWalkingOutputBoundary walkingPresenter = new CalculateWalkingPresenter(walkingViewAdapter);
 
                 // View Model and Presenter for ViewCourse Use Case

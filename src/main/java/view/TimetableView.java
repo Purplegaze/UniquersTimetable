@@ -1,6 +1,8 @@
 package view;
 
 import interface_adapter.controller.DeleteSectionController;
+import interface_adapter.presenter.TimetableViewInterface;
+import interface_adapter.viewmodel.TimetableSlotViewModel;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -11,9 +13,9 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.*;
 
-public class TimetableView extends JPanel {
+public class TimetableView extends JPanel implements TimetableViewInterface {
 
-    public static class TimetableSlotItem {
+    private static class TimetableSlotItem {
         private final String courseCode;
         private final String sectionCode;
         private final String location;
@@ -53,6 +55,36 @@ public class TimetableView extends JPanel {
 
     public void setDeleteController(DeleteSectionController controller) {
         this.deleteSectionController = controller;
+    }
+
+    @Override
+    public void displayCourse(TimetableSlotViewModel viewModel) {
+        // Extract data from ViewModel
+        String day = viewModel.getDayName();
+        int startHour = viewModel.getStartHour();
+        int endHour = viewModel.getEndHour();
+
+        // Create internal TimetableSlotItem
+        TimetableSlotItem item = new TimetableSlotItem(
+                viewModel.getCourseCode(),
+                viewModel.getSectionCode(),
+                viewModel.getLocation(),
+                viewModel.getColor(),
+                false  // hasConflict
+        );
+
+        // Call existing method
+        displayCourse(day, startHour, endHour, item);
+    }
+
+    @Override
+    public void showError(String message) {
+        showErrorMessage(message);
+    }
+
+    @Override
+    public void clearTimetable() {
+        clearAll();
     }
 
     public void displayCourse(String day, int startHour, int endHour, TimetableSlotItem item) {
