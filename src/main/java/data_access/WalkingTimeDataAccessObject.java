@@ -1,5 +1,4 @@
 package data_access;
-
 import entity.Building;
 import entity.Timetable;
 import usecase.calculatewalkingtime.CalculateWalkingDataAccessInterface;
