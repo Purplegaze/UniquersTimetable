@@ -76,6 +76,10 @@ public class Main {
                         new AddCourseInteractor(timetableDataAccess, courseDataAccess, addCoursePresenter);
                 SearchCourseInputBoundary searchCourseInteractor =
                         new SearchCourseInteractor(courseDataAccess, searchCoursePresenter);
+                CalculateWalkingDataAccessInterface walkingDataAccess = new WalkingTimeDataAccessObject();
+                CalculateWalkingInputBoundary walkingInteractor =
+                        new CalculateWalkingInteractor(walkingDataAccess, walkingPresenter);
+
 
                 // Create controllers
                 AddCourseController addCourseController = new AddCourseController(addCourseInteractor);
