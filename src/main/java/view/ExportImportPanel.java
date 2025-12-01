@@ -25,7 +25,7 @@ public class ExportImportPanel extends JPanel {
         // TODO: add null check
 
         setLayout(new BorderLayout(10, 10));
-        setPreferredSize(new Dimension(350, 0));
+        setPreferredSize(new Dimension(350, 40));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         initializeComponents();
