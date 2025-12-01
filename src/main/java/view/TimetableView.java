@@ -1,10 +1,12 @@
 package view;
 
-import interface_adapter.controller.DeleteSectionController;
+import interface_adapter.deletesection.DeleteSectionController;
+import interface_adapter.viewmodel.TimetableSlotViewModel;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +15,7 @@ import javax.swing.*;
 
 public class TimetableView extends JPanel {
 
-    public static class TimetableSlotItem {
+    private static class TimetableSlotItem {
         private final String courseCode;
         private final String sectionCode;
         private final String location;
@@ -55,7 +57,88 @@ public class TimetableView extends JPanel {
         this.deleteSectionController = controller;
     }
 
-    public void displayCourse(String day, int startHour, int endHour, TimetableSlotItem item) {
+    /**
+     * Connect AddCourseViewModel to this view.
+     */
+    public void setAddCourseViewModel(interface_adapter.addcourse.AddCourseViewModel viewModel) {
+        viewModel.addPropertyChangeListener(this::handleAddCourseViewModelChange);
+    }
+
+    /**
+     * Handle property changes from AddCourseViewModel.
+     */
+    private void handleAddCourseViewModelChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case "slotsAdded":
+                interface_adapter.addcourse.AddCourseViewModel vm =
+                        (interface_adapter.addcourse.AddCourseViewModel) evt.getSource();
+                List<TimetableSlotViewModel> slots = vm.getSlots();
+                // Display all slots
+                for (TimetableSlotViewModel slot : slots) {
+                    displaySlotViewModel(slot);
+                }
+                break;
+            case "conflict":
+                interface_adapter.addcourse.AddCourseViewModel conflictVM =
+                        (interface_adapter.addcourse.AddCourseViewModel) evt.getSource();
+                showConflictWarning(conflictVM.getConflictMessage());
+                break;
+            case "error":
+                interface_adapter.addcourse.AddCourseViewModel errorVM =
+                        (interface_adapter.addcourse.AddCourseViewModel) evt.getSource();
+                showErrorMessage(errorVM.getErrorMessage());
+                break;
+            case "cleared":
+                clearAll();
+                break;
+        }
+    }
+
+    /**
+     * Connect DeleteSectionViewModel to this view.
+     */
+    public void setDeleteSectionViewModel(interface_adapter.deletesection.DeleteSectionViewModel viewModel) {
+        viewModel.addPropertyChangeListener(this::handleDeleteSectionViewModelChange);
+    }
+
+    /**
+     * Handle property changes from DeleteSectionViewModel.
+     */
+    private void handleDeleteSectionViewModelChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case "sectionDeleted":
+                interface_adapter.deletesection.DeleteSectionViewModel vm =
+                        (interface_adapter.deletesection.DeleteSectionViewModel) evt.getSource();
+                removeCourse(vm.getDeletedCourseCode(), vm.getDeletedSectionCode());
+                break;
+            case "error":
+                interface_adapter.deletesection.DeleteSectionViewModel errorVM =
+                        (interface_adapter.deletesection.DeleteSectionViewModel) evt.getSource();
+                showErrorMessage(errorVM.getErrorMessage());
+                break;
+        }
+    }
+
+    /**
+     * Convert TimetableSlotViewModel to internal representation and display.
+     */
+    private void displaySlotViewModel(TimetableSlotViewModel viewModel) {
+        String day = viewModel.getDayName();
+        int startHour = viewModel.getStartHour();
+        int endHour = viewModel.getEndHour();
+
+        TimetableSlotItem item = new TimetableSlotItem(
+                viewModel.getCourseCode(),
+                viewModel.getSectionCode(),
+                viewModel.getLocation(),
+                viewModel.getColor(),
+                viewModel.hasConflict()
+        );
+
+        displayCourse(day, startHour, endHour, item);
+    }
+
+    private void displayCourse(String day, int startHour, int endHour, TimetableSlotItem item) {
         List<String> slotKeys = generateSlotKeys(day, startHour, endHour);
         String courseKey = item.getCourseCode() + "-" + item.getSectionCode();
 
@@ -70,7 +153,7 @@ public class TimetableView extends JPanel {
         }
     }
 
-    public void removeCourse(String courseCode, String sectionCode) {
+    private void removeCourse(String courseCode, String sectionCode) {
         String courseKey = courseCode + "-" + sectionCode;
 
         // Find and clear all slots with this course
@@ -97,7 +180,7 @@ public class TimetableView extends JPanel {
         }
     }
 
-    public void clearAll() {
+    private void clearAll() {
         slotCourseKeys.clear();
 
         for (JPanel slot : slotPanels.values()) {
@@ -109,12 +192,12 @@ public class TimetableView extends JPanel {
         }
     }
 
-    public void showConflictWarning(String conflictMessage) {
+    private void showConflictWarning(String conflictMessage) {
         JOptionPane.showMessageDialog(this, conflictMessage,
                 "Schedule Conflict", JOptionPane.WARNING_MESSAGE);
     }
 
-    public void showErrorMessage(String errorMessage) {
+    private void showErrorMessage(String errorMessage) {
         JOptionPane.showMessageDialog(this, errorMessage,
                 "Error", JOptionPane.ERROR_MESSAGE);
     }

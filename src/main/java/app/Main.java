@@ -1,33 +1,47 @@
 package app;
 
-import data_access.*;
+import data_access.CourseDataAccessInterface;
+import data_access.CourseEvalDataReader;
+import data_access.InMemoryTimetableDataAccess;
+import data_access.JSONCourseDataAccess;
+import data_access.TimetableDataAccessInterface;
 import entity.Course;
 import interface_adapter.calculatewalkingtime.CalculateWalkingController;
 import interface_adapter.calculatewalkingtime.CalculateWalkingInterface;
 import interface_adapter.calculatewalkingtime.CalculateWalkingPresenter;
-import interface_adapter.controller.*;
-import interface_adapter.presenter.*;
-import usecase.export.ExportTimetableDataAccessInterface;
-import usecase.export.ExportTimetableInputBoundary;
-import usecase.export.ExportTimetableInteractor;
-import usecase.export.ExportTimetableOutputBoundary;
+import interface_adapter.controller.AddCourseController;
+import interface_adapter.controller.SearchCourseController;
+import interface_adapter.controller.DeleteSectionController;
+import interface_adapter.controller.ViewCourseController;
+import interface_adapter.presenter.AddCoursePresenter;
+import interface_adapter.presenter.SearchCoursePresenter;
+import interface_adapter.presenter.DeleteSectionPresenter;
 import view.SearchPanelAdapter;
 import usecase.calculatewalkingtime.CalculateWalkingDataAccessInterface;
 import usecase.calculatewalkingtime.CalculateWalkingInputBoundary;
 import usecase.calculatewalkingtime.CalculateWalkingInteractor;
 import usecase.calculatewalkingtime.CalculateWalkingOutputBoundary;
 import view.*;
+import interface_adapter.presenter.SearchPanelInterface;
 import view.TimetableViewAdapter;
+import interface_adapter.presenter.TimetableViewInterface;
+import interface_adapter.presenter.ViewCoursePresenter;
 import interface_adapter.viewmodel.ViewCourseViewModel;
 import usecase.addcourse.AddCourseInputBoundary;
 import usecase.addcourse.AddCourseInteractor;
 import usecase.addcourse.AddCourseOutputBoundary;
+
 import usecase.search.SearchCourseInputBoundary;
 import usecase.search.SearchCourseInteractor;
 import usecase.search.SearchCourseOutputBoundary;
+
 import usecase.deletesection.DeleteSectionInputBoundary;
 import usecase.deletesection.DeleteSectionInteractor;
 import usecase.deletesection.DeleteSectionOutputBoundary;
+
+import usecase.viewcourse.ViewCourseInputBoundary;
+import usecase.viewcourse.ViewCourseInteractor;
+
 import view.MainView;
 import view.SearchPanel;
 import view.SectionView;
@@ -40,6 +54,7 @@ import javax.swing.*;
 
 import view.WalkingTimeView;
 import view.WalkingTimeViewAdapter;
+import data_access.WalkingTimeDataAccessObject;
 
 /**
  * Main entry point for the Timetable Application.
@@ -64,22 +79,29 @@ public class Main {
                 // Reader for ratings
                 CourseEvalDataReader ratingReader = new CourseEvalDataReader("src/main/resources/course_eval_data.csv");
 
+                // ViewModels
+                SearchViewModel searchViewModel = new SearchViewModel();
+                AddCourseViewModel addCourseViewModel = new AddCourseViewModel();
+                DeleteSectionViewModel deleteSectionViewModel = new DeleteSectionViewModel();
+
                 // Create UI views
                 MainView mainView = new MainView();
                 TimetableView timetableView = mainView.getTimetableView();
+                timetableView.setAddCourseViewModel(addCourseViewModel);
+                timetableView.setDeleteSectionViewModel(deleteSectionViewModel);
+
                 SearchPanel searchPanel = mainView.getSearchPanel();
+                searchPanel.setViewModel(searchViewModel);
+
                 WalkingTimeView walkingTimeView = mainView.getWalkingTimeView();
                 ExportImportPanel exportImportPanel = mainView.getExportImportPanel();
 
-                // Create view adapters
-                TimetableViewInterface timetableViewAdapter = new TimetableViewAdapter(timetableView);
-                SearchPanelInterface searchViewAdapter = new SearchPanelAdapter(searchPanel);
                 CalculateWalkingInterface walkingViewAdapter = new WalkingTimeViewAdapter(walkingTimeView);
 
                 // Create presenters
-                AddCourseOutputBoundary addCoursePresenter = new AddCoursePresenter(timetableViewAdapter);
-                SearchCourseOutputBoundary searchCoursePresenter = new SearchCoursePresenter(searchViewAdapter);
-                DeleteSectionOutputBoundary deleteSectionPresenter = new DeleteSectionPresenter(timetableViewAdapter);
+                AddCourseOutputBoundary addCoursePresenter = new AddCoursePresenter(addCourseViewModel);
+                SearchCourseOutputBoundary searchCoursePresenter = new SearchCoursePresenter(searchViewModel);
+                DeleteSectionOutputBoundary deleteSectionPresenter = new DeleteSectionPresenter(deleteSectionViewModel);
                 CalculateWalkingOutputBoundary walkingPresenter = new CalculateWalkingPresenter(walkingViewAdapter);
                 ExportTimetableOutputBoundary exportPresenter = new ExportTimetablePresenter();
 

@@ -1,4 +1,4 @@
-package interface_adapter.controller;
+package interface_adapter.viewcourse;
 
 import usecase.viewcourse.ViewCourseInputBoundary;
 import usecase.viewcourse.ViewCourseInputData;

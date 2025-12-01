@@ -6,7 +6,7 @@ import entity.Building;
 import entity.Course;
 import entity.Section;
 import entity.TimeSlot;
-import interface_adapter.controller.AddCourseController.TimeSlotData;
+import interface_adapter.addcourse.AddCourseController.TimeSlotData;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -101,7 +101,7 @@ public class AddCourseInteractor implements AddCourseInputBoundary {
                 return;
             }
 
-            AddCourseOutputData outputData = new AddCourseOutputData(section, false);
+            AddCourseOutputData outputData = createOutputData(section, hasConflict);
             presenter.presentSuccess(outputData);
 
         } catch (Exception e) {
@@ -200,5 +200,26 @@ public class AddCourseInteractor implements AddCourseInputBoundary {
         }
 
         return currentTerm.equals(courseTerm);
+    }
+
+    private AddCourseOutputData createOutputData(Section section, boolean hasConflict) {
+        String courseCode = section.getCourse().getCourseCode();
+        String sectionCode = section.getSectionId();
+        String instructor = section.getInstructors() != null && !section.getInstructors().isEmpty()
+                ? section.getInstructors().get(0)
+                : "TBA";
+
+        // Convert TimeSlots to TimeSlotData
+        List<AddCourseOutputData.TimeSlotData> timeSlotDatas = new ArrayList<>();
+        for (TimeSlot timeSlot : section.getTimes()) {
+            timeSlotDatas.add(new AddCourseOutputData.TimeSlotData(
+                    timeSlot.getDayName(),
+                    timeSlot.getStartTime().getHour(),
+                    timeSlot.getEndTime().getHour(),
+                    timeSlot.getBuilding() != null ? timeSlot.getBuilding().getBuildingCode() : "TBD"
+            ));
+        }
+
+        return new AddCourseOutputData(courseCode, sectionCode, instructor, timeSlotDatas, hasConflict);
     }
 }

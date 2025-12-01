@@ -1,6 +1,6 @@
 package usecase.addcourse;
 
-import interface_adapter.controller.AddCourseController.TimeSlotData;
+import interface_adapter.addcourse.AddCourseController.TimeSlotData;
 import java.util.ArrayList;
 import java.util.List;
 
