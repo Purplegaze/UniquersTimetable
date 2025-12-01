@@ -1,15 +1,16 @@
 package interface_adapter.addcourse;
 
-import interface_adapter.presenter.TimetableViewInterface;
-import interface_adapter.viewmodel.TimetableSlotViewModel;
 import entity.Course;
 import entity.Section;
 import entity.TimeSlot;
+import interface_adapter.viewmodel.TimetableSlotViewModel;
 import usecase.addcourse.AddCourseOutputBoundary;
 import usecase.addcourse.AddCourseOutputData;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,7 +18,7 @@ import java.util.Map;
  */
 public class AddCoursePresenter implements AddCourseOutputBoundary {
 
-    private final TimetableViewInterface view;
+    private final AddCourseViewModel viewModel;
     private final Map<String, Color> courseColors;
     private int colorIndex;
 
@@ -32,11 +33,11 @@ public class AddCoursePresenter implements AddCourseOutputBoundary {
             new Color(169, 255, 207),
     };
 
-    public AddCoursePresenter(TimetableViewInterface view) {
-        if (view == null) {
-            throw new IllegalArgumentException("View cannot be null");
+    public AddCoursePresenter(AddCourseViewModel viewModel) {
+        if (viewModel == null) {
+            throw new IllegalArgumentException("ViewModel cannot be null");
         }
-        this.view = view;
+        this.viewModel = viewModel;
         this.courseColors = new HashMap<>();
         this.colorIndex = 0;
     }
@@ -49,29 +50,33 @@ public class AddCoursePresenter implements AddCourseOutputBoundary {
         Color color = getColorForCourse(course.getCourseCode());
         
         // Convert each time slot to a view model
+        List<TimetableSlotViewModel> slotViewModels = new ArrayList<>();
         for (TimeSlot timeSlot : section.getTimes()) {
-            TimetableSlotViewModel viewModel = createViewModel(
-                    section, timeSlot, color, false
+            TimetableSlotViewModel slotVM = createSlotViewModel(
+                    section, timeSlot, color
             );
-            view.displayCourse(viewModel);
+            slotViewModels.add(slotVM);
         }
+
+        // Update ViewModel
+        viewModel.addSlots(slotViewModels);
     }
 
     @Override
     public void presentConflict(AddCourseOutputData outputData) {
-        view.showConflictWarning("Cannot add section: Time conflict with existing courses");
+        viewModel.setConflict("Cannot add section: Time conflict with existing courses");
     }
 
     @Override
     public void presentError(String errorMessage) {
-        view.showError(errorMessage);
+        viewModel.setError(errorMessage);
     }
 
     /**
-     * Create a view model from entity data.
+     * Create a TimetableSlotViewModel from entity data.
      */
-    private TimetableSlotViewModel createViewModel(Section section, TimeSlot timeSlot,
-                                                   Color color, boolean hasConflict) {
+    private TimetableSlotViewModel createSlotViewModel(Section section, TimeSlot timeSlot,
+                                                       Color color) {
         return new TimetableSlotViewModel.Builder()
                 .courseCode(section.getCourse().getCourseCode())
                 .sectionCode(section.getSectionId())
@@ -80,7 +85,7 @@ public class AddCoursePresenter implements AddCourseOutputBoundary {
                 .startHour(timeSlot.getStartTime().getHour())
                 .endHour(timeSlot.getEndTime().getHour())
                 .color(color)
-                .hasConflict(hasConflict)
+                .hasConflict(false)
                 .build();
     }
 
@@ -93,13 +98,5 @@ public class AddCoursePresenter implements AddCourseOutputBoundary {
             colorIndex++;
             return color;
         });
-    }
-
-    /**
-     * Reset color assignments.
-     */
-    public void resetColors() {
-        courseColors.clear();
-        colorIndex = 0;
     }
 }

@@ -4,30 +4,30 @@ import usecase.deletesection.DeleteSectionOutputBoundary;
 import usecase.deletesection.DeleteSectionOutputData;
 
 /**
- * Presenter for Delete Course use case.
+ * Presenter for Delete Section use case.
  */
 public class DeleteSectionPresenter implements DeleteSectionOutputBoundary {
-    
-    private final interface_adapter.presenter.TimetableViewInterface view;
-    
-    public DeleteSectionPresenter(interface_adapter.presenter.TimetableViewInterface view) {
-        if (view == null) {
-            throw new IllegalArgumentException("View cannot be null");
+
+    private final DeleteSectionViewModel viewModel;
+
+    public DeleteSectionPresenter(DeleteSectionViewModel viewModel) {
+        if (viewModel == null) {
+            throw new IllegalArgumentException("ViewModel cannot be null");
         }
-        this.view = view;
+        this.viewModel = viewModel;
     }
 
     @Override
     public void presentSuccess(DeleteSectionOutputData outputData) {
-        // Just remove the deleted course
-        view.removeCourse(
+        // Update ViewModel with deletion info
+        viewModel.setSectionDeleted(
                 outputData.getDeletedCourseCode(),
                 outputData.getDeletedSectionCode()
         );
     }
-    
+
     @Override
     public void presentError(String errorMessage) {
-        view.showError(errorMessage);
+        viewModel.setError(errorMessage);
     }
 }
