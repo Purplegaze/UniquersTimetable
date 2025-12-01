@@ -47,7 +47,7 @@ import view.*;
 import javax.swing.*;
 
 import view.WalkingTimeView;
-import view.WalkingTimeViewAdapter;
+//import view.WalkingTimeViewAdapter;
 import data_access.WalkingTimeDataAccessObject;
 
 /**
@@ -81,13 +81,14 @@ public class Main {
                 // Create view adapters
                 TimetableViewInterface timetableViewAdapter = new TimetableViewAdapter(timetableView);
                 SearchPanelInterface searchViewAdapter = new SearchPanelAdapter(searchPanel);
-                CalculateWalkingInterface walkingViewAdapter = new WalkingTimeViewAdapter(walkingTimeView);
+//                CalculateWalkingInterface walkingViewAdapter = new WalkingTimeViewAdapter(walkingTimeView);
 
                 // Create presenters
                 AddCourseOutputBoundary addCoursePresenter = new AddCoursePresenter(timetableViewAdapter);
                 SearchCourseOutputBoundary searchCoursePresenter = new SearchCoursePresenter(searchViewAdapter);
                 DeleteSectionOutputBoundary deleteSectionPresenter = new DeleteSectionPresenter(timetableViewAdapter);
-                CalculateWalkingOutputBoundary walkingPresenter = new CalculateWalkingPresenter(walkingViewAdapter);
+                CalculateWalkingOutputBoundary walkingPresenter =
+                        new CalculateWalkingPresenter(walkingTimeView.getViewModel());
 
                 // View Model and Presenter for ViewCourse Use Case
                 ViewCourseViewModel viewCourseViewModel = new ViewCourseViewModel();
