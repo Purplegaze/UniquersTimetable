@@ -7,5 +7,5 @@ public class ExportTimetableOutputData {
         this.filepath = filepath;
     }
 
-    String getFilepath() {return filepath;}
+    public String getFilepath() {return filepath;}
 }

@@ -1,4 +1,4 @@
-package interface_adapter.controller;
+package interface_adapter.export;
 
 import usecase.export.ExportTimetableInputBoundary;
 import usecase.export.ExportTimetableInputData;
