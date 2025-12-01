@@ -140,7 +140,7 @@ public class Main {
                         Course course = (Course) evt.getNewValue();
                         if (course != null) {
                             // Display the SectionView using the course (now with ratings) and the add controller
-                            new SectionView(course, addCourseController).display();
+                            new SectionView(viewCourseViewModel, addCourseController).display();
                         }
                     } else if ("error".equals(evt.getPropertyName())) {
                         JOptionPane.showMessageDialog(mainView,
