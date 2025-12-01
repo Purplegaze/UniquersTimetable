@@ -1,4 +1,4 @@
-package interface_adapter.controller;
+package interface_adapter.search;
 
 import usecase.search.SearchCourseInputBoundary;
 import usecase.search.SearchCourseInputData;
@@ -17,14 +17,8 @@ public class SearchCourseController {
         this.searchCourseInteractor = searchCourseInteractor;
     }
 
-    /**
-     * Handle search request from the view.
-     */
-    public void search(String query) {
-        // Create Input Data (simple primitive wrapper)
+    public void execute(String query) {
         SearchCourseInputData inputData = new SearchCourseInputData(query);
-        
-        // Execute use case through Input Boundary interface
         searchCourseInteractor.execute(inputData);
     }
 
@@ -32,13 +26,13 @@ public class SearchCourseController {
      * Handle search with empty query (show all courses).
      */
     public void searchAll() {
-        search("");
+        execute("");
     }
 
     /**
      * Handle clear search request.
      */
     public void clearSearch() {
-        search("");
+        execute("");
     }
 }

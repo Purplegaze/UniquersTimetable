@@ -1,54 +1,21 @@
 package view;
 
+import interface_adapter.search.SearchCourseController;
+import interface_adapter.search.SearchViewModel;
+import interface_adapter.search.SearchViewModel.SearchResult;
+
 import javax.swing.*;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * SearchPanel - Pure UI component following Clean Architecture.
- * <p>
- * Responsibilities:
- * - Render the search UI (search bar, results list)
- * - Capture user input and forward to controller
- * - Display data provided by presenter via ViewModels
- * <p>
- * Does NOT:
- * - Know about domain entities (Course, Section, etc.)
- * - Perform search logic
- * - Access data sources
+ * Implements SearchPanelInterface to receive data from presenter.
  */
-public class SearchPanel extends JPanel {
-
-    // ==================== View Model ====================
-
-    /**
-     * Simple data container for displaying search results.
-     * This is NOT an entity - just what the UI needs to display.
-     */
-    public static class SearchResultItem {
-        private final String id;
-        private final String displayText;
-
-        public SearchResultItem(String id, String displayText) {
-            this.id = id;
-            this.displayText = displayText;
-        }
-
-        public String getId() { return id; }
-        public String getDisplayText() { return displayText; }
-    }
-
-    // ==================== Listener Interface ====================
-
-    /**
-     * Interface for handling user actions from this panel.
-     * The controller implements this.
-     */
-    public interface SearchPanelListener {
-        void onSearchRequested(String query);
-        void onResultSelected(String resultId);
-    }
+public class SearchPanel extends JPanel implements PropertyChangeListener {
 
     // ==================== UI Components ====================
 
@@ -57,10 +24,9 @@ public class SearchPanel extends JPanel {
     private JList<String> resultsList;
     private DefaultListModel<String> listModel;
 
-    private List<SearchResultItem> currentResults = new ArrayList<>();
-    private SearchPanelListener listener;
-
-    // ==================== Constructor ====================
+    private List<SearchResult> currentResults = new ArrayList<>();
+    private SearchCourseController controller;
+    private SearchViewModel viewModel;
 
     public SearchPanel() {
         setLayout(new BorderLayout(10, 10));
@@ -72,45 +38,62 @@ public class SearchPanel extends JPanel {
         setupEventHandlers();
     }
 
-    // ==================== Public Methods ====================
-
-    public void setListener(SearchPanelListener listener) {
-        this.listener = listener;
+    public void setController(SearchCourseController controller) {
+        this.controller = controller;
     }
 
-    public void displayResults(List<SearchResultItem> results) {
-        this.currentResults = new ArrayList<>(results);
-        listModel.clear();
+    public void setViewModel(SearchViewModel viewModel) {
+        if (this.viewModel != null) {
+            this.viewModel.removePropertyChangeListener(this);
+        }
 
-        for (SearchResultItem item : results) {
-            listModel.addElement(item.getDisplayText());
+        this.viewModel = viewModel;
+        viewModel.addPropertyChangeListener(this);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case "results":
+                handleResults();
+                break;
+            case "noResults":
+                handleNoResults();
+                break;
+            case "error":
+                handleError();
+                break;
         }
     }
 
-    public void displayNoResults() {
+    private void handleResults() {
+        if (viewModel == null) return;
+
+        List<SearchResult> results = viewModel.getResults();
+        this.currentResults = new ArrayList<>(results);
+        listModel.clear();
+
+        for (SearchResult result : results) {
+            listModel.addElement(result.getDisplayText());
+        }
+    }
+
+    private void handleNoResults() {
         this.currentResults = new ArrayList<>();
         listModel.clear();
         listModel.addElement("No results found");
     }
 
-    public void displayError(String message) {
+    private void handleError() {
+        if (viewModel == null) return;
+
         JOptionPane.showMessageDialog(
                 this,
-                message,
+                viewModel.getErrorMessage(),
                 "Error",
                 JOptionPane.ERROR_MESSAGE
         );
     }
-
-    public void clearSearchField() {
-        searchField.setText("");
-    }
-
-    public String getSearchQuery() {
-        return searchField.getText();
-    }
-
-    // ==================== Private UI Setup ====================
 
     private void initializeComponents() {
         searchField = new JTextField();
@@ -167,25 +150,22 @@ public class SearchPanel extends JPanel {
         });
     }
 
-    // ==================== Event Notification ====================
-
-    private void notifySearchRequested() {
-        if (listener != null) {
-            String query = searchField.getText().trim();
-            listener.onSearchRequested(query);
-        }
-    }
-
     private void notifyResultSelected() {
         int selectedIndex = resultsList.getSelectedIndex();
 
-        if (selectedIndex < 0 || selectedIndex >= currentResults.size()) {
-            return;
-        }
+        if (selectedIndex >= 0 && selectedIndex < currentResults.size()) {
+            String courseCode = currentResults.get(selectedIndex).getCourseCode();
 
-        if (listener != null) {
-            String selectedId = currentResults.get(selectedIndex).getId();
-            listener.onResultSelected(selectedId);
+            if (viewModel != null) {
+                viewModel.setSelectedCourseCode(courseCode);
+            }
+        }
+    }
+
+    private void notifySearchRequested() {
+        if (controller != null) {
+            String query = searchField.getText().trim();
+            controller.execute(query);
         }
     }
 }

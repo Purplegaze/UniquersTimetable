@@ -1,6 +1,12 @@
 package view;
 
+import interface_adapter.deletesection.DeleteSectionController;
+import interface_adapter.viewmodel.TimetableSlotViewModel;
+
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +15,7 @@ import javax.swing.*;
 
 public class TimetableView extends JPanel {
 
-    public static class TimetableSlotItem {
+    private static class TimetableSlotItem {
         private final String courseCode;
         private final String sectionCode;
         private final String location;
@@ -37,37 +43,145 @@ public class TimetableView extends JPanel {
     private static final String[] DAYS = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
 
     private Map<String, JPanel> slotPanels;
-
-    private Map<String, List<TimetableSlotItem>> slotCourses;
+    private Map<String, String> slotCourseKeys;
+    private DeleteSectionController deleteSectionController;
 
     public TimetableView() {
         slotPanels = new HashMap<>();
-        slotCourses = new HashMap<>();
+        slotCourseKeys = new HashMap<>();
         setLayout(new BorderLayout());
-
         initializeComponents();
     }
 
-    public void displayCourse(String day, int startHour, int endHour, TimetableSlotItem item) {
-        java.util.List<String> slotKeys = generateSlotKeys(day, startHour, endHour);
+    public void setDeleteController(DeleteSectionController controller) {
+        this.deleteSectionController = controller;
+    }
 
-        for (String key : slotKeys) {
+    /**
+     * Connect AddCourseViewModel to this view.
+     */
+    public void setAddCourseViewModel(interface_adapter.addcourse.AddCourseViewModel viewModel) {
+        viewModel.addPropertyChangeListener(this::handleAddCourseViewModelChange);
+    }
+
+    /**
+     * Handle property changes from AddCourseViewModel.
+     */
+    private void handleAddCourseViewModelChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case "slotsAdded":
+                interface_adapter.addcourse.AddCourseViewModel vm =
+                        (interface_adapter.addcourse.AddCourseViewModel) evt.getSource();
+                List<TimetableSlotViewModel> slots = vm.getSlots();
+                // Display all slots
+                for (TimetableSlotViewModel slot : slots) {
+                    displaySlotViewModel(slot);
+                }
+                break;
+            case "conflict":
+                interface_adapter.addcourse.AddCourseViewModel conflictVM =
+                        (interface_adapter.addcourse.AddCourseViewModel) evt.getSource();
+                showConflictWarning(conflictVM.getConflictMessage());
+                break;
+            case "error":
+                interface_adapter.addcourse.AddCourseViewModel errorVM =
+                        (interface_adapter.addcourse.AddCourseViewModel) evt.getSource();
+                showErrorMessage(errorVM.getErrorMessage());
+                break;
+            case "cleared":
+                clearAll();
+                break;
+        }
+    }
+
+    /**
+     * Connect DeleteSectionViewModel to this view.
+     */
+    public void setDeleteSectionViewModel(interface_adapter.deletesection.DeleteSectionViewModel viewModel) {
+        viewModel.addPropertyChangeListener(this::handleDeleteSectionViewModelChange);
+    }
+
+    /**
+     * Handle property changes from DeleteSectionViewModel.
+     */
+    private void handleDeleteSectionViewModelChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case "sectionDeleted":
+                interface_adapter.deletesection.DeleteSectionViewModel vm =
+                        (interface_adapter.deletesection.DeleteSectionViewModel) evt.getSource();
+                removeCourse(vm.getDeletedCourseCode(), vm.getDeletedSectionCode());
+                break;
+            case "error":
+                interface_adapter.deletesection.DeleteSectionViewModel errorVM =
+                        (interface_adapter.deletesection.DeleteSectionViewModel) evt.getSource();
+                showErrorMessage(errorVM.getErrorMessage());
+                break;
+        }
+    }
+
+    /**
+     * Convert TimetableSlotViewModel to internal representation and display.
+     */
+    private void displaySlotViewModel(TimetableSlotViewModel viewModel) {
+        String day = viewModel.getDayName();
+        int startHour = viewModel.getStartHour();
+        int endHour = viewModel.getEndHour();
+
+        TimetableSlotItem item = new TimetableSlotItem(
+                viewModel.getCourseCode(),
+                viewModel.getSectionCode(),
+                viewModel.getLocation(),
+                viewModel.getColor(),
+                viewModel.hasConflict()
+        );
+
+        displayCourse(day, startHour, endHour, item);
+    }
+
+    private void displayCourse(String day, int startHour, int endHour, TimetableSlotItem item) {
+        List<String> slotKeys = generateSlotKeys(day, startHour, endHour);
+        String courseKey = item.getCourseCode() + "-" + item.getSectionCode();
+
+        for (int i = 0; i < slotKeys.size(); i++) {
+            String key = slotKeys.get(i);
             JPanel slot = slotPanels.get(key);
             if (slot != null) {
-                // Get or create list of courses for this slot
-                List<TimetableSlotItem> courses = slotCourses.computeIfAbsent(key, k -> new ArrayList<>());
-
-                // Add the new course
-                courses.add(item);
-
-                // Update the slot display
-                updateSlotWithMultipleCourses(slot, courses);
+                slotCourseKeys.put(key, courseKey);
+                boolean isFirstSlot = (i == 0);
+                displayCourseInSlot(slot, item, isFirstSlot);
             }
         }
     }
 
-    public void clearAll() {
-        slotCourses.clear();
+    private void removeCourse(String courseCode, String sectionCode) {
+        String courseKey = courseCode + "-" + sectionCode;
+
+        // Find and clear all slots with this course
+        List<String> slotsToRemove = new ArrayList<>();
+        for (Map.Entry<String, String> entry : slotCourseKeys.entrySet()) {
+            if (courseKey.equals(entry.getValue())) {
+                String slotKey = entry.getKey();
+                slotsToRemove.add(slotKey);
+
+                JPanel slot = slotPanels.get(slotKey);
+                if (slot != null) {
+                    slot.removeAll();
+                    slot.setBackground(Color.WHITE);
+                    slot.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+                    slot.revalidate();
+                    slot.repaint();
+                }
+            }
+        }
+
+        // Remove from tracking
+        for (String slotKey : slotsToRemove) {
+            slotCourseKeys.remove(slotKey);
+        }
+    }
+
+    private void clearAll() {
+        slotCourseKeys.clear();
 
         for (JPanel slot : slotPanels.values()) {
             slot.removeAll();
@@ -78,28 +192,18 @@ public class TimetableView extends JPanel {
         }
     }
 
-
-    public void showConflictWarning(String conflictMessage) {
-        JOptionPane.showMessageDialog(
-                this,
-                conflictMessage,
-                "Schedule Conflict",
-                JOptionPane.WARNING_MESSAGE
-        );
+    private void showConflictWarning(String conflictMessage) {
+        JOptionPane.showMessageDialog(this, conflictMessage,
+                "Schedule Conflict", JOptionPane.WARNING_MESSAGE);
     }
 
-    public void showErrorMessage(String errorMessage) {
-        JOptionPane.showMessageDialog(
-                this,
-                errorMessage,
-                "Error",
-                JOptionPane.ERROR_MESSAGE
-        );
+    private void showErrorMessage(String errorMessage) {
+        JOptionPane.showMessageDialog(this, errorMessage,
+                "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-
-    private java.util.List<String> generateSlotKeys(String day, int startHour, int endHour) {
-        java.util.List<String> keys = new ArrayList<>();
+    private List<String> generateSlotKeys(String day, int startHour, int endHour) {
+        List<String> keys = new ArrayList<>();
         for (int hour = startHour; hour < endHour; hour++) {
             keys.add(day + "-" + hour);
         }
@@ -107,68 +211,82 @@ public class TimetableView extends JPanel {
     }
 
     /**
-     * Update a slot that may contain multiple courses (conflict).
-     * Splits the slot horizontally if there are 2+ courses.
+     * Display a course in a slot.
+     * Only shows course info and X button in the first slot.
      */
-    private void updateSlotWithMultipleCourses(JPanel slot, List<TimetableSlotItem> courses) {
+    private void displayCourseInSlot(JPanel slot, TimetableSlotItem item, boolean isFirstSlot) {
         slot.removeAll();
+        slot.setBackground(item.getColor());
+        slot.setLayout(new BorderLayout());
 
-        if (courses.size() == 1) {
-            // Single course - use entire slot
-            TimetableSlotItem item = courses.get(0);
-            slot.setBackground(item.getColor());
-            slot.setLayout(new BorderLayout());
+        if (isFirstSlot) {
+            // FIRST SLOT: Show course info + X button
+            JPanel contentPanel = new JPanel(new BorderLayout());
+            contentPanel.setOpaque(false);
 
+            // Course label in center
             JLabel label = createCourseLabel(item);
-            slot.add(label, BorderLayout.CENTER);
+            contentPanel.add(label, BorderLayout.CENTER);
 
-            if (item.hasConflict()) {
-                slot.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
-            } else {
-                slot.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            }
-        } else {
-            // Multiple courses - split the slot
-            slot.setLayout(new GridLayout(1, courses.size()));
-            slot.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+            // X button in top-right
+            JButton deleteButton = createDeleteButton(item.getCourseCode(), item.getSectionCode());
+            contentPanel.add(deleteButton, BorderLayout.NORTH);
 
-            for (TimetableSlotItem item : courses) {
-                JPanel coursePanel = new JPanel(new BorderLayout());
-                coursePanel.setBackground(item.getColor());
-                coursePanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
-
-                JLabel label = createCourseLabel(item);
-                coursePanel.add(label, BorderLayout.CENTER);
-
-                slot.add(coursePanel);
-            }
+            slot.add(contentPanel, BorderLayout.CENTER);
         }
+        // Other slots are just colored (no content)
 
+        slot.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         slot.revalidate();
         slot.repaint();
     }
 
     /**
-     * Update a single slot with course information.
+     * Create X delete button.
      */
-    private void updateSlot(JPanel slot, TimetableSlotItem item) {
-        slot.removeAll();
-        slot.setBackground(item.getColor());
-        slot.setLayout(new BorderLayout());
+    private JButton createDeleteButton(String courseCode, String sectionCode) {
+        JButton deleteButton = new JButton("×");
+        deleteButton.setFont(new Font("Arial", Font.BOLD, 16));
+        deleteButton.setForeground(Color.RED);
+        deleteButton.setOpaque(false);
+        deleteButton.setContentAreaFilled(false);
+        deleteButton.setBorderPainted(false);
+        deleteButton.setFocusPainted(false);
+        deleteButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        deleteButton.setPreferredSize(new Dimension(25, 20));
 
-        JLabel label = createCourseLabel(item);
-        slot.add(label, BorderLayout.CENTER);
+        // Hover effect
+        deleteButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                deleteButton.setForeground(new Color(200, 0, 0));
+            }
 
-        if (item.hasConflict()) {
-            slot.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
-        } else {
-            slot.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-        }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                deleteButton.setForeground(Color.RED);
+            }
+        });
 
-        slot.revalidate();
-        slot.repaint();
+        // Delete action
+        deleteButton.addActionListener(e -> {
+            if (deleteSectionController != null) {
+                int confirm = JOptionPane.showConfirmDialog(
+                        this,
+                        "Delete " + courseCode + " " + sectionCode + " from timetable?",
+                        "Confirm Delete",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE
+                );
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    deleteSectionController.deleteSection(courseCode, sectionCode);
+                }
+            }
+        });
+
+        return deleteButton;
     }
-
 
     private JLabel createCourseLabel(TimetableSlotItem item) {
         String labelText = "<html><center>" + item.getCourseCode() + "<br>"
@@ -181,10 +299,10 @@ public class TimetableView extends JPanel {
     private void initializeComponents() {
         int numRows = END_TIME - START_TIME;
 
-        // Create a container for headers (time header + day headers)
+        // Header container
         JPanel headerContainer = new JPanel(new BorderLayout());
 
-        // Time header (top-left corner)
+        // Time header
         JLabel timeHeader = new JLabel("Time", SwingConstants.CENTER);
         timeHeader.setFont(new Font("Arial", Font.BOLD, 12));
         timeHeader.setBorder(BorderFactory.createLineBorder(Color.GRAY));
@@ -219,10 +337,8 @@ public class TimetableView extends JPanel {
                 slot.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
                 slot.setBackground(Color.WHITE);
 
-                // Store reference with key like "Monday-9"
                 String key = day + "-" + hour;
                 slotPanels.put(key, slot);
-                slotCourses.put(key, new ArrayList<>());
 
                 gridPanel.add(slot);
             }

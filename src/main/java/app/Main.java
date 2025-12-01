@@ -6,48 +6,65 @@ import data_access.InMemoryTimetableDataAccess;
 import data_access.JSONCourseDataAccess;
 import data_access.TimetableDataAccessInterface;
 import entity.Course;
-import entity.Timetable;
 import interface_adapter.calculatewalkingtime.CalculateWalkingController;
 import interface_adapter.calculatewalkingtime.CalculateWalkingInterface;
 import interface_adapter.calculatewalkingtime.CalculateWalkingPresenter;
-import interface_adapter.calculatewalkingtime.CalculateWalkingViewModel;
-import interface_adapter.controller.AddCourseController;
-import interface_adapter.controller.SearchCourseController;
-import interface_adapter.controller.ViewCourseController;
-import interface_adapter.presenter.AddCoursePresenter;
-import interface_adapter.presenter.SearchCoursePresenter;
-import view.SearchPanelAdapter;
+
+import interface_adapter.addcourse.AddCourseController;
+import interface_adapter.search.SearchCourseController;
+import interface_adapter.deletesection.DeleteSectionController;
+import interface_adapter.viewcourse.ViewCourseController;
+
+import interface_adapter.addcourse.AddCoursePresenter;
+import interface_adapter.search.SearchCoursePresenter;
+import interface_adapter.deletesection.DeleteSectionPresenter;
+import interface_adapter.viewcourse.ViewCoursePresenter;
+
+import interface_adapter.viewcourse.ViewCourseViewModel;
+import interface_adapter.search.SearchViewModel;
+import interface_adapter.addcourse.AddCourseViewModel;
+import interface_adapter.deletesection.DeleteSectionViewModel;
+
 import usecase.calculatewalkingtime.CalculateWalkingDataAccessInterface;
 import usecase.calculatewalkingtime.CalculateWalkingInputBoundary;
 import usecase.calculatewalkingtime.CalculateWalkingInteractor;
 import usecase.calculatewalkingtime.CalculateWalkingOutputBoundary;
-import view.*;
-import interface_adapter.presenter.SearchPanelInterface;
-import interface_adapter.presenter.TimetableViewInterface;
-import interface_adapter.presenter.ViewCoursePresenter;
-import interface_adapter.viewmodel.ViewCourseViewModel;
+
 import usecase.addcourse.AddCourseInputBoundary;
 import usecase.addcourse.AddCourseInteractor;
 import usecase.addcourse.AddCourseOutputBoundary;
+
 import usecase.search.SearchCourseInputBoundary;
 import usecase.search.SearchCourseInteractor;
 import usecase.search.SearchCourseOutputBoundary;
+
+import usecase.deletesection.DeleteSectionInputBoundary;
+import usecase.deletesection.DeleteSectionInteractor;
+import usecase.deletesection.DeleteSectionOutputBoundary;
+
 import usecase.viewcourse.ViewCourseInputBoundary;
 import usecase.viewcourse.ViewCourseInteractor;
-import view.*;
+
+import view.MainView;
+import view.SearchPanel;
+import view.SectionView;
+import view.TimetableView;
 
 import javax.swing.*;
 
 import view.WalkingTimeView;
 import view.WalkingTimeViewAdapter;
-import interface_adapter.calculatewalkingtime.CalculateWalkingInterface;
-import interface_adapter.calculatewalkingtime.CalculateWalkingPresenter;
-import usecase.calculatewalkingtime.CalculateWalkingOutputBoundary;
-import usecase.calculatewalkingtime.CalculateWalkingDataAccessInterface;
-import usecase.calculatewalkingtime.CalculateWalkingInteractor;
-import usecase.calculatewalkingtime.CalculateWalkingInputBoundary;
-import interface_adapter.calculatewalkingtime.CalculateWalkingController;
 import data_access.WalkingTimeDataAccessObject;
+
+/**
+ * Main entry point for the Timetable Application.
+ * <p>
+ * This is the Composition Root: wires all layers together
+ * - Creates all components
+ * - Wires dependencies
+ * - Connects UI events to controllers
+ * - Starts the application
+ */
 
 public class Main {
 
@@ -61,20 +78,27 @@ public class Main {
                 // Reader for ratings
                 CourseEvalDataReader ratingReader = new CourseEvalDataReader("src/main/resources/course_eval_data.csv");
 
+                // ViewModels
+                SearchViewModel searchViewModel = new SearchViewModel();
+                AddCourseViewModel addCourseViewModel = new AddCourseViewModel();
+                DeleteSectionViewModel deleteSectionViewModel = new DeleteSectionViewModel();
+
                 // Create UI views
                 MainView mainView = new MainView();
                 TimetableView timetableView = mainView.getTimetableView();
+                timetableView.setAddCourseViewModel(addCourseViewModel);
+                timetableView.setDeleteSectionViewModel(deleteSectionViewModel);
+
                 SearchPanel searchPanel = mainView.getSearchPanel();
+
                 WalkingTimeView walkingTimeView = mainView.getWalkingTimeView();
 
-                // Create view adapters
-                TimetableViewInterface timetableViewAdapter = new TimetableViewAdapter(timetableView);
-                SearchPanelInterface searchViewAdapter = new SearchPanelAdapter(searchPanel);
                 CalculateWalkingInterface walkingViewAdapter = new WalkingTimeViewAdapter(walkingTimeView);
 
                 // Create presenters
-                AddCourseOutputBoundary addCoursePresenter = new AddCoursePresenter(timetableViewAdapter);
-                SearchCourseOutputBoundary searchCoursePresenter = new SearchCoursePresenter(searchViewAdapter);
+                AddCourseOutputBoundary addCoursePresenter = new AddCoursePresenter(addCourseViewModel);
+                SearchCourseOutputBoundary searchCoursePresenter = new SearchCoursePresenter(searchViewModel);
+                DeleteSectionOutputBoundary deleteSectionPresenter = new DeleteSectionPresenter(deleteSectionViewModel);
                 CalculateWalkingOutputBoundary walkingPresenter = new CalculateWalkingPresenter(walkingViewAdapter);
 
                 // View Model and Presenter for ViewCourse Use Case
@@ -86,6 +110,8 @@ public class Main {
                         new AddCourseInteractor(timetableDataAccess, courseDataAccess, addCoursePresenter);
                 SearchCourseInputBoundary searchCourseInteractor =
                         new SearchCourseInteractor(courseDataAccess, searchCoursePresenter);
+                DeleteSectionInputBoundary deleteCourseInteractor =
+                        new DeleteSectionInteractor(timetableDataAccess, deleteSectionPresenter);
                 CalculateWalkingDataAccessInterface walkingDataAccess = new WalkingTimeDataAccessObject();
                 CalculateWalkingInputBoundary walkingInteractor =
                         new CalculateWalkingInteractor(walkingDataAccess, walkingPresenter);
@@ -98,15 +124,15 @@ public class Main {
                 // Create controllers
                 AddCourseController addCourseController = new AddCourseController(addCourseInteractor);
                 SearchCourseController searchCourseController = new SearchCourseController(searchCourseInteractor);
-
+                DeleteSectionController deleteSectionController = new DeleteSectionController(deleteCourseInteractor);
+                ViewCourseController viewCourseController = new ViewCourseController(viewCourseInteractor);
                 CalculateWalkingController walkingController = new CalculateWalkingController(walkingInteractor);
 
+                searchPanel.setController(searchCourseController);
+                searchPanel.setViewModel(searchViewModel);
+                timetableView.setDeleteController(deleteSectionController);
                 walkingTimeView.setWalkingController(walkingController);
-
                 walkingTimeView.setTimetable(timetableDataAccess.getTimetable());
-
-                // Controller for ViewCourse
-                ViewCourseController viewCourseController = new ViewCourseController(viewCourseInteractor);
 
                 // Observe ViewModel to display SectionView when a course is loaded with ratings
                 viewCourseViewModel.addPropertyChangeListener(evt -> {
@@ -114,7 +140,7 @@ public class Main {
                         Course course = (Course) evt.getNewValue();
                         if (course != null) {
                             // Display the SectionView using the course (now with ratings) and the add controller
-                            new SectionView(course, addCourseController).display();
+                            new SectionView(viewCourseViewModel, addCourseController).display();
                         }
                     } else if ("error".equals(evt.getPropertyName())) {
                         JOptionPane.showMessageDialog(mainView,
@@ -125,30 +151,21 @@ public class Main {
                 });
 
                 // Wire UI events to controllers
-                searchPanel.setListener(new SearchPanel.SearchPanelListener() {
-                    @Override
-                    public void onSearchRequested(String query) {
-                        searchCourseController.search(query);
-                    }
+                searchViewModel.addPropertyChangeListener(evt -> {
+                    System.out.println("Property changed: " + evt.getPropertyName());
 
-                    @Override
-                    public void onResultSelected(String resultId) {
-                        Course course = courseDataAccess.findByCourseCode(resultId);
+                    if ("selectedCourse".equals(evt.getPropertyName())) {
+                        String courseCode = searchViewModel.getSelectedCourseCode();
+                        System.out.println("Selected course: " + courseCode);
 
-                        if (course != null) {
-                            new SectionView(course, addCourseController).display();
+                        if (courseCode != null) {
+                            viewCourseController.execute(courseCode);
                             walkingTimeView.setTimetable(timetableDataAccess.getTimetable());
-                        } else {
-                            JOptionPane.showMessageDialog(mainView,
-                                    "Course not found: " + resultId,
-                                    "Error",
-                                    JOptionPane.ERROR_MESSAGE);
                         }
-                        viewCourseController.execute(resultId);
                     }
                 });
 
-                searchCourseController.search("");
+                searchCourseController.execute("");
                 mainView.display();
 
             } catch (Exception e) {
