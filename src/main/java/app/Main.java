@@ -22,6 +22,8 @@ import interface_adapter.viewcourse.ViewCoursePresenter;
 
 import interface_adapter.viewcourse.ViewCourseViewModel;
 import interface_adapter.search.SearchViewModel;
+import interface_adapter.addcourse.AddCourseViewModel;
+import interface_adapter.deletesection.DeleteSectionViewModel;
 
 import usecase.calculatewalkingtime.CalculateWalkingDataAccessInterface;
 import usecase.calculatewalkingtime.CalculateWalkingInputBoundary;
@@ -78,20 +80,26 @@ public class Main {
 
                 // ViewModels
                 SearchViewModel searchViewModel = new SearchViewModel();
+                AddCourseViewModel addCourseViewModel = new AddCourseViewModel();
+                DeleteSectionViewModel deleteSectionViewModel = new DeleteSectionViewModel();
 
                 // Create UI views
                 MainView mainView = new MainView();
                 TimetableView timetableView = mainView.getTimetableView();
+                timetableView.setAddCourseViewModel(addCourseViewModel);
+                timetableView.setDeleteSectionViewModel(deleteSectionViewModel);
+
                 SearchPanel searchPanel = mainView.getSearchPanel();
                 searchPanel.setViewModel(searchViewModel);
+
                 WalkingTimeView walkingTimeView = mainView.getWalkingTimeView();
 
                 CalculateWalkingInterface walkingViewAdapter = new WalkingTimeViewAdapter(walkingTimeView);
 
                 // Create presenters
-                AddCourseOutputBoundary addCoursePresenter = new AddCoursePresenter(timetableView);
+                AddCourseOutputBoundary addCoursePresenter = new AddCoursePresenter(addCourseViewModel);
                 SearchCourseOutputBoundary searchCoursePresenter = new SearchCoursePresenter(searchViewModel);
-                DeleteSectionOutputBoundary deleteSectionPresenter = new DeleteSectionPresenter(timetableView);
+                DeleteSectionOutputBoundary deleteSectionPresenter = new DeleteSectionPresenter(deleteSectionViewModel);
                 CalculateWalkingOutputBoundary walkingPresenter = new CalculateWalkingPresenter(walkingViewAdapter);
 
                 // View Model and Presenter for ViewCourse Use Case
