@@ -35,13 +35,6 @@ public class ViewModel<T> {
     }
 
     /**
-     * Fires a property changed event for the state of this ViewModel.
-     */
-    public void firePropertyChange() {
-        this.support.firePropertyChange("state", null, this.state);
-    }
-
-    /**
      * Fires a property changed event for the state of this ViewModel, which
      * allows the user to specify a different propertyName. This can be useful
      * when a class is listening for multiple kinds of property changes.
@@ -50,7 +43,7 @@ public class ViewModel<T> {
      * it can use the property name to distinguish which property has changed.
      * @param propertyName the label for the property that was changed
      */
-    public void firePropertyChange(String propertyName) {
+    protected void firePropertyChanged(String propertyName) {
         this.support.firePropertyChange(propertyName, null, this.state);
     }
 
@@ -60,5 +53,9 @@ public class ViewModel<T> {
      */
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         this.support.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        support.removePropertyChangeListener(listener);
     }
 }

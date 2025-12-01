@@ -1,4 +1,4 @@
-package interface_adapter.controller;
+package interface_adapter.search;
 
 import usecase.search.SearchCourseInputBoundary;
 import usecase.search.SearchCourseInputData;

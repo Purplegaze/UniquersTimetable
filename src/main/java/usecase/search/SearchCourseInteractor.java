@@ -45,7 +45,8 @@ public class SearchCourseInteractor implements SearchCourseInputBoundary {
             if (matchingCourses.isEmpty()) {
                 presenter.presentNoResults();
             } else {
-                SearchCourseOutputData outputData = new SearchCourseOutputData(matchingCourses);
+                SearchCourseOutputData outputData =
+                    new SearchCourseOutputData(convertToCourseData(matchingCourses));
                 presenter.presentSearchResults(outputData);
             }
         } catch (Exception e) {
@@ -74,5 +75,16 @@ public class SearchCourseInteractor implements SearchCourseInputBoundary {
                 ? course.getCourseName().toLowerCase() : "";
 
         return code.contains(query) || name.contains(query);
+    }
+
+    private List<SearchCourseOutputData.CourseData> convertToCourseData(List<Course> courses) {
+        List<SearchCourseOutputData.CourseData> courseData = new ArrayList<>();
+        for (Course course : courses) {
+            courseData.add(new SearchCourseOutputData.CourseData(
+                    course.getCourseCode(),
+                    course.getCourseName()
+            ));
+        }
+        return courseData;
     }
 }

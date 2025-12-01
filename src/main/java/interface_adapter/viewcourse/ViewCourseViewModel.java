@@ -1,4 +1,4 @@
-package interface_adapter.viewmodel;
+package interface_adapter.viewcourse;
 
 import entity.Course;
 import java.beans.PropertyChangeListener;
