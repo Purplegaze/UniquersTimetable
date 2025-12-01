@@ -6,7 +6,7 @@ import entity.Building;
 import entity.Course;
 import entity.Section;
 import entity.TimeSlot;
-import interface_adapter.controller.AddCourseController.TimeSlotData;
+import interface_adapter.addcourse.AddCourseController.TimeSlotData;
 
 import java.time.LocalTime;
 import java.util.ArrayList;

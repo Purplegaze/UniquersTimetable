@@ -1,6 +1,6 @@
 package view;
 
-import interface_adapter.controller.DeleteSectionController;
+import interface_adapter.deletesection.DeleteSectionController;
 import interface_adapter.presenter.TimetableViewInterface;
 import interface_adapter.viewmodel.TimetableSlotViewModel;
 
