@@ -1,4 +1,4 @@
-package interface_adapter.presenter;
+package interface_adapter.deletesection;
 
 import usecase.deletesection.DeleteSectionOutputBoundary;
 import usecase.deletesection.DeleteSectionOutputData;

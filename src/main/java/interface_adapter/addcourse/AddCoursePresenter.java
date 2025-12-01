@@ -1,5 +1,6 @@
-package interface_adapter.presenter;
+package interface_adapter.addcourse;
 
+import interface_adapter.presenter.TimetableViewInterface;
 import interface_adapter.viewmodel.TimetableSlotViewModel;
 import entity.Course;
 import entity.Section;
