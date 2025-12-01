@@ -1,10 +1,12 @@
 package view;
 
-import interface_adapter.presenter.SearchPanelInterface;
-import interface_adapter.viewmodel.SearchResultViewModel;
+import interface_adapter.search.SearchViewModel;
+import interface_adapter.search.SearchViewModel.SearchResult;
 
 import javax.swing.*;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +14,7 @@ import java.util.List;
  * SearchPanel - Pure UI component following Clean Architecture.
  * Implements SearchPanelInterface to receive data from presenter.
  */
-public class SearchPanel extends JPanel implements SearchPanelInterface {
+public class SearchPanel extends JPanel implements PropertyChangeListener {
 
     // ==================== Listener Interface ====================
 
@@ -32,10 +34,9 @@ public class SearchPanel extends JPanel implements SearchPanelInterface {
     private JList<String> resultsList;
     private DefaultListModel<String> listModel;
 
-    private List<SearchResultViewModel> currentResults = new ArrayList<>();
+    private List<SearchResult> currentResults = new ArrayList<>();
     private SearchPanelListener listener;
-
-    // ==================== Constructor ====================
+    private SearchViewModel viewModel;
 
     public SearchPanel() {
         setLayout(new BorderLayout(10, 10));
@@ -47,58 +48,62 @@ public class SearchPanel extends JPanel implements SearchPanelInterface {
         setupEventHandlers();
     }
 
-    // ==================== Public Methods ====================
+    public void setViewModel(SearchViewModel viewModel) {
+        if (this.viewModel != null) {
+            this.viewModel.removePropertyChangeListener(this);
+        }
+
+        this.viewModel = viewModel;
+        viewModel.addPropertyChangeListener(this);
+    }
 
     public void setListener(SearchPanelListener listener) {
         this.listener = listener;
     }
 
-    // ==================== Interface Implementation ====================
-
     @Override
-    public void displaySearchResults(List<SearchResultViewModel> results) {
-        this.currentResults = new ArrayList<>(results);
-        listModel.clear();
-
-        for (SearchResultViewModel vm : results) {
-            listModel.addElement(vm.getDisplayText());
+    public void propertyChange(PropertyChangeEvent evt) {
+        switch (evt.getPropertyName()) {
+            case "results":
+                handleResults();
+                break;
+            case "noResults":
+                handleNoResults();
+                break;
+            case "error":
+                handleError();
+                break;
         }
     }
 
-    @Override
-    public void showNoResultsMessage() {
+    private void handleResults() {
+        if (viewModel == null) return;
+
+        List<SearchResult> results = viewModel.getResults();
+        this.currentResults = new ArrayList<>(results);
+        listModel.clear();
+
+        for (SearchResult result : results) {
+            listModel.addElement(result.getDisplayText());
+        }
+    }
+
+    private void handleNoResults() {
         this.currentResults = new ArrayList<>();
         listModel.clear();
         listModel.addElement("No results found");
     }
 
-    @Override
-    public void clearResults() {
-        this.currentResults = new ArrayList<>();
-        listModel.clear();
-    }
+    private void handleError() {
+        if (viewModel == null) return;
 
-    @Override
-    public void showError(String message) {
         JOptionPane.showMessageDialog(
                 this,
-                message,
+                viewModel.getErrorMessage(),
                 "Error",
                 JOptionPane.ERROR_MESSAGE
         );
     }
-
-    // ==================== Additional Helper Methods ====================
-
-    public void clearSearchField() {
-        searchField.setText("");
-    }
-
-    public String getSearchQuery() {
-        return searchField.getText();
-    }
-
-    // ==================== Private UI Setup ====================
 
     private void initializeComponents() {
         searchField = new JTextField();
@@ -154,8 +159,6 @@ public class SearchPanel extends JPanel implements SearchPanelInterface {
             }
         });
     }
-
-    // ==================== Event Notification ====================
 
     private void notifySearchRequested() {
         if (listener != null) {

@@ -1,7 +1,5 @@
 package view;
 
-import interface_adapter.calculatewalkingtime.CalculateWalkingViewModel;
-
 import javax.swing.*;
 import java.awt.*;
 
