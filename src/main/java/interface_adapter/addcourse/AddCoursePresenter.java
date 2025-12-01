@@ -1,8 +1,5 @@
 package interface_adapter.addcourse;
 
-import entity.Course;
-import entity.Section;
-import entity.TimeSlot;
 import interface_adapter.viewmodel.TimetableSlotViewModel;
 import usecase.addcourse.AddCourseOutputBoundary;
 import usecase.addcourse.AddCourseOutputData;
@@ -44,21 +41,27 @@ public class AddCoursePresenter implements AddCourseOutputBoundary {
 
     @Override
     public void presentSuccess(AddCourseOutputData outputData) {
-        Section section = outputData.getSection();
-        Course course = section.getCourse();
+        String courseCode = outputData.getCourseCode();
+        String sectionCode = outputData.getSectionCode();
 
-        Color color = getColorForCourse(course.getCourseCode());
-        
-        // Convert each time slot to a view model
+        Color color = getColorForCourse(courseCode);
+
+        // Convert each time slot data to a view model
         List<TimetableSlotViewModel> slotViewModels = new ArrayList<>();
-        for (TimeSlot timeSlot : section.getTimes()) {
-            TimetableSlotViewModel slotVM = createSlotViewModel(
-                    section, timeSlot, color
-            );
+        for (AddCourseOutputData.TimeSlotData timeSlotData : outputData.getTimeSlots()) {
+            TimetableSlotViewModel slotVM = new TimetableSlotViewModel.Builder()
+                    .courseCode(courseCode)
+                    .sectionCode(sectionCode)
+                    .location(timeSlotData.getLocation())
+                    .dayName(timeSlotData.getDayName())
+                    .startHour(timeSlotData.getStartHour())
+                    .endHour(timeSlotData.getEndHour())
+                    .color(color)
+                    .hasConflict(false)  // No conflict since it was successfully added
+                    .build();
             slotViewModels.add(slotVM);
         }
 
-        // Update ViewModel
         viewModel.addSlots(slotViewModels);
     }
 
@@ -70,23 +73,6 @@ public class AddCoursePresenter implements AddCourseOutputBoundary {
     @Override
     public void presentError(String errorMessage) {
         viewModel.setError(errorMessage);
-    }
-
-    /**
-     * Create a TimetableSlotViewModel from entity data.
-     */
-    private TimetableSlotViewModel createSlotViewModel(Section section, TimeSlot timeSlot,
-                                                       Color color) {
-        return new TimetableSlotViewModel.Builder()
-                .courseCode(section.getCourse().getCourseCode())
-                .sectionCode(section.getSectionId())
-                .location(timeSlot.getBuilding().getBuildingCode())
-                .dayName(timeSlot.getDayName())
-                .startHour(timeSlot.getStartTime().getHour())
-                .endHour(timeSlot.getEndTime().getHour())
-                .color(color)
-                .hasConflict(false)
-                .build();
     }
 
     /**
