@@ -1,6 +1,5 @@
 package usecase.search;
 
-import entity.Course;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,13 +8,31 @@ import java.util.List;
  */
 public class SearchCourseOutputData {
 
-    private final List<Course> courses;
+    public static class CourseData {
+        private final String courseCode;
+        private final String courseName;
 
-    public SearchCourseOutputData(List<Course> courses) {
+        public CourseData(String courseCode, String courseName) {
+            this.courseCode = courseCode;
+            this.courseName = courseName;
+        }
+
+        public String getCourseCode() {
+            return courseCode;
+        }
+
+        public String getCourseName() {
+            return courseName;
+        }
+    }
+
+    private final List<CourseData> courses;
+
+    public SearchCourseOutputData(List<CourseData> courses) {
         this.courses = courses != null ? new ArrayList<>(courses) : new ArrayList<>();
     }
 
-    public List<Course> getCourses() {
+    public List<CourseData> getCourses() {
         return new ArrayList<>(courses);
     }
 

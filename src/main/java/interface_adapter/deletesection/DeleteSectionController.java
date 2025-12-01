@@ -1,4 +1,4 @@
-package interface_adapter.controller;
+package interface_adapter.deletesection;
 
 import usecase.deletesection.DeleteSectionInputBoundary;
 import usecase.deletesection.DeleteSectionInputData;

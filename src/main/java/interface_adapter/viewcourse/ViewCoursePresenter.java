@@ -1,6 +1,5 @@
-package interface_adapter.presenter;
+package interface_adapter.viewcourse;
 
-import interface_adapter.viewmodel.ViewCourseViewModel;
 import usecase.viewcourse.ViewCourseOutputBoundary;
 import usecase.viewcourse.ViewCourseOutputData;
 

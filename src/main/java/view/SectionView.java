@@ -1,7 +1,7 @@
 package view;
 
-import interface_adapter.controller.AddCourseController;
-import interface_adapter.controller.AddCourseController.TimeSlotData;
+import interface_adapter.addcourse.AddCourseController;
+import interface_adapter.addcourse.AddCourseController.TimeSlotData;
 import entity.Course;
 import entity.Rating;
 import entity.Section;
@@ -282,28 +282,28 @@ public class SectionView extends JDialog {
         if (term == null) {
             return "Unknown";
         }
-        switch (term) {
-            case "F": return "Fall";
-            case "S": return "Winter";
-            case "Y": return "Year-long";
-            default: return "Unknown";
-        }
+        return switch (term) {
+            case "F" -> "Fall";
+            case "S" -> "Winter";
+            case "Y" -> "Year-long";
+            default -> "Unknown";
+        };
     }
 
     /**
      * Convert day of week number to name.
      */
     private String getDayName(int dayOfWeek) {
-        switch (dayOfWeek) {
-            case 1: return "Monday";
-            case 2: return "Tuesday";
-            case 3: return "Wednesday";
-            case 4: return "Thursday";
-            case 5: return "Friday";
-            case 6: return "Saturday";
-            case 7: return "Sunday";
-            default: return "Unknown";
-        }
+        return switch (dayOfWeek) {
+            case 1 -> "Monday";
+            case 2 -> "Tuesday";
+            case 3 -> "Wednesday";
+            case 4 -> "Thursday";
+            case 5 -> "Friday";
+            case 6 -> "Saturday";
+            case 7 -> "Sunday";
+            default -> "Unknown";
+        };
     }
 
     /**
