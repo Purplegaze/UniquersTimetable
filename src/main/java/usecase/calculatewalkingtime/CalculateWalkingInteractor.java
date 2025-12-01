@@ -24,8 +24,6 @@ public class CalculateWalkingInteractor implements CalculateWalkingInputBoundary
 
     @Override
     public void execute(CalculateWalkingInputData inputData) {
-
-        // Use the timetable passed in from the controller
         Timetable timetable = inputData.getTimetable();
 
         if (timetable == null || timetable.getBlocks().isEmpty()) {
@@ -68,6 +66,10 @@ public class CalculateWalkingInteractor implements CalculateWalkingInputBoundary
         } else {
             presenter.prepareSuccessView(new CalculateWalkingOutputData(walkingTimes));
         }
+
+
     }
+
+
 
 }
