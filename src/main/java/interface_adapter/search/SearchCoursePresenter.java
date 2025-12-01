@@ -1,8 +1,5 @@
 package interface_adapter.search;
 
-import entity.Course;
-import entity.Section;
-import interface_adapter.search.SearchViewModel;
 import interface_adapter.search.SearchViewModel.SearchResult;
 import usecase.search.SearchCourseOutputBoundary;
 import usecase.search.SearchCourseOutputData;
@@ -29,14 +26,14 @@ public class SearchCoursePresenter implements SearchCourseOutputBoundary {
         }
 
         // Get Course entities from output data
-        List<Course> courses = outputData.getCourses();
+        List<SearchCourseOutputData.CourseData> courseDatas = outputData.getCourses();
 
         // Convert entities to view models
         List<SearchResult> results = new ArrayList<>();
-        for (Course course : courses) {
+        for (SearchCourseOutputData.CourseData courseData : courseDatas) {
             results.add(new SearchResult(
-                    course.getCourseCode(),
-                    course.getCourseName()
+                    courseData.getCourseCode(),
+                    courseData.getCourseName()
             ));
         }
 
