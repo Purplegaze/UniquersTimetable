@@ -1,10 +1,10 @@
 package interface_adapter.customtimefilter;
 
-import interface_adapter.presenter.SearchPanelInterface;
 import interface_adapter.viewmodel.SearchResultViewModel;
 import usecase.customtimefilter.CustomTimeFilterOutputBoundary;
 import usecase.customtimefilter.CustomTimeFilterOutputData;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -13,18 +13,18 @@ import java.util.List;
  */
 public class CustomTimeFilterPresenter implements CustomTimeFilterOutputBoundary {
 
-    private final SearchPanelInterface view;
+    private final CustomTimeFilterViewModel viewModel;
 
-    public CustomTimeFilterPresenter(SearchPanelInterface view) {
-        if (view == null) {
-            throw new IllegalArgumentException("View cannot be null");
+    public CustomTimeFilterPresenter(CustomTimeFilterViewModel viewModel) {
+        if (viewModel == null) {
+            throw new IllegalArgumentException("ViewModel cannot be null");
         }
-        this.view = view;
+        this.viewModel = viewModel;
     }
 
     @Override
     public void presentResults(CustomTimeFilterOutputData outputData) {
-        if (outputData == null || outputData.getResults() == null) {
+        if (outputData == null || outputData.getResults() == null || outputData.getResults().isEmpty()) {
             presentNoResults();
             return;
         }
@@ -32,11 +32,9 @@ public class CustomTimeFilterPresenter implements CustomTimeFilterOutputBoundary
         List<SearchResultViewModel> viewModels = new ArrayList<>();
 
         for (CustomTimeFilterOutputData.ResultItem item : outputData.getResults()) {
-            // term and hasAvailableSections are not provided in this use case,
-            // so we can fill them with reasonable placeholder values.
             String courseCode = item.getCourseCode();
             String courseName = item.getCourseName();
-            String term = "";              // or "N/A"
+            String term = "";
             boolean hasAvailableSections = true;
 
             viewModels.add(new SearchResultViewModel(
@@ -47,17 +45,21 @@ public class CustomTimeFilterPresenter implements CustomTimeFilterOutputBoundary
             ));
         }
 
-        view.displaySearchResults(viewModels);
+        viewModel.setResults(viewModels);
+        viewModel.setNoResults(false);
+        viewModel.setErrorMessage(null);
     }
 
     @Override
     public void presentNoResults() {
-        view.clearResults();
-        view.showNoResultsMessage();
+        viewModel.setResults(Collections.emptyList());
+        viewModel.setNoResults(true);
+        viewModel.setErrorMessage(null);
     }
 
     @Override
     public void presentError(String errorMessage) {
-        view.showError(errorMessage);
+        viewModel.setErrorMessage(errorMessage);
+        viewModel.setNoResults(false);
     }
 }

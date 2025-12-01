@@ -16,6 +16,7 @@ import interface_adapter.controller.ViewCourseController;
 import interface_adapter.presenter.AddCoursePresenter;
 import interface_adapter.presenter.SearchCoursePresenter;
 import interface_adapter.presenter.DeleteSectionPresenter;
+import interface_adapter.customtimefilter.CustomTimeFilterViewModel;
 import view.SearchPanelAdapter;
 import usecase.calculatewalkingtime.CalculateWalkingDataAccessInterface;
 import usecase.calculatewalkingtime.CalculateWalkingInputBoundary;
@@ -27,6 +28,8 @@ import view.TimetableViewAdapter;
 import interface_adapter.presenter.TimetableViewInterface;
 import interface_adapter.presenter.ViewCoursePresenter;
 import interface_adapter.viewmodel.ViewCourseViewModel;
+import interface_adapter.viewmodel.SearchResultViewModel;
+import java.util.List;
 import usecase.addcourse.AddCourseInputBoundary;
 import usecase.addcourse.AddCourseInteractor;
 import usecase.addcourse.AddCourseOutputBoundary;
@@ -144,13 +147,40 @@ public class Main {
                                 JOptionPane.ERROR_MESSAGE);
                     }
                 });
+                //CustomTimeFilter
+                CustomTimeFilterViewModel customTimeFilterViewModel = new CustomTimeFilterViewModel();
+                // Listen for changes in the CustomTimeFilterViewModel and update the SearchPanel through its adapter
+                customTimeFilterViewModel.addPropertyChangeListener(evt -> {
+                    String property = evt.getPropertyName();
+
+                    if (CustomTimeFilterViewModel.PROPERTY_RESULTS.equals(property)) {
+                        // New filtered results available → update the SearchPanel with these results
+                        List<SearchResultViewModel> results = customTimeFilterViewModel.getResults();
+                        searchViewAdapter.displaySearchResults(results);
+
+                    } else if (CustomTimeFilterViewModel.PROPERTY_NO_RESULTS.equals(property)) {
+                        // The presenter indicates that no results were found
+                        if (customTimeFilterViewModel.isNoResults()) {
+                            searchViewAdapter.clearResults();
+                            searchViewAdapter.showNoResultsMessage();
+                        }
+
+                    } else if (CustomTimeFilterViewModel.PROPERTY_ERROR.equals(property)) {
+                        // An error occurred during the use case execution
+                        String error = customTimeFilterViewModel.getErrorMessage();
+                        if (error != null && !error.isEmpty()) {
+                            searchViewAdapter.showError(error);
+                        }
+                    }
+                });
+
                 // ==========================
                 // Custom Time Filter Use Case (Use Case #3)
                 // ==========================
 
                 // Create presenter
                 CustomTimeFilterPresenter customTimeFilterPresenter =
-                        new CustomTimeFilterPresenter(searchViewAdapter);
+                        new CustomTimeFilterPresenter(customTimeFilterViewModel);
 
                 // Create interactor
                 CustomTimeFilterInteractor customTimeFilterInteractor =
