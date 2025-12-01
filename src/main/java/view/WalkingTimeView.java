@@ -2,21 +2,29 @@ package view;
 
 import entity.Timetable;
 import interface_adapter.calculatewalkingtime.CalculateWalkingController;
+import interface_adapter.calculatewalkingtime.CalculateWalkingState;
+import interface_adapter.calculatewalkingtime.CalculateWalkingViewModel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
-public class WalkingTimeView extends JPanel {
+public class WalkingTimeView extends JPanel implements PropertyChangeListener {
+
 
     private CalculateWalkingController walkingController;
     private Timetable currentTimetable;
+    private CalculateWalkingViewModel viewModel;
 
     private final JTextArea walkingTimesArea = new JTextArea(12, 35);
     private final JLabel errorLabel = new JLabel();
     private final JButton calculateButton = new JButton("Calculate Walking Times");
 
-    public WalkingTimeView() {
+    public WalkingTimeView(CalculateWalkingViewModel viewModel) {
+        this.viewModel = viewModel;
+        this.viewModel.addPropertyChangeListener(this);
 
         setLayout(new BorderLayout(10, 10));
 
@@ -74,4 +82,23 @@ public class WalkingTimeView extends JPanel {
         walkingTimesArea.setText("");
         errorLabel.setText("Error: " + message);
     }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        CalculateWalkingState state = viewModel.getState();
+
+        if (state.getErrorMessage() != null && !state.getErrorMessage().isEmpty()) {
+            walkingTimesArea.setText("");
+            errorLabel.setText("Error: " + state.getErrorMessage());
+        } else {
+            errorLabel.setText("");
+            walkingTimesArea.setText(state.getWalkingTimesText());
+        }
+    }
+
+    public CalculateWalkingViewModel getViewModel() {
+        return viewModel;
+    }
+
+
 }
