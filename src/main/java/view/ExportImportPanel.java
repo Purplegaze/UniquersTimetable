@@ -2,13 +2,14 @@ package view;
 
 import interface_adapter.export.ExportTimetableController;
 import interface_adapter.export.ExportTimetableViewModel;
+import interface_adapter.importsections.ImportTimetableController;
+import interface_adapter.importsections.ImportTimetableViewModel;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-//import javax.jnlp.*;
 import java.awt.FileDialog;
 
 public class ExportImportPanel extends JPanel implements PropertyChangeListener {
@@ -16,8 +17,11 @@ public class ExportImportPanel extends JPanel implements PropertyChangeListener 
     private JButton exportButton;
     private JButton importButton;
 
-    private ExportTimetableController controller = null;
-    private ExportTimetableViewModel viewModel;
+    private ExportTimetableController exportController = null;
+    private ExportTimetableViewModel exportViewModel;
+
+    private ImportTimetableController importController;
+    private ImportTimetableViewModel importViewModel;
 
     public ExportImportPanel() {
         setLayout(new BorderLayout(10, 10));
@@ -30,43 +34,72 @@ public class ExportImportPanel extends JPanel implements PropertyChangeListener 
 
     }
 
-    public void setViewModel(ExportTimetableViewModel viewModel) {
-        if (this.viewModel != null) {
-            this.viewModel.removePropertyChangeListener(this);
+    public void setExportViewModel(ExportTimetableViewModel exportViewModel) {
+        if (this.exportViewModel != null) {
+            this.exportViewModel.removePropertyChangeListener(this);
         }
 
-        this.viewModel = viewModel;
-        viewModel.addPropertyChangeListener(this);
+        this.exportViewModel = exportViewModel;
+        exportViewModel.addPropertyChangeListener(this);
+    }
+
+    public void setImportViewModel(ImportTimetableViewModel importViewModel) {
+        if (this.importViewModel != null) {
+            this.importViewModel.removePropertyChangeListener(this);
+        }
+
+        this.importViewModel = importViewModel;
+        importViewModel.addPropertyChangeListener(this);
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case "exported":
-                announceSuccess();
+                announceExportSuccess();
+                break;
+            case "imported":
+                announceImportSuccess();
                 break;
             case "exportCancelled":
-                announceCancel();
+                announceExportCancelled();
                 break;
-            case "error":
-                handleError();
+            case "importCancelled":
+                announceImportCancelled();
+                break;
+            case "exportError":
+                handleExportError();
+                break;
+            case "importError":
+                handleImportError();
                 break;
         }
     }
 
-    private void announceSuccess() {
-        if (viewModel == null) return;
+    private void announceExportSuccess() {
+        if (exportViewModel == null) return;
 
         JOptionPane.showMessageDialog(
                 this,
-                "Successfully exported timetable to file:" + viewModel.getExportedPath(),
+                "Successfully exported timetable to file:" + exportViewModel.getExportedPath(),
                 "Export",
                 JOptionPane.INFORMATION_MESSAGE
         );
     }
 
-    private void announceCancel() {
-        if (viewModel == null) return;
+    private void announceImportSuccess() {
+        if (importViewModel == null) return;
+
+        JOptionPane.showMessageDialog(
+                this,
+                importViewModel.getImportDataString(),
+                "Import",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    private void announceExportCancelled() {
+        if (exportViewModel == null) return;
 
         JOptionPane.showMessageDialog(
                 this,
@@ -76,20 +109,42 @@ public class ExportImportPanel extends JPanel implements PropertyChangeListener 
         );
     }
 
-    private void handleError() {
-        if (viewModel == null) return;
+    private void announceImportCancelled() {
+        if (importViewModel == null) return;
 
         JOptionPane.showMessageDialog(
                 this,
-                viewModel.getErrorMessage(),
+                "Import cancelled.",
+                "Import",
+                JOptionPane.WARNING_MESSAGE
+        );
+    }
+
+    private void handleExportError() {
+        if (exportViewModel == null) return;
+
+        JOptionPane.showMessageDialog(
+                this,
+                exportViewModel.getErrorMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+        );
+    }
+
+    private void handleImportError() {
+        if (importViewModel == null) return;
+
+        JOptionPane.showMessageDialog(
+                this,
+                importViewModel.getErrorMessage(),
                 "Error",
                 JOptionPane.ERROR_MESSAGE
         );
     }
 
     private void initializeComponents() {
-        exportButton = new JButton("Export");
-        importButton = new JButton("Import");
+        exportButton = new JButton("Export as JSON");
+        importButton = new JButton("Import from JSON");
     }
 
     private void layoutComponents() {
@@ -99,26 +154,41 @@ public class ExportImportPanel extends JPanel implements PropertyChangeListener 
 
     private void setupEventHandlers() {
         exportButton.addActionListener(e -> onExportButtonClicked());
-        // importButton.addActionListener(e -> onImportButtonClicked());
+        importButton.addActionListener(e -> onImportButtonClicked());
 
     }
 
     private void onExportButtonClicked() {
         try {
-            if (controller == null) {
+            if (exportController == null) {
                 throw new NullPointerException("Controller is null");
             }
 
-            String path = runFileDialog();
-            controller.exportTimetable(path);
+            String path = runSaveFileDialog();
+            exportController.exportTimetable(path);
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
     }
 
+    private void onImportButtonClicked() {
+        try {
+            if (importController == null) {
+                throw new NullPointerException("Controller is null");
+            }
+
+            String path = runOpenFileDialog();
+            importController.importTimetable(path);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
     @Nullable
-    private String runFileDialog() {
+    private String runSaveFileDialog() {
         FileDialog fileDialog = new FileDialog((Frame) SwingUtilities.getWindowAncestor(this), "Save", FileDialog.SAVE);
         String currentDirectory = System.getProperty("user.dir");
         fileDialog.setDirectory(currentDirectory);
@@ -129,10 +199,26 @@ public class ExportImportPanel extends JPanel implements PropertyChangeListener 
         } else {
             return fileDialog.getDirectory() + fileDialog.getFile();
         }
-
     }
 
-    public void setController(ExportTimetableController controller) {
-        this.controller = controller;
+    @Nullable
+    private String runOpenFileDialog() {
+        FileDialog fileDialog = new FileDialog((Frame) SwingUtilities.getWindowAncestor(this), "Open", FileDialog.LOAD);
+        String currentDirectory = System.getProperty("user.dir");
+        fileDialog.setDirectory(currentDirectory);
+        fileDialog.setVisible(true);
+        if (fileDialog.getFile() == null) {
+            return null;
+        } else {
+            return fileDialog.getDirectory() + fileDialog.getFile();
+        }
+    }
+
+    public void setExportController(ExportTimetableController exportController) {
+        this.exportController = exportController;
+    }
+
+    public void setImportController(ImportTimetableController importController) {
+        this.importController = importController;
     }
 }
