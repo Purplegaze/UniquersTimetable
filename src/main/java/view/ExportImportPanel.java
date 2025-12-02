@@ -2,6 +2,7 @@ package view;
 
 import interface_adapter.export.ExportTimetableController;
 import interface_adapter.export.ExportTimetableViewModel;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -123,22 +124,27 @@ public class ExportImportPanel extends JPanel implements PropertyChangeListener 
                 throw new NullPointerException("Controller is null");
             }
 
-            FileDialog fileDialog = new FileDialog((Frame) SwingUtilities.getWindowAncestor(this), "Save", FileDialog.SAVE);
-            String currentDirectory = System.getProperty("user.dir");
-            fileDialog.setDirectory(currentDirectory);
-            fileDialog.setFile(currentDirectory + "\\" + "courseExport.json");
-            fileDialog.setVisible(true);
-            String path;
-            if (fileDialog.getFile() == null) {
-                path = null;
-            } else {
-                path = fileDialog.getDirectory() + fileDialog.getFile();
-            }
+            String path = runFileDialog();
             controller.ExportTimetable(path);
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
+    }
+
+    @Nullable
+    private String runFileDialog() {
+        FileDialog fileDialog = new FileDialog((Frame) SwingUtilities.getWindowAncestor(this), "Save", FileDialog.SAVE);
+        String currentDirectory = System.getProperty("user.dir");
+        fileDialog.setDirectory(currentDirectory);
+        fileDialog.setFile(currentDirectory + "\\" + "courseExport.json");
+        fileDialog.setVisible(true);
+        if (fileDialog.getFile() == null) {
+            return null;
+        } else {
+            return fileDialog.getDirectory() + fileDialog.getFile();
+        }
+
     }
 
     public void setController(ExportTimetableController controller) {
