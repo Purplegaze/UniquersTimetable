@@ -5,16 +5,15 @@ import entity.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalTime;
-import java.util.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CalculateWalkingInteractorTest {
 
+    // This is now unused but harmless to keep
     private static class FakeTimetableDAO implements TimetableDataAccessInterface {
         private final Timetable timetable;
 
@@ -54,7 +53,6 @@ class CalculateWalkingInteractorTest {
 
     @Test
     void nullNextBuildingTest() {
-
         Building ba = new Building("BA", "Address", 0, 0);
         Building nullBuilding = new Building(null, "Nowhere", 0, 0);
 
@@ -69,7 +67,6 @@ class CalculateWalkingInteractorTest {
         tt.addSectionOfNewCourse(new Section("S2", List.of(t2), 0,new ArrayList<>(),100,c2));
 
         FakeWalkingDAO walkingDAO = new FakeWalkingDAO(99);
-        FakeTimetableDAO timetableDAO = new FakeTimetableDAO(tt);
 
         CalculateWalkingOutputBoundary presenter = new CalculateWalkingOutputBoundary() {
             @Override public void prepareSuccessView(CalculateWalkingOutputData data) {
@@ -80,14 +77,14 @@ class CalculateWalkingInteractorTest {
             }
         };
 
-        new CalculateWalkingInteractor(walkingDAO, timetableDAO, presenter)
-                .execute();
+        CalculateWalkingInteractor interactor =
+                new CalculateWalkingInteractor(walkingDAO, presenter);
+        interactor.execute(new CalculateWalkingInputData(tt));
     }
 
 
     @Test
     void nullToBuildingCodeTest() {
-
         Building ba = new Building("BA", "Address", 0, 0);
         Building nullBuilding = new Building(null, "Unknown", 0, 0);
 
@@ -102,7 +99,6 @@ class CalculateWalkingInteractorTest {
         tt.addSectionOfNewCourse(new Section("L2", List.of(t2), 0,new ArrayList<>(),100,c2));
 
         FakeWalkingDAO walkingDAO = new FakeWalkingDAO(99);
-        FakeTimetableDAO timetableDAO = new FakeTimetableDAO(tt);
 
         CalculateWalkingOutputBoundary presenter = new CalculateWalkingOutputBoundary() {
             @Override public void prepareSuccessView(CalculateWalkingOutputData data) {
@@ -113,15 +109,14 @@ class CalculateWalkingInteractorTest {
             }
         };
 
-        new CalculateWalkingInteractor(walkingDAO, timetableDAO, presenter)
-                .execute();
+        CalculateWalkingInteractor interactor =
+                new CalculateWalkingInteractor(walkingDAO, presenter);
+        interactor.execute(new CalculateWalkingInputData(tt));
     }
 
 
     @Test
     void successTest() {
-
-        // create timetable with a back to back time pair
         Building ba = new Building("BA", "Address", 0.0, 0.0);
         Building ss = new Building("SS", "Address", 0.0, 0.0);
 
@@ -136,26 +131,25 @@ class CalculateWalkingInteractorTest {
         timetable.addSectionOfNewCourse(new Section("L0201", List.of(ts2), 0,new ArrayList<>(),100,c2));
 
         FakeWalkingDAO walkingDAO = new FakeWalkingDAO(12.3);
-        FakeTimetableDAO timetableDAO = new FakeTimetableDAO(timetable);
 
         CalculateWalkingOutputBoundary presenter = new CalculateWalkingOutputBoundary() {
             @Override public void prepareSuccessView(CalculateWalkingOutputData data) {
                 assertEquals(1, data.getWalkingTimes().size());
-                assertTrue(data.getWalkingTimes().values().contains(12)); // rounded down
+                assertTrue(data.getWalkingTimes().values().contains(12)); // rounded
             }
             @Override public void prepareFailView(String error) {
                 fail("Unexpected failure: " + error);
             }
         };
 
-        new CalculateWalkingInteractor(walkingDAO, timetableDAO, presenter)
-                .execute();
+        CalculateWalkingInteractor interactor =
+                new CalculateWalkingInteractor(walkingDAO, presenter);
+        interactor.execute(new CalculateWalkingInputData(timetable));
     }
 
 
     @Test
     void roundingUpTest() {
-
         Building ba = new Building("BA", "Address", 0, 0);
         Building ss = new Building("SS", "Address", 0, 0);
 
@@ -170,7 +164,6 @@ class CalculateWalkingInteractorTest {
         tt.addSectionOfNewCourse(new Section("S2", List.of(t2), 0,new ArrayList<>(),100,c2));
 
         FakeWalkingDAO walkingDAO = new FakeWalkingDAO(12.6);
-        FakeTimetableDAO timetableDAO = new FakeTimetableDAO(tt);
 
         CalculateWalkingOutputBoundary presenter = new CalculateWalkingOutputBoundary() {
             @Override public void prepareSuccessView(CalculateWalkingOutputData data) {
@@ -181,14 +174,14 @@ class CalculateWalkingInteractorTest {
             }
         };
 
-        new CalculateWalkingInteractor(walkingDAO, timetableDAO, presenter)
-                .execute();
+        CalculateWalkingInteractor interactor =
+                new CalculateWalkingInteractor(walkingDAO, presenter);
+        interactor.execute(new CalculateWalkingInputData(tt));
     }
 
 
     @Test
     void successTbdBuildingTest() {
-
         Building tbd = new Building("TBD", "Unknown", 0, 0);
         Building ba = new Building("BA", "Address", 0, 0);
 
@@ -203,7 +196,6 @@ class CalculateWalkingInteractorTest {
         timetable.addSectionOfNewCourse(new Section("B", List.of(t2), 0,new ArrayList<>(),100,c2));
 
         FakeWalkingDAO walkingDAO = new FakeWalkingDAO(10);
-        FakeTimetableDAO timetableDAO = new FakeTimetableDAO(timetable);
 
         CalculateWalkingOutputBoundary presenter = new CalculateWalkingOutputBoundary() {
             @Override public void prepareSuccessView(CalculateWalkingOutputData data) {
@@ -214,16 +206,15 @@ class CalculateWalkingInteractorTest {
             }
         };
 
-        new CalculateWalkingInteractor(walkingDAO, timetableDAO, presenter)
-                .execute();
+        CalculateWalkingInteractor interactor =
+                new CalculateWalkingInteractor(walkingDAO, presenter);
+        interactor.execute(new CalculateWalkingInputData(timetable));
     }
 
 
     @Test
     void failureNoTimetableTest() {
-
         FakeWalkingDAO walkingDAO = new FakeWalkingDAO(0);
-        FakeTimetableDAO timetableDAO = new FakeTimetableDAO(null);
 
         CalculateWalkingOutputBoundary presenter = new CalculateWalkingOutputBoundary() {
             @Override public void prepareSuccessView(CalculateWalkingOutputData data) {
@@ -234,14 +225,14 @@ class CalculateWalkingInteractorTest {
             }
         };
 
-        new CalculateWalkingInteractor(walkingDAO, timetableDAO, presenter)
-                .execute();
+        CalculateWalkingInteractor interactor =
+                new CalculateWalkingInteractor(walkingDAO, presenter);
+        interactor.execute(new CalculateWalkingInputData(null));
     }
 
 
     @Test
     void failureNoBackToBackTest() {
-
         Building ba = new Building("BA", "Address", 0.0, 0.0);
 
         Course c1 = new Course("BIO120", "Bio", "", 0.5f, "F", new ArrayList<>(), ba, 0);
@@ -254,7 +245,6 @@ class CalculateWalkingInteractorTest {
         timetable.addSectionOfNewCourse(s1);
 
         FakeWalkingDAO walkingDAO = new FakeWalkingDAO(999);
-        FakeTimetableDAO timetableDAO = new FakeTimetableDAO(timetable);
 
         CalculateWalkingOutputBoundary presenter = new CalculateWalkingOutputBoundary() {
             @Override public void prepareSuccessView(CalculateWalkingOutputData data) {
@@ -265,7 +255,8 @@ class CalculateWalkingInteractorTest {
             }
         };
 
-        new CalculateWalkingInteractor(walkingDAO, timetableDAO, presenter)
-                .execute();
+        CalculateWalkingInteractor interactor =
+                new CalculateWalkingInteractor(walkingDAO, presenter);
+        interactor.execute(new CalculateWalkingInputData(timetable));
     }
 }
