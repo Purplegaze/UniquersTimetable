@@ -24,6 +24,7 @@ import interface_adapter.viewcourse.ViewCourseViewModel;
 import interface_adapter.search.SearchViewModel;
 import interface_adapter.addcourse.AddCourseViewModel;
 import interface_adapter.deletesection.DeleteSectionViewModel;
+import view.TimetableClickListener;
 
 import usecase.calculatewalkingtime.CalculateWalkingDataAccessInterface;
 import usecase.calculatewalkingtime.CalculateWalkingInputBoundary;
@@ -55,6 +56,11 @@ import javax.swing.*;
 import view.WalkingTimeView;
 import view.WalkingTimeViewAdapter;
 import data_access.WalkingTimeDataAccessObject;
+import interface_adapter.customtimefilter.CustomTimeFilterController;
+import interface_adapter.customtimefilter.CustomTimeFilterPresenter;
+import usecase.customtimefilter.CustomTimeFilterInputBoundary;
+import usecase.customtimefilter.CustomTimeFilterInteractor;
+import usecase.customtimefilter.CustomTimeFilterOutputBoundary;
 
 /**
  * Main entry point for the Timetable Application.
@@ -115,6 +121,23 @@ public class Main {
                 CalculateWalkingDataAccessInterface walkingDataAccess = new WalkingTimeDataAccessObject();
                 CalculateWalkingInputBoundary walkingInteractor =
                         new CalculateWalkingInteractor(walkingDataAccess, walkingPresenter);
+                // Custom Time Filter use case (Use Case #3)
+                CustomTimeFilterOutputBoundary customTimeFilterPresenter =
+                        new CustomTimeFilterPresenter(searchViewModel);
+
+                CustomTimeFilterInputBoundary customTimeFilterInteractor =
+                        new CustomTimeFilterInteractor(courseDataAccess, customTimeFilterPresenter);
+
+                CustomTimeFilterController customTimeFilterController =
+                        new CustomTimeFilterController(customTimeFilterInteractor);
+                timetableView.setClickListener(new TimetableClickListener() {
+                    @Override
+                    public void onEmptySlotClicked(String day, String startTime, String endTime) {
+                        // For now, we don’t combine with a text query – just use an empty query string.
+                        String query = "";
+                        customTimeFilterController.execute(query, day, startTime, endTime);
+                    }
+                });
 
 
                 // Interactor for ViewCourse, injecting the rating reader
@@ -130,6 +153,7 @@ public class Main {
 
                 searchPanel.setController(searchCourseController);
                 searchPanel.setViewModel(searchViewModel);
+                searchPanel.setCustomTimeFilterController(customTimeFilterController);
                 timetableView.setDeleteController(deleteSectionController);
                 walkingTimeView.setWalkingController(walkingController);
                 walkingTimeView.setTimetable(timetableDataAccess.getTimetable());

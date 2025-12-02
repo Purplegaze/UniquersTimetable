@@ -37,6 +37,11 @@ public class TimetableView extends JPanel {
         public Color getColor() { return color; }
         public boolean hasConflict() { return hasConflict; }
     }
+    private TimetableClickListener listener;
+
+    public void setClickListener(TimetableClickListener listener) {
+        this.listener = listener;
+    }
 
     private static final int START_TIME = 9;
     private static final int END_TIME = 21;
@@ -340,12 +345,28 @@ public class TimetableView extends JPanel {
                 String key = day + "-" + hour;
                 slotPanels.put(key, slot);
 
+                // Add click handler for empty-slot detection
+                int finalHour = hour;      // Needed because lambda requires effectively-final variables
+                String finalDay = day;     // Capture the day as well
+
+                slot.addMouseListener(new java.awt.event.MouseAdapter() {
+                    @Override
+                    public void mouseClicked(java.awt.event.MouseEvent e) {
+                        // Empty slot = no course mapped to this key
+                        boolean slotIsEmpty = !slotCourseKeys.containsKey(key);
+
+                        if (listener != null && slotIsEmpty) {
+                            String startTime = String.format("%02d:00", finalHour);
+                            String endTime   = String.format("%02d:00", finalHour + 1);
+                            listener.onEmptySlotClicked(finalDay, startTime, endTime);
+                        }
+                    }
+                });
+
                 gridPanel.add(slot);
             }
         }
 
         add(headerContainer, BorderLayout.NORTH);
         add(timePanel, BorderLayout.WEST);
-        add(gridPanel, BorderLayout.CENTER);
-    }
-}
+        add(gridPanel, BorderLayout.CENTER);}}
