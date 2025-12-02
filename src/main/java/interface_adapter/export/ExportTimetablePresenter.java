@@ -1,6 +1,5 @@
 package interface_adapter.export;
 
-import interface_adapter.deletesection.DeleteSectionViewModel;
 import usecase.export.ExportTimetableOutputBoundary;
 import usecase.export.ExportTimetableOutputData;
 
