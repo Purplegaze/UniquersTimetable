@@ -119,23 +119,13 @@ public class ExportImportPanel extends JPanel implements PropertyChangeListener 
 
     private void onExportButtonClicked() {
         try {
-//            controller.ExportTimetable();
-//            File tempFile = new File("./testExport.json");
-//            if (tempFile.exists()) {
-//                InputStream fis = new FileInputStream(tempFile);
-//
-//            }
-
             if (controller == null) {
                 throw new NullPointerException("Controller is null");
             }
 
             FileDialog fileDialog = new FileDialog((Frame) SwingUtilities.getWindowAncestor(this), "Save", FileDialog.SAVE);
             String currentDirectory = System.getProperty("user.dir");
-            //System.out.println(currentDirectory);
             fileDialog.setDirectory(currentDirectory);
-            //FilenameFilter jsonFilter = new ExtensionFilenameFilter("json"); // Implementation doesn't work on Windows.
-            //fileDialog.setFilenameFilter(jsonFilter);
             fileDialog.setFile(currentDirectory + "\\" + "courseExport.json");
             fileDialog.setVisible(true);
             String path;
