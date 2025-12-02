@@ -208,7 +208,6 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
 
         JPanel centerPanel = new JPanel(new BorderLayout(5, 10));
         // A new panel to stack search bar + time filter vertically
-        JPanel topPanel = new JPanel();
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
 
         topPanel.add(searchBarPanel);
