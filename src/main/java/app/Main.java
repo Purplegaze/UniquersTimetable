@@ -7,7 +7,6 @@ import data_access.JSONCourseDataAccess;
 import data_access.TimetableDataAccessInterface;
 import entity.Course;
 import interface_adapter.calculatewalkingtime.CalculateWalkingController;
-import interface_adapter.calculatewalkingtime.CalculateWalkingInterface;
 import interface_adapter.calculatewalkingtime.CalculateWalkingPresenter;
 
 import interface_adapter.addcourse.AddCourseController;
@@ -54,7 +53,7 @@ import view.TimetableView;
 import javax.swing.*;
 
 import view.WalkingTimeView;
-import view.WalkingTimeViewAdapter;
+//import view.WalkingTimeViewAdapter;
 import data_access.WalkingTimeDataAccessObject;
 import interface_adapter.customtimefilter.CustomTimeFilterController;
 import interface_adapter.customtimefilter.CustomTimeFilterPresenter;
@@ -68,10 +67,17 @@ import interface_adapter.returntosearch.ReturnToSearchPresenter;
 import usecase.returntosearch.ReturnToSearchInputBoundary;
 import usecase.returntosearch.ReturnToSearchInteractor;
 import usecase.returntosearch.ReturnToSearchOutputBoundary;
+import interface_adapter.filter_courses.FilterCoursesController;
+import interface_adapter.filter_courses.FilterCoursesPresenter;
+import interface_adapter.filter_courses.FilterCoursesViewModel;
+
+import usecase.filter_courses.FilterCoursesInputBoundary;
+import usecase.filter_courses.FilterCoursesInteractor;
+import usecase.filter_courses.FilterCoursesOutputBoundary;
 
 /**
  * Main entry point for the Timetable Application.
- * <p>
+ *
  * This is the Composition Root: wires all layers together
  * - Creates all components
  * - Wires dependencies
@@ -96,6 +102,14 @@ public class Main {
                 AddCourseViewModel addCourseViewModel = new AddCourseViewModel();
                 DeleteSectionViewModel deleteSectionViewModel = new DeleteSectionViewModel();
 
+                FilterCoursesViewModel filterCoursesViewModel = new FilterCoursesViewModel();
+                FilterCoursesOutputBoundary filterCoursesPresenter =
+                        new FilterCoursesPresenter(searchViewModel);
+                FilterCoursesInputBoundary filterCoursesInteractor =
+                        new FilterCoursesInteractor(courseDataAccess.getAllCourses(), filterCoursesPresenter);
+                FilterCoursesController filterCoursesController =
+                        new FilterCoursesController(filterCoursesInteractor);
+
                 // Create UI views
                 MainView mainView = new MainView();
                 TimetableView timetableView = mainView.getTimetableView();
@@ -103,16 +117,13 @@ public class Main {
                 timetableView.setDeleteSectionViewModel(deleteSectionViewModel);
 
                 SearchPanel searchPanel = mainView.getSearchPanel();
-
                 WalkingTimeView walkingTimeView = mainView.getWalkingTimeView();
 
-                CalculateWalkingInterface walkingViewAdapter = new WalkingTimeViewAdapter(walkingTimeView);
-
                 // Create presenters
+
                 AddCourseOutputBoundary addCoursePresenter = new AddCoursePresenter(addCourseViewModel);
                 SearchCourseOutputBoundary searchCoursePresenter = new SearchCoursePresenter(searchViewModel);
                 DeleteSectionOutputBoundary deleteSectionPresenter = new DeleteSectionPresenter(deleteSectionViewModel);
-                CalculateWalkingOutputBoundary walkingPresenter = new CalculateWalkingPresenter(walkingViewAdapter);
 
                 // View Model and Presenter for ViewCourse Use Case
                 ViewCourseViewModel viewCourseViewModel = new ViewCourseViewModel();
@@ -125,9 +136,7 @@ public class Main {
                         new SearchCourseInteractor(courseDataAccess, searchCoursePresenter);
                 DeleteSectionInputBoundary deleteCourseInteractor =
                         new DeleteSectionInteractor(timetableDataAccess, deleteSectionPresenter);
-                CalculateWalkingDataAccessInterface walkingDataAccess = new WalkingTimeDataAccessObject();
-                CalculateWalkingInputBoundary walkingInteractor =
-                        new CalculateWalkingInteractor(walkingDataAccess, walkingPresenter);
+           
                 // Custom Time Filter use case (Use Case #3)
                 CustomTimeFilterOutputBoundary customTimeFilterPresenter =
                         new CustomTimeFilterPresenter(searchViewModel);
@@ -167,14 +176,26 @@ public class Main {
                 SearchCourseController searchCourseController = new SearchCourseController(searchCourseInteractor);
                 DeleteSectionController deleteSectionController = new DeleteSectionController(deleteCourseInteractor);
                 ViewCourseController viewCourseController = new ViewCourseController(viewCourseInteractor);
-                CalculateWalkingController walkingController = new CalculateWalkingController(walkingInteractor);
+                timetableView.setDeleteController(deleteSectionController);
+
+                // Wiring for Calculate Walking Use Case
+                CalculateWalkingDataAccessInterface walkingDataAccess = new WalkingTimeDataAccessObject();
+
+                CalculateWalkingOutputBoundary walkingPresenter =
+                        new CalculateWalkingPresenter(walkingTimeView.getViewModel());
+
+                CalculateWalkingInputBoundary walkingInteractor =
+                        new CalculateWalkingInteractor(walkingDataAccess, timetableDataAccess, walkingPresenter);
+
+                CalculateWalkingController walkingController =
+                        new CalculateWalkingController(walkingInteractor);
 
                 searchPanel.setController(searchCourseController);
                 searchPanel.setViewModel(searchViewModel);
+                searchPanel.setFilterController(filterCoursesController);
                 searchPanel.setCustomTimeFilterController(customTimeFilterController);
                 timetableView.setDeleteController(deleteSectionController);
                 walkingTimeView.setWalkingController(walkingController);
-                walkingTimeView.setTimetable(timetableDataAccess.getTimetable());
 
                 // Observe ViewModel to display SectionView when a course is loaded with ratings
                 viewCourseViewModel.addPropertyChangeListener(evt -> {
@@ -202,7 +223,7 @@ public class Main {
 
                         if (courseCode != null) {
                             viewCourseController.execute(courseCode);
-                            walkingTimeView.setTimetable(timetableDataAccess.getTimetable());
+                            
                         }
                     }
                 });

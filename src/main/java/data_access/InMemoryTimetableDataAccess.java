@@ -1,6 +1,7 @@
 package data_access;
 
 import entity.*;
+import usecase.calculatewalkingtime.CalculateWalkingInputBoundary;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,9 @@ import java.util.List;
  * In-memory implementation of TimetableDataAccessInterface.
  * Stores the current working timetable in memory.
  */
-public class InMemoryTimetableDataAccess implements TimetableDataAccessInterface {
+public class InMemoryTimetableDataAccess
+        implements TimetableDataAccessInterface {
+
 
     private final Timetable timetable;
 
