@@ -1,22 +1,28 @@
 package view;
 
-import entity.Timetable;
 import interface_adapter.calculatewalkingtime.CalculateWalkingController;
+import interface_adapter.calculatewalkingtime.CalculateWalkingState;
+import interface_adapter.calculatewalkingtime.CalculateWalkingViewModel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
-public class WalkingTimeView extends JPanel {
+public class WalkingTimeView extends JPanel implements PropertyChangeListener {
+
 
     private CalculateWalkingController walkingController;
-    private Timetable currentTimetable;
+    private final CalculateWalkingViewModel viewModel;
 
     private final JTextArea walkingTimesArea = new JTextArea(12, 35);
     private final JLabel errorLabel = new JLabel();
     private final JButton calculateButton = new JButton("Calculate Walking Times");
 
-    public WalkingTimeView() {
+    public WalkingTimeView(CalculateWalkingViewModel viewModel) {
+        this.viewModel = viewModel;
+        this.viewModel.addPropertyChangeListener(this);
 
         setLayout(new BorderLayout(10, 10));
 
@@ -46,23 +52,13 @@ public class WalkingTimeView extends JPanel {
         this.walkingController = controller;
     }
 
-    /** Called by main to update timetable when user adds/drops classes */
-    public void setTimetable(Timetable timetable) {
-        this.currentTimetable = timetable;
-    }
-
     private void handleCalculateClicked(ActionEvent e) {
         if (walkingController == null) {
-            showErrorMessage("Internal error: No controller is connected.");
+            showErrorMessage("Internal error: No controller connected.");
             return;
         }
 
-        if (currentTimetable == null || currentTimetable.getCourses().isEmpty()) {
-            showErrorMessage("Error No timetable found. Add courses first.");
-            return;
-        }
-
-        walkingController.execute(currentTimetable);
+        walkingController.execute();
     }
 
     public void displayWalkingTimes(String text) {
@@ -73,5 +69,20 @@ public class WalkingTimeView extends JPanel {
     public void showErrorMessage(String message) {
         walkingTimesArea.setText("");
         errorLabel.setText("Error: " + message);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        CalculateWalkingState state = viewModel.getState();
+
+        if (state.getErrorMessage() != null && !state.getErrorMessage().isEmpty()) {
+            showErrorMessage(state.getErrorMessage());
+        } else {
+            displayWalkingTimes(state.getWalkingTimesText());
+        }
+    }
+
+    public CalculateWalkingViewModel getViewModel() {
+        return viewModel;
     }
 }

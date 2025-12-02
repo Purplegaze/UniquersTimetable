@@ -4,6 +4,7 @@ import interface_adapter.filter_courses.FilterCoursesController;
 import interface_adapter.search.SearchCourseController;
 import interface_adapter.search.SearchViewModel;
 import interface_adapter.search.SearchViewModel.SearchResult;
+import interface_adapter.customtimefilter.CustomTimeFilterController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,6 +19,21 @@ import java.util.List;
  */
 public class SearchPanel extends JPanel implements PropertyChangeListener {
 
+    // ==================== Listener Interface ====================
+
+    /**
+     * Interface for handling user actions from this panel.
+     * The controller implements this.
+     */
+    public interface SearchPanelListener {
+        void onSearchRequested(String query);
+        void onCustomTimeFilterRequested(String query,
+                                         String dayOfWeek,
+                                         String startTime,
+                                         String endTime);
+        void onResultSelected(String resultId);
+    }
+
     // ==================== UI Components ====================
 
     private JTextField searchField;
@@ -25,11 +41,18 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
     private JComboBox<String> breadthCombo;
     private JList<String> resultsList;
     private DefaultListModel<String> listModel;
+    //  components for custom time filter
+    private JComboBox<String> dayComboBox;
+    private JTextField startTimeField;
+    private JTextField endTimeField;
+    private JButton timeFilterButton;
 
     private List<SearchResult> currentResults = new ArrayList<>();
     private SearchCourseController controller;
     private FilterCoursesController filterController;
     private SearchViewModel viewModel;
+    private SearchPanelListener listener;
+    private CustomTimeFilterController customTimeFilterController;
 
     public SearchPanel() {
         setLayout(new BorderLayout(10, 10));
@@ -56,6 +79,12 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
 
         this.viewModel = viewModel;
         viewModel.addPropertyChangeListener(this);
+    }
+    public void setCustomTimeFilterController(CustomTimeFilterController customTimeFilterController) {
+        this.customTimeFilterController = customTimeFilterController;
+    }
+    public void setListener(SearchPanelListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -117,6 +146,19 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
         resultsList = new JList<>(listModel);
         resultsList.setFont(new Font("Arial", Font.PLAIN, 13));
         resultsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
+        dayComboBox = new JComboBox<>(days);
+        dayComboBox.setFont(new Font("Arial", Font.PLAIN, 12));
+
+        startTimeField = new JTextField("13:00");  // default example
+        startTimeField.setFont(new Font("Arial", Font.PLAIN, 12));
+
+        endTimeField = new JTextField("14:00");
+        endTimeField.setFont(new Font("Arial", Font.PLAIN, 12));
+
+        timeFilterButton = new JButton("Filter by Time");
+        timeFilterButton.setFont(new Font("Arial", Font.BOLD, 12));
     }
 
     private void layoutComponents() {
@@ -136,6 +178,24 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
         JPanel topPanel = new JPanel(new BorderLayout(5, 5));
         topPanel.add(searchBarPanel, BorderLayout.NORTH);
         topPanel.add(breadthPanel, BorderLayout.SOUTH);
+        // === New time filter panel ===
+        JPanel timeFilterPanel = new JPanel(new GridLayout(2, 2, 5, 5));
+
+        // First row — day + start
+        timeFilterPanel.add(new JLabel("Day:"));
+        timeFilterPanel.add(dayComboBox);
+
+        // Second row — start + end time fields
+        JPanel timeInputs = new JPanel(new GridLayout(1, 2, 5, 5));
+        timeInputs.add(startTimeField);
+        timeInputs.add(endTimeField);
+
+        timeFilterPanel.add(new JLabel("Time Range:"));
+        timeFilterPanel.add(timeInputs);
+
+        // Add time filter button below
+        JPanel timeFilterButtonPanel = new JPanel(new BorderLayout());
+        timeFilterButtonPanel.add(timeFilterButton, BorderLayout.CENTER);
 
         JPanel resultsPanel = new JPanel(new BorderLayout(5, 5));
         JLabel resultsLabel = new JLabel("Results:");
@@ -147,6 +207,16 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
         resultsPanel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel centerPanel = new JPanel(new BorderLayout(5, 10));
+        // A new panel to stack search bar + time filter vertically
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+
+        topPanel.add(searchBarPanel);
+        topPanel.add(Box.createRigidArea(new Dimension(0, 8)));  // small spacing
+        topPanel.add(timeFilterPanel);
+        topPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        topPanel.add(timeFilterButton);
+
         centerPanel.add(topPanel, BorderLayout.NORTH);
         centerPanel.add(resultsPanel, BorderLayout.CENTER);
 
@@ -158,6 +228,8 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
         searchField.addActionListener(e -> notifySearchRequested());
         breadthCombo.addActionListener(e -> notifySearchRequested());
 
+        // New: time filter button
+        timeFilterButton.addActionListener(e -> notifyCustomTimeFilterRequested());
         resultsList.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -166,6 +238,16 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
                 }
             }
         });
+    }
+    private void notifyCustomTimeFilterRequested() {
+        if (customTimeFilterController != null) {
+            String query = searchField.getText().trim();
+            String day = (String) dayComboBox.getSelectedItem();
+            String start = startTimeField.getText().trim();
+            String end = endTimeField.getText().trim();
+
+            customTimeFilterController.execute(query, day, start, end);
+        }
     }
 
     private void notifyResultSelected() {
