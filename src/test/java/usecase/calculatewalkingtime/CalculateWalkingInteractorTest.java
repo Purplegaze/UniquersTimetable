@@ -6,6 +6,10 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalTime;
 import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -117,6 +121,7 @@ class CalculateWalkingInteractorTest {
     @Test
     void successTest() {
 
+        // create timetable with a back to back time pair
         Building ba = new Building("BA", "Address", 0.0, 0.0);
         Building ss = new Building("SS", "Address", 0.0, 0.0);
 

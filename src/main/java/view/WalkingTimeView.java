@@ -12,6 +12,7 @@ import java.beans.PropertyChangeListener;
 
 public class WalkingTimeView extends JPanel implements PropertyChangeListener {
 
+
     private CalculateWalkingController walkingController;
     private final CalculateWalkingViewModel viewModel;
 

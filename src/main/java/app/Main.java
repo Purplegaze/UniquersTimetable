@@ -57,7 +57,7 @@ import data_access.WalkingTimeDataAccessObject;
 
 /**
  * Main entry point for the Timetable Application.
- * <p>
+ *
  * This is the Composition Root: wires all layers together
  * - Creates all components
  * - Wires dependencies
