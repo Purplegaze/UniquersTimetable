@@ -30,6 +30,6 @@ public class ExportTimetableViewModel extends ViewModel {
 
     public void setError(String message) {
         this.errorMessage = message;
-        firePropertyChanged("error");
+        firePropertyChanged("exportError");
     }
 }

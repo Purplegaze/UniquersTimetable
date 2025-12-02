@@ -9,6 +9,9 @@ import interface_adapter.addcourse.AddCourseController;
 import interface_adapter.export.ExportTimetableController;
 import interface_adapter.export.ExportTimetablePresenter;
 import interface_adapter.export.ExportTimetableViewModel;
+import interface_adapter.importsections.ImportTimetableController;
+import interface_adapter.importsections.ImportTimetablePresenter;
+import interface_adapter.importsections.ImportTimetableViewModel;
 import interface_adapter.search.SearchCourseController;
 import interface_adapter.deletesection.DeleteSectionController;
 import interface_adapter.viewcourse.ViewCourseController;
@@ -26,6 +29,10 @@ import usecase.export.ExportTimetableDataAccessInterface;
 import usecase.export.ExportTimetableInputBoundary;
 import usecase.export.ExportTimetableInteractor;
 import usecase.export.ExportTimetableOutputBoundary;
+import usecase.importsections.ImportTimetableDataAccessInterface;
+import usecase.importsections.ImportTimetableInputBoundary;
+import usecase.importsections.ImportTimetableInteractor;
+import usecase.importsections.ImportTimetableOutputBoundary;
 import view.*;
 
 import usecase.calculatewalkingtime.CalculateWalkingDataAccessInterface;
@@ -90,6 +97,7 @@ public class Main {
                 CourseDataAccessInterface courseDataAccess = new JSONCourseDataAccess();
                 TimetableDataAccessInterface timetableDataAccess = new InMemoryTimetableDataAccess();
                 ExportTimetableDataAccessInterface exportDataAccess = new ExportDataAccess();
+                ImportTimetableDataAccessInterface importDataAccess = new ImportDataAccess();
 
                 // Reader for ratings
                 CourseEvalDataReader ratingReader = new CourseEvalDataReader("src/main/resources/course_eval_data.csv");
@@ -99,6 +107,7 @@ public class Main {
                 AddCourseViewModel addCourseViewModel = new AddCourseViewModel();
                 DeleteSectionViewModel deleteSectionViewModel = new DeleteSectionViewModel();
                 ExportTimetableViewModel exportTimetableViewModel = new ExportTimetableViewModel();
+                ImportTimetableViewModel importTimetableViewModel = new ImportTimetableViewModel();
 
 
                 FilterCoursesViewModel filterCoursesViewModel = new FilterCoursesViewModel();
@@ -119,7 +128,8 @@ public class Main {
                 WalkingTimeView walkingTimeView = mainView.getWalkingTimeView();
 
                 ExportImportPanel exportImportPanel = mainView.getExportImportPanel();
-                exportImportPanel.setViewModel(exportTimetableViewModel);
+                exportImportPanel.setExportViewModel(exportTimetableViewModel);
+                exportImportPanel.setImportViewModel(importTimetableViewModel);
 
                 // Create presenters
 
@@ -127,7 +137,7 @@ public class Main {
                 SearchCourseOutputBoundary searchCoursePresenter = new SearchCoursePresenter(searchViewModel);
                 DeleteSectionOutputBoundary deleteSectionPresenter = new DeleteSectionPresenter(deleteSectionViewModel);
                 ExportTimetableOutputBoundary exportPresenter = new ExportTimetablePresenter(exportTimetableViewModel);
-
+                ImportTimetableOutputBoundary importPresenter = new ImportTimetablePresenter(importTimetableViewModel, addCourseViewModel);
 
                 // View Model and Presenter for ViewCourse Use Case
                 ViewCourseViewModel viewCourseViewModel = new ViewCourseViewModel();
@@ -142,6 +152,8 @@ public class Main {
                         new DeleteSectionInteractor(timetableDataAccess, deleteSectionPresenter);
                 ExportTimetableInputBoundary exportTimetableInteractor =
                         new ExportTimetableInteractor(exportPresenter, timetableDataAccess, courseDataAccess, exportDataAccess);
+                ImportTimetableInputBoundary importTimetableInteractor =
+                        new ImportTimetableInteractor(importPresenter, timetableDataAccess, courseDataAccess, importDataAccess);
 
                 // Custom Time Filter use case (Use Case #3)
                 CustomTimeFilterOutputBoundary customTimeFilterPresenter =
@@ -184,7 +196,7 @@ public class Main {
                 ViewCourseController viewCourseController = new ViewCourseController(viewCourseInteractor);
                 timetableView.setDeleteController(deleteSectionController);
                 ExportTimetableController exportTimetableController = new ExportTimetableController(exportTimetableInteractor);
-
+                ImportTimetableController importTimetableController = new ImportTimetableController(importTimetableInteractor);
 
                 // Wiring for Calculate Walking Use Case
                 CalculateWalkingDataAccessInterface walkingDataAccess = new WalkingTimeDataAccessObject();
@@ -236,7 +248,8 @@ public class Main {
                     }
                 });
 
-                exportImportPanel.setController(exportTimetableController);
+                exportImportPanel.setExportController(exportTimetableController);
+                exportImportPanel.setImportController(importTimetableController);
 
                 searchCourseController.execute("");
                 mainView.display();
