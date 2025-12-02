@@ -105,19 +105,6 @@ public class ExportImportPanel extends JPanel implements PropertyChangeListener 
 
     }
 
-    private class ExtensionFilenameFilter implements FilenameFilter {
-        private String extension;
-        public ExtensionFilenameFilter(String extension) {
-            this.extension = extension;
-        }
-
-        @Override
-        public boolean accept(File dir, String name) {
-            return name.endsWith("." + extension);
-        }
-    }
-
-
     private void onExportButtonClicked() {
         try {
             if (controller == null) {
