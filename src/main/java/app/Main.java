@@ -24,29 +24,13 @@ import interface_adapter.viewcourse.ViewCourseViewModel;
 import interface_adapter.search.SearchViewModel;
 import interface_adapter.addcourse.AddCourseViewModel;
 import interface_adapter.deletesection.DeleteSectionViewModel;
+import view.TimetableClickListener;
 
-import interface_adapter.controller.AddCourseController;
-import interface_adapter.controller.SearchCourseController;
-import interface_adapter.controller.DeleteSectionController;
-import interface_adapter.controller.ViewCourseController;
-import interface_adapter.presenter.AddCoursePresenter;
-import interface_adapter.presenter.SearchCoursePresenter;
-import interface_adapter.presenter.DeleteSectionPresenter;
-import interface_adapter.customtimefilter.CustomTimeFilterViewModel;
-import view.SearchPanelAdapter;
 import usecase.calculatewalkingtime.CalculateWalkingDataAccessInterface;
 import usecase.calculatewalkingtime.CalculateWalkingInputBoundary;
 import usecase.calculatewalkingtime.CalculateWalkingInteractor;
 import usecase.calculatewalkingtime.CalculateWalkingOutputBoundary;
 
-import view.*;
-import interface_adapter.presenter.SearchPanelInterface;
-import view.TimetableViewAdapter;
-import interface_adapter.presenter.TimetableViewInterface;
-import interface_adapter.presenter.ViewCoursePresenter;
-import interface_adapter.viewmodel.ViewCourseViewModel;
-import interface_adapter.viewmodel.SearchResultViewModel;
-import java.util.List;
 import usecase.addcourse.AddCourseInputBoundary;
 import usecase.addcourse.AddCourseInteractor;
 import usecase.addcourse.AddCourseOutputBoundary;
@@ -66,19 +50,17 @@ import view.MainView;
 import view.SearchPanel;
 import view.SectionView;
 import view.TimetableView;
-import usecase.viewcourse.ViewCourseInputBoundary;
-import usecase.viewcourse.ViewCourseInteractor;
-import view.*;
-import view.TimetableClickListener;
-import interface_adapter.customtimefilter.CustomTimeFilterController;
-import interface_adapter.customtimefilter.CustomTimeFilterPresenter;
-import usecase.customtimefilter.CustomTimeFilterInteractor;
 
 import javax.swing.*;
 
 import view.WalkingTimeView;
 import view.WalkingTimeViewAdapter;
 import data_access.WalkingTimeDataAccessObject;
+import interface_adapter.customtimefilter.CustomTimeFilterController;
+import interface_adapter.customtimefilter.CustomTimeFilterPresenter;
+import usecase.customtimefilter.CustomTimeFilterInputBoundary;
+import usecase.customtimefilter.CustomTimeFilterInteractor;
+import usecase.customtimefilter.CustomTimeFilterOutputBoundary;
 
 /**
  * Main entry point for the Timetable Application.
@@ -140,6 +122,23 @@ public class Main {
                 CalculateWalkingDataAccessInterface walkingDataAccess = new WalkingTimeDataAccessObject();
                 CalculateWalkingInputBoundary walkingInteractor =
                         new CalculateWalkingInteractor(walkingDataAccess, walkingPresenter);
+                // Custom Time Filter use case (Use Case #3)
+                CustomTimeFilterOutputBoundary customTimeFilterPresenter =
+                        new CustomTimeFilterPresenter(searchViewModel);
+
+                CustomTimeFilterInputBoundary customTimeFilterInteractor =
+                        new CustomTimeFilterInteractor(courseDataAccess, customTimeFilterPresenter);
+
+                CustomTimeFilterController customTimeFilterController =
+                        new CustomTimeFilterController(customTimeFilterInteractor);
+                timetableView.setClickListener(new TimetableClickListener() {
+                    @Override
+                    public void onEmptySlotClicked(String day, String startTime, String endTime) {
+                        // For now, we don’t combine with a text query – just use an empty query string.
+                        String query = "";
+                        customTimeFilterController.execute(query, day, startTime, endTime);
+                    }
+                });
 
 
                 // Interactor for ViewCourse, injecting the rating reader
@@ -177,58 +176,7 @@ public class Main {
                                 JOptionPane.ERROR_MESSAGE);
                     }
                 });
-                //CustomTimeFilter
-                CustomTimeFilterViewModel customTimeFilterViewModel = new CustomTimeFilterViewModel();
-                // Listen for changes in the CustomTimeFilterViewModel and update the SearchPanel through its adapter
-                customTimeFilterViewModel.addPropertyChangeListener(evt -> {
-                    String property = evt.getPropertyName();
 
-                    if (CustomTimeFilterViewModel.PROPERTY_RESULTS.equals(property)) {
-                        // New filtered results available → update the SearchPanel with these results
-                        List<SearchResultViewModel> results = customTimeFilterViewModel.getResults();
-                        searchViewAdapter.displaySearchResults(results);
-
-                    } else if (CustomTimeFilterViewModel.PROPERTY_NO_RESULTS.equals(property)) {
-                        // The presenter indicates that no results were found
-                        if (customTimeFilterViewModel.isNoResults()) {
-                            searchViewAdapter.clearResults();
-                            searchViewAdapter.showNoResultsMessage();
-                        }
-
-                    } else if (CustomTimeFilterViewModel.PROPERTY_ERROR.equals(property)) {
-                        // An error occurred during the use case execution
-                        String error = customTimeFilterViewModel.getErrorMessage();
-                        if (error != null && !error.isEmpty()) {
-                            searchViewAdapter.showError(error);
-                        }
-                    }
-                });
-
-                // ==========================
-                // Custom Time Filter Use Case (Use Case #3)
-                // ==========================
-
-                // Create presenter
-                CustomTimeFilterPresenter customTimeFilterPresenter =
-                        new CustomTimeFilterPresenter(customTimeFilterViewModel);
-
-                // Create interactor
-                CustomTimeFilterInteractor customTimeFilterInteractor =
-                        new CustomTimeFilterInteractor(courseDataAccess, customTimeFilterPresenter);
-
-                // Create controller
-                CustomTimeFilterController customTimeFilterController =
-                        new CustomTimeFilterController(customTimeFilterInteractor);
-
-                // Wire timetable empty-slot clicks to Custom Time Filter use case
-                timetableView.setClickListener(new TimetableClickListener() {
-                    @Override
-                    public void onEmptySlotClicked(String day, String startTime, String endTime) {
-                        // Use the current search query so it combines with existing filters
-                        String query = searchPanel.getSearchQuery();
-                        customTimeFilterController.execute(query, day, startTime, endTime);
-                    }
-                });
                 // Wire UI events to controllers
                 searchPanel.setListener(new SearchPanel.SearchPanelListener() {
                     @Override
@@ -256,7 +204,6 @@ public class Main {
                                                             String dayOfWeek,
                                                             String startTime,
                                                             String endTime) {
-
                         customTimeFilterController.execute(query, dayOfWeek, startTime, endTime);
                     }
                 });
