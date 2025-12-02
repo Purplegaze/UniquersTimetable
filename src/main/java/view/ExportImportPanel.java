@@ -14,6 +14,9 @@ import java.awt.FileDialog;
 
 public class ExportImportPanel extends JPanel implements PropertyChangeListener {
 
+    private final String EXPORT_DIRECTORY = System.getProperty("user.dir");
+    private final String DEFAULT_EXPORT_NAME = "courseExport.json";
+
     private JButton exportButton;
     private JButton importButton;
 
@@ -189,10 +192,12 @@ public class ExportImportPanel extends JPanel implements PropertyChangeListener 
 
     @Nullable
     private String runSaveFileDialog() {
-        FileDialog fileDialog = new FileDialog((Frame) SwingUtilities.getWindowAncestor(this), "Save", FileDialog.SAVE);
-        String currentDirectory = System.getProperty("user.dir");
-        fileDialog.setDirectory(currentDirectory);
-        fileDialog.setFile(currentDirectory + "\\" + "courseExport.json");
+        FileDialog fileDialog = new FileDialog(
+                (Frame) SwingUtilities.getWindowAncestor(this),
+                "Save",
+                FileDialog.SAVE);
+        fileDialog.setDirectory(EXPORT_DIRECTORY);
+        fileDialog.setFile(EXPORT_DIRECTORY + "\\" + DEFAULT_EXPORT_NAME);
         fileDialog.setVisible(true);
         if (fileDialog.getFile() == null) {
             return null;
