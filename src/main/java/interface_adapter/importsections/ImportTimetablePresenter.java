@@ -9,6 +9,7 @@ import usecase.importsections.ImportTimetableOutputData;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ImportTimetablePresenter implements ImportTimetableOutputBoundary {
@@ -41,7 +42,14 @@ public class ImportTimetablePresenter implements ImportTimetableOutputBoundary {
         List<TimetableSlotViewModel> slotViewModels = new ArrayList<>();
 
         int i = 7;
+        HashMap<String, Integer> courseColours = new HashMap<>();
         for (AddCourseOutputData addCourseOutputData : outputData.getCoursesToAdd()) {
+            if (!courseColours.containsKey(addCourseOutputData.getCourseCode())) {
+                courseColours.put(addCourseOutputData.getCourseCode(), i);
+                i--;
+                if (i < 0) {i += 8;}
+            }
+            int color = courseColours.get(addCourseOutputData.getCourseCode());
             for (AddCourseOutputData.TimeSlotData timeSlotData : addCourseOutputData.getTimeSlots()) {
                 TimetableSlotViewModel slotVM = new TimetableSlotViewModel.Builder()
                         .courseCode(addCourseOutputData.getCourseCode())
@@ -50,13 +58,11 @@ public class ImportTimetablePresenter implements ImportTimetableOutputBoundary {
                         .dayName(timeSlotData.getDayName())
                         .startHour(timeSlotData.getStartHour())
                         .endHour(timeSlotData.getEndHour())
-                        .color(COLOR_PALETTE[i])
+                        .color(COLOR_PALETTE[color])
                         .hasConflict(false)  // No conflict since it was successfully added
                         .build();
                 slotViewModels.add(slotVM);
             }
-            i--;
-            if (i < 0) {i += 8;}
         }
 
 
