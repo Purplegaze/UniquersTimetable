@@ -1,5 +1,6 @@
 package usecase.calculatewalkingtime;
 
+import data_access.TimetableDataAccessInterface;
 import entity.Building;
 import entity.Timetable;
 import entity.TimetableBlock;
@@ -13,18 +14,21 @@ import java.util.Map;
  */
 public class CalculateWalkingInteractor implements CalculateWalkingInputBoundary {
 
-    private final CalculateWalkingDataAccessInterface dataAccess;
+    private final CalculateWalkingDataAccessInterface walkingDAO;
+    private final TimetableDataAccessInterface timetableDAO;
     private final CalculateWalkingOutputBoundary presenter;
 
-    public CalculateWalkingInteractor(CalculateWalkingDataAccessInterface dataAccess,
+    public CalculateWalkingInteractor(CalculateWalkingDataAccessInterface walkingDAO,
+                                      TimetableDataAccessInterface timetableDAO,
                                       CalculateWalkingOutputBoundary presenter) {
-        this.dataAccess = dataAccess;
+        this.walkingDAO = walkingDAO;
+        this.timetableDAO = timetableDAO;
         this.presenter = presenter;
     }
 
     @Override
-    public void execute(CalculateWalkingInputData inputData) {
-        Timetable timetable = inputData.getTimetable();
+    public void execute() {
+        Timetable timetable = timetableDAO.getTimetable();
 
         if (timetable == null || timetable.getBlocks().isEmpty()) {
             presenter.prepareFailView("No courses found in timetable.");
@@ -54,7 +58,8 @@ public class CalculateWalkingInteractor implements CalculateWalkingInputBoundary
                     continue;
                 }
 
-                double rawTime = dataAccess.calculateWalking(from, to);
+                double rawTime = walkingDAO.calculateWalking(from, to);
+
                 int roundedTime = (int) Math.round(rawTime);
 
                 walkingTimes.put(key, roundedTime);
@@ -66,10 +71,5 @@ public class CalculateWalkingInteractor implements CalculateWalkingInputBoundary
         } else {
             presenter.prepareSuccessView(new CalculateWalkingOutputData(walkingTimes));
         }
-
-
     }
-
-
-
 }

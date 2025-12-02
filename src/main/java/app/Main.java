@@ -7,7 +7,6 @@ import data_access.JSONCourseDataAccess;
 import data_access.TimetableDataAccessInterface;
 import entity.Course;
 import interface_adapter.calculatewalkingtime.CalculateWalkingController;
-import interface_adapter.calculatewalkingtime.CalculateWalkingInterface;
 import interface_adapter.calculatewalkingtime.CalculateWalkingPresenter;
 
 import interface_adapter.addcourse.AddCourseController;
@@ -49,9 +48,6 @@ import view.MainView;
 import view.SearchPanel;
 import view.SectionView;
 import view.TimetableView;
-import usecase.viewcourse.ViewCourseInputBoundary;
-import usecase.viewcourse.ViewCourseInteractor;
-import view.*;
 
 import javax.swing.*;
 
@@ -99,12 +95,9 @@ public class Main {
 
                 // Create presenters
 
-                CalculateWalkingOutputBoundary walkingPresenter =
-                        new CalculateWalkingPresenter(walkingTimeView.getViewModel());
                 AddCourseOutputBoundary addCoursePresenter = new AddCoursePresenter(addCourseViewModel);
                 SearchCourseOutputBoundary searchCoursePresenter = new SearchCoursePresenter(searchViewModel);
                 DeleteSectionOutputBoundary deleteSectionPresenter = new DeleteSectionPresenter(deleteSectionViewModel);
-
 
                 // View Model and Presenter for ViewCourse Use Case
                 ViewCourseViewModel viewCourseViewModel = new ViewCourseViewModel();
@@ -117,9 +110,6 @@ public class Main {
                         new SearchCourseInteractor(courseDataAccess, searchCoursePresenter);
                 DeleteSectionInputBoundary deleteCourseInteractor =
                         new DeleteSectionInteractor(timetableDataAccess, deleteSectionPresenter);
-                CalculateWalkingDataAccessInterface walkingDataAccess = new WalkingTimeDataAccessObject();
-                CalculateWalkingInputBoundary walkingInteractor =
-                        new CalculateWalkingInteractor(walkingDataAccess, walkingPresenter);
 
 
                 // Interactor for ViewCourse, injecting the rating reader
@@ -133,11 +123,20 @@ public class Main {
 
                 timetableView.setDeleteController(deleteSectionController);
 
-                CalculateWalkingController walkingController = new CalculateWalkingController(walkingInteractor);
+                // Wiring for Calculate Walking Use Case
+                CalculateWalkingDataAccessInterface walkingDataAccess = new WalkingTimeDataAccessObject();
+
+                CalculateWalkingOutputBoundary walkingPresenter =
+                        new CalculateWalkingPresenter(walkingTimeView.getViewModel());
+
+                CalculateWalkingInputBoundary walkingInteractor =
+                        new CalculateWalkingInteractor(walkingDataAccess, timetableDataAccess, walkingPresenter);
+
+                CalculateWalkingController walkingController =
+                        new CalculateWalkingController(walkingInteractor);
 
                 walkingTimeView.setWalkingController(walkingController);
 
-                walkingTimeView.setTimetable(timetableDataAccess.getTimetable());
 
                 // Controller for ViewCourse
                 ViewCourseController viewCourseController = new ViewCourseController(viewCourseInteractor);
@@ -171,7 +170,6 @@ public class Main {
 
                         if (course != null) {
                             new SectionView(course, addCourseController).display();
-                            walkingTimeView.setTimetable(timetableDataAccess.getTimetable());
                         } else {
                             JOptionPane.showMessageDialog(mainView,
                                     "Course not found: " + resultId,
