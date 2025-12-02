@@ -281,4 +281,17 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
         int idx = breadthCombo.getSelectedIndex();
         return (idx <= 0) ? null : idx;
     }
+
+    public void setSearchQuery(String query) {
+        if (searchField != null) {
+            searchField.setText(query);
+        }
+    }
+
+    public void performSearch() {
+        if (searchButton != null) {
+            searchButton.doClick();
+        }
+    }
+}
 }

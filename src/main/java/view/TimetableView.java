@@ -237,6 +237,16 @@ public class TimetableView extends JPanel {
             JButton deleteButton = createDeleteButton(item.getCourseCode(), item.getSectionCode());
             contentPanel.add(deleteButton, BorderLayout.NORTH);
 
+            // Add mouse listener to trigger search return
+            contentPanel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (listener != null) {
+                        listener.onCourseClicked(item.getCourseCode());
+                    }
+                }
+            });
+
             slot.add(contentPanel, BorderLayout.CENTER);
         }
         // Other slots are just colored (no content)
@@ -369,4 +379,6 @@ public class TimetableView extends JPanel {
 
         add(headerContainer, BorderLayout.NORTH);
         add(timePanel, BorderLayout.WEST);
-        add(gridPanel, BorderLayout.CENTER);}}
+        add(gridPanel, BorderLayout.CENTER);
+    }
+}

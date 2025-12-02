@@ -61,6 +61,12 @@ import usecase.customtimefilter.CustomTimeFilterInputBoundary;
 import usecase.customtimefilter.CustomTimeFilterInteractor;
 import usecase.customtimefilter.CustomTimeFilterOutputBoundary;
 
+// Use Case 6: Return to Search
+import interface_adapter.returntosearch.ReturnToSearchController;
+import interface_adapter.returntosearch.ReturnToSearchPresenter;
+import usecase.returntosearch.ReturnToSearchInputBoundary;
+import usecase.returntosearch.ReturnToSearchInteractor;
+import usecase.returntosearch.ReturnToSearchOutputBoundary;
 import interface_adapter.filter_courses.FilterCoursesController;
 import interface_adapter.filter_courses.FilterCoursesPresenter;
 import interface_adapter.filter_courses.FilterCoursesViewModel;
@@ -140,12 +146,23 @@ public class Main {
 
                 CustomTimeFilterController customTimeFilterController =
                         new CustomTimeFilterController(customTimeFilterInteractor);
+
+                // Use Case 6: Return to Search Components
+                ReturnToSearchOutputBoundary returnToSearchPresenter = new ReturnToSearchPresenter(searchPanel);
+                ReturnToSearchInputBoundary returnToSearchInteractor = new ReturnToSearchInteractor(returnToSearchPresenter);
+                ReturnToSearchController returnToSearchController = new ReturnToSearchController(returnToSearchInteractor);
+
                 timetableView.setClickListener(new TimetableClickListener() {
                     @Override
                     public void onEmptySlotClicked(String day, String startTime, String endTime) {
                         // For now, we don’t combine with a text query – just use an empty query string.
                         String query = "";
                         customTimeFilterController.execute(query, day, startTime, endTime);
+                    }
+
+                    @Override
+                    public void onCourseClicked(String courseCode) {
+                        returnToSearchController.execute(courseCode);
                     }
                 });
 
