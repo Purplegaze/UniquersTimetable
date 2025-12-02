@@ -14,7 +14,7 @@ public class ExportTimetableController {
 
     }
 
-    public void ExportTimetable(String filePath) {
+    public void exportTimetable(String filePath) {
         ExportTimetableInputData inputData = new ExportTimetableInputData(filePath);
         try {
             exportInteractor.execute(inputData);

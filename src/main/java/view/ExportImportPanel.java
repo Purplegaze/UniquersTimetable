@@ -8,8 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.FilenameFilter;
 //import javax.jnlp.*;
 import java.awt.FileDialog;
 
@@ -112,7 +110,7 @@ public class ExportImportPanel extends JPanel implements PropertyChangeListener 
             }
 
             String path = runFileDialog();
-            controller.ExportTimetable(path);
+            controller.exportTimetable(path);
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
