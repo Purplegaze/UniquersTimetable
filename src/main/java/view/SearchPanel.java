@@ -1,5 +1,6 @@
 package view;
 
+import interface_adapter.filter_courses.FilterCoursesController;
 import interface_adapter.search.SearchCourseController;
 import interface_adapter.search.SearchViewModel;
 import interface_adapter.search.SearchViewModel.SearchResult;
@@ -13,7 +14,7 @@ import java.util.List;
 
 /**
  * SearchPanel - Pure UI component following Clean Architecture.
- * Implements SearchPanelInterface to receive data from presenter.
+ * Listens to SearchViewModel and sends user actions to SearchCourseController.
  */
 public class SearchPanel extends JPanel implements PropertyChangeListener {
 
@@ -21,11 +22,13 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
 
     private JTextField searchField;
     private JButton searchButton;
+    private JComboBox<String> breadthCombo;
     private JList<String> resultsList;
     private DefaultListModel<String> listModel;
 
     private List<SearchResult> currentResults = new ArrayList<>();
     private SearchCourseController controller;
+    private FilterCoursesController filterController;
     private SearchViewModel viewModel;
 
     public SearchPanel() {
@@ -40,6 +43,10 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
 
     public void setController(SearchCourseController controller) {
         this.controller = controller;
+    }
+
+    public void setFilterController(FilterCoursesController filterController) {
+        this.filterController = filterController;
     }
 
     public void setViewModel(SearchViewModel viewModel) {
@@ -102,6 +109,10 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
         searchButton = new JButton("Search");
         searchButton.setFont(new Font("Arial", Font.BOLD, 14));
 
+        breadthCombo = new JComboBox<>(new String[]{
+                "All breadths", "1", "2", "3", "4", "5"
+        });
+
         listModel = new DefaultListModel<>();
         resultsList = new JList<>(listModel);
         resultsList.setFont(new Font("Arial", Font.PLAIN, 13));
@@ -117,6 +128,15 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
         searchBarPanel.add(searchField, BorderLayout.CENTER);
         searchBarPanel.add(searchButton, BorderLayout.EAST);
 
+        JPanel breadthPanel = new JPanel(new BorderLayout(5, 5));
+        JLabel breadthLabel = new JLabel("Breadth:");
+        breadthPanel.add(breadthLabel, BorderLayout.WEST);
+        breadthPanel.add(breadthCombo, BorderLayout.CENTER);
+
+        JPanel topPanel = new JPanel(new BorderLayout(5, 5));
+        topPanel.add(searchBarPanel, BorderLayout.NORTH);
+        topPanel.add(breadthPanel, BorderLayout.SOUTH);
+
         JPanel resultsPanel = new JPanel(new BorderLayout(5, 5));
         JLabel resultsLabel = new JLabel("Results:");
         resultsLabel.setFont(new Font("Arial", Font.BOLD, 14));
@@ -126,12 +146,9 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
         resultsPanel.add(resultsLabel, BorderLayout.NORTH);
         resultsPanel.add(scrollPane, BorderLayout.CENTER);
 
-        JPanel buttonsPanel = new JPanel(new GridLayout(2, 1, 5, 5));
-
         JPanel centerPanel = new JPanel(new BorderLayout(5, 10));
-        centerPanel.add(searchBarPanel, BorderLayout.NORTH);
+        centerPanel.add(topPanel, BorderLayout.NORTH);
         centerPanel.add(resultsPanel, BorderLayout.CENTER);
-        centerPanel.add(buttonsPanel, BorderLayout.SOUTH);
 
         add(centerPanel, BorderLayout.CENTER);
     }
@@ -139,6 +156,7 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
     private void setupEventHandlers() {
         searchButton.addActionListener(e -> notifySearchRequested());
         searchField.addActionListener(e -> notifySearchRequested());
+        breadthCombo.addActionListener(e -> notifySearchRequested());
 
         resultsList.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -163,9 +181,23 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
     }
 
     private void notifySearchRequested() {
-        if (controller != null) {
-            String query = searchField.getText().trim();
-            controller.execute(query);
+        String query = searchField.getText().trim();
+        Integer breadth = getSelectedBreadth();
+
+        if (breadth == null) {
+            if (controller != null) {
+                controller.execute(query);
+            }
         }
+        else {
+            if (filterController != null) {
+                filterController.execute(query, breadth);
+            }
+        }
+    }
+
+    private Integer getSelectedBreadth() {
+        int idx = breadthCombo.getSelectedIndex();
+        return (idx <= 0) ? null : idx;
     }
 }
