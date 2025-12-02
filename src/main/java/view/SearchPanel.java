@@ -250,4 +250,16 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
             controller.execute(query);
         }
     }
+
+    public void setSearchQuery(String query) {
+        if (searchField != null) {
+            searchField.setText(query);
+        }
+    }
+
+    public void performSearch() {
+        if (searchButton != null) {
+            searchButton.doClick();
+        }
+    }
 }
