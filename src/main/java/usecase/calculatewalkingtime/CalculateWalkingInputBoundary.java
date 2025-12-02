@@ -10,7 +10,5 @@ public interface CalculateWalkingInputBoundary {
     /**
      * Execute the Calculate Walking Time Use Case.
      */
-    void execute();
-
-
+    void execute(CalculateWalkingInputData inputData);
 }

@@ -1,6 +1,9 @@
 package interface_adapter.calculatewalkingtime;
 
+import entity.Timetable;
 import usecase.calculatewalkingtime.CalculateWalkingInputBoundary;
+import usecase.calculatewalkingtime.CalculateWalkingInputData;
+
 
 
 /**
@@ -15,11 +18,11 @@ public class CalculateWalkingController {
         this.useCase = useCase;
     }
 
-    /**
-     * Executes the Calculate Walking Time Use Case without the view knowing the timetable.
-     */
-    public void execute() {
-        useCase.execute();
-    }
 
+    public void execute(Timetable timetable) {
+        CalculateWalkingInputData inputData = new CalculateWalkingInputData(timetable);
+        useCase.execute(inputData);
+    }
 }
+
+
