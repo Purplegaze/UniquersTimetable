@@ -85,4 +85,19 @@ public class Course {
         return location;
     }
 
+    public Section getSectionByCode(String sectionCode) throws SectionNotFoundException {
+        for (Section section : sections) {
+            if (section.getSectionId().equals(sectionCode)) {
+                return section;
+            }
+        }
+        throw new SectionNotFoundException("Section not found: " + sectionCode);
+    }
+
+    public static class SectionNotFoundException extends Exception {
+        public SectionNotFoundException(String message) {
+            super(message);
+        }
+    }
+
 }
