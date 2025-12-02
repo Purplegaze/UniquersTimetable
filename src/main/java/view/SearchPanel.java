@@ -1,5 +1,6 @@
 package view;
 
+import interface_adapter.search.SearchCourseController;
 import interface_adapter.search.SearchViewModel;
 import interface_adapter.search.SearchViewModel.SearchResult;
 
@@ -16,17 +17,6 @@ import java.util.List;
  */
 public class SearchPanel extends JPanel implements PropertyChangeListener {
 
-    // ==================== Listener Interface ====================
-
-    /**
-     * Interface for handling user actions from this panel.
-     * The controller implements this.
-     */
-    public interface SearchPanelListener {
-        void onSearchRequested(String query);
-        void onResultSelected(String resultId);
-    }
-
     // ==================== UI Components ====================
 
     private JTextField searchField;
@@ -35,7 +25,7 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
     private DefaultListModel<String> listModel;
 
     private List<SearchResult> currentResults = new ArrayList<>();
-    private SearchPanelListener listener;
+    private SearchCourseController controller;
     private SearchViewModel viewModel;
 
     public SearchPanel() {
@@ -48,6 +38,10 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
         setupEventHandlers();
     }
 
+    public void setController(SearchCourseController controller) {
+        this.controller = controller;
+    }
+
     public void setViewModel(SearchViewModel viewModel) {
         if (this.viewModel != null) {
             this.viewModel.removePropertyChangeListener(this);
@@ -55,10 +49,6 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
 
         this.viewModel = viewModel;
         viewModel.addPropertyChangeListener(this);
-    }
-
-    public void setListener(SearchPanelListener listener) {
-        this.listener = listener;
     }
 
     @Override
@@ -160,23 +150,22 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
         });
     }
 
-    private void notifySearchRequested() {
-        if (listener != null) {
-            String query = searchField.getText().trim();
-            listener.onSearchRequested(query);
-        }
-    }
-
     private void notifyResultSelected() {
         int selectedIndex = resultsList.getSelectedIndex();
 
-        if (selectedIndex < 0 || selectedIndex >= currentResults.size()) {
-            return;
-        }
+        if (selectedIndex >= 0 && selectedIndex < currentResults.size()) {
+            String courseCode = currentResults.get(selectedIndex).getCourseCode();
 
-        if (listener != null) {
-            String selectedId = currentResults.get(selectedIndex).getCourseCode();
-            listener.onResultSelected(selectedId);
+            if (viewModel != null) {
+                viewModel.setSelectedCourseCode(courseCode);
+            }
+        }
+    }
+
+    private void notifySearchRequested() {
+        if (controller != null) {
+            String query = searchField.getText().trim();
+            controller.execute(query);
         }
     }
 }

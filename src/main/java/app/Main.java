@@ -89,7 +89,6 @@ public class Main {
                 timetableView.setDeleteSectionViewModel(deleteSectionViewModel);
 
                 SearchPanel searchPanel = mainView.getSearchPanel();
-                searchPanel.setViewModel(searchViewModel);
 
                 WalkingTimeView walkingTimeView = mainView.getWalkingTimeView();
 
@@ -120,7 +119,7 @@ public class Main {
                 AddCourseController addCourseController = new AddCourseController(addCourseInteractor);
                 SearchCourseController searchCourseController = new SearchCourseController(searchCourseInteractor);
                 DeleteSectionController deleteSectionController = new DeleteSectionController(deleteCourseInteractor);
-
+                ViewCourseController viewCourseController = new ViewCourseController(viewCourseInteractor);
                 timetableView.setDeleteController(deleteSectionController);
 
                 // Wiring for Calculate Walking Use Case
@@ -135,11 +134,10 @@ public class Main {
                 CalculateWalkingController walkingController =
                         new CalculateWalkingController(walkingInteractor);
 
+                searchPanel.setController(searchCourseController);
+                searchPanel.setViewModel(searchViewModel);
+                timetableView.setDeleteController(deleteSectionController);
                 walkingTimeView.setWalkingController(walkingController);
-
-
-                // Controller for ViewCourse
-                ViewCourseController viewCourseController = new ViewCourseController(viewCourseInteractor);
 
                 // Observe ViewModel to display SectionView when a course is loaded with ratings
                 viewCourseViewModel.addPropertyChangeListener(evt -> {
@@ -147,7 +145,7 @@ public class Main {
                         Course course = (Course) evt.getNewValue();
                         if (course != null) {
                             // Display the SectionView using the course (now with ratings) and the add controller
-                            new SectionView(course, addCourseController).display();
+                            new SectionView(viewCourseViewModel, addCourseController).display();
                         }
                     } else if ("error".equals(evt.getPropertyName())) {
                         JOptionPane.showMessageDialog(mainView,
@@ -158,29 +156,21 @@ public class Main {
                 });
 
                 // Wire UI events to controllers
-                searchPanel.setListener(new SearchPanel.SearchPanelListener() {
-                    @Override
-                    public void onSearchRequested(String query) {
-                        searchCourseController.search(query);
-                    }
+                searchViewModel.addPropertyChangeListener(evt -> {
+                    System.out.println("Property changed: " + evt.getPropertyName());
 
-                    @Override
-                    public void onResultSelected(String resultId) {
-                        Course course = courseDataAccess.findByCourseCode(resultId);
+                    if ("selectedCourse".equals(evt.getPropertyName())) {
+                        String courseCode = searchViewModel.getSelectedCourseCode();
+                        System.out.println("Selected course: " + courseCode);
 
-                        if (course != null) {
-                            new SectionView(course, addCourseController).display();
-                        } else {
-                            JOptionPane.showMessageDialog(mainView,
-                                    "Course not found: " + resultId,
-                                    "Error",
-                                    JOptionPane.ERROR_MESSAGE);
+                        if (courseCode != null) {
+                            viewCourseController.execute(courseCode);
+                            
                         }
-                        viewCourseController.execute(resultId);
                     }
                 });
 
-                searchCourseController.search("");
+                searchCourseController.execute("");
                 mainView.display();
 
             } catch (Exception e) {
