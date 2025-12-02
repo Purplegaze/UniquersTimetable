@@ -68,4 +68,21 @@ public class Course {
     public boolean isFall() { return "F".equals(term); }
 
     public boolean isWinter() { return "S".equals(term); }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public float getCredits() {
+        return credits;
+    }
+
+    public int getBreadthCategory() {
+        return breadthCategory;
+    }
+
+    public Building getLocation() {
+        return location;
+    }
+
 }

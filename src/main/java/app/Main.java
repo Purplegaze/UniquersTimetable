@@ -61,6 +61,14 @@ import usecase.customtimefilter.CustomTimeFilterInputBoundary;
 import usecase.customtimefilter.CustomTimeFilterInteractor;
 import usecase.customtimefilter.CustomTimeFilterOutputBoundary;
 
+import interface_adapter.filter_courses.FilterCoursesController;
+import interface_adapter.filter_courses.FilterCoursesPresenter;
+import interface_adapter.filter_courses.FilterCoursesViewModel;
+
+import usecase.filter_courses.FilterCoursesInputBoundary;
+import usecase.filter_courses.FilterCoursesInteractor;
+import usecase.filter_courses.FilterCoursesOutputBoundary;
+
 /**
  * Main entry point for the Timetable Application.
  *
@@ -87,6 +95,14 @@ public class Main {
                 SearchViewModel searchViewModel = new SearchViewModel();
                 AddCourseViewModel addCourseViewModel = new AddCourseViewModel();
                 DeleteSectionViewModel deleteSectionViewModel = new DeleteSectionViewModel();
+
+                FilterCoursesViewModel filterCoursesViewModel = new FilterCoursesViewModel();
+                FilterCoursesOutputBoundary filterCoursesPresenter =
+                        new FilterCoursesPresenter(searchViewModel);
+                FilterCoursesInputBoundary filterCoursesInteractor =
+                        new FilterCoursesInteractor(courseDataAccess.getAllCourses(), filterCoursesPresenter);
+                FilterCoursesController filterCoursesController =
+                        new FilterCoursesController(filterCoursesInteractor);
 
                 // Create UI views
                 MainView mainView = new MainView();
@@ -159,6 +175,7 @@ public class Main {
 
                 searchPanel.setController(searchCourseController);
                 searchPanel.setViewModel(searchViewModel);
+                searchPanel.setFilterController(filterCoursesController);
                 searchPanel.setCustomTimeFilterController(customTimeFilterController);
                 timetableView.setDeleteController(deleteSectionController);
                 walkingTimeView.setWalkingController(walkingController);
