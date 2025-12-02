@@ -25,6 +25,7 @@ public class SearchViewModel extends ViewModel {
 
     private List<SearchResult> results = new ArrayList<>();
     private String errorMessage = "";
+    private String selectedCourseCode = null;
 
     public SearchViewModel() {
         super("search");
@@ -51,5 +52,14 @@ public class SearchViewModel extends ViewModel {
     public void setError(String message) {
         this.errorMessage = message;
         firePropertyChanged("error");
+    }
+
+    public void setSelectedCourseCode(String courseCode) {
+        this.selectedCourseCode = courseCode;
+        firePropertyChanged("selectedCourse");
+    }
+
+    public String getSelectedCourseCode() {
+        return selectedCourseCode;
     }
 }

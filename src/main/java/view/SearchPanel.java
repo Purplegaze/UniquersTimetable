@@ -1,7 +1,9 @@
 package view;
 
+import interface_adapter.search.SearchCourseController;
 import interface_adapter.search.SearchViewModel;
 import interface_adapter.search.SearchViewModel.SearchResult;
+import interface_adapter.customtimefilter.CustomTimeFilterController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,8 +46,10 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
     private JButton timeFilterButton;
 
     private List<SearchResult> currentResults = new ArrayList<>();
-    private SearchPanelListener listener;
+    private SearchCourseController controller;
     private SearchViewModel viewModel;
+    private SearchPanelListener listener;
+    private CustomTimeFilterController customTimeFilterController;
 
     public SearchPanel() {
         setLayout(new BorderLayout(10, 10));
@@ -57,6 +61,10 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
         setupEventHandlers();
     }
 
+    public void setController(SearchCourseController controller) {
+        this.controller = controller;
+    }
+
     public void setViewModel(SearchViewModel viewModel) {
         if (this.viewModel != null) {
             this.viewModel.removePropertyChangeListener(this);
@@ -65,7 +73,9 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
         this.viewModel = viewModel;
         viewModel.addPropertyChangeListener(this);
     }
-
+    public void setCustomTimeFilterController(CustomTimeFilterController customTimeFilterController) {
+        this.customTimeFilterController = customTimeFilterController;
+    }
     public void setListener(SearchPanelListener listener) {
         this.listener = listener;
     }
@@ -212,33 +222,32 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
         });
     }
     private void notifyCustomTimeFilterRequested() {
-        if (listener != null) {
+        if (customTimeFilterController != null) {
             String query = searchField.getText().trim();
             String day = (String) dayComboBox.getSelectedItem();
             String start = startTimeField.getText().trim();
             String end = endTimeField.getText().trim();
 
-            listener.onCustomTimeFilterRequested(query, day, start, end);
-        }
-    }
-
-    private void notifySearchRequested() {
-        if (listener != null) {
-            String query = searchField.getText().trim();
-            listener.onSearchRequested(query);
+            customTimeFilterController.execute(query, day, start, end);
         }
     }
 
     private void notifyResultSelected() {
         int selectedIndex = resultsList.getSelectedIndex();
 
-        if (selectedIndex < 0 || selectedIndex >= currentResults.size()) {
-            return;
-        }
+        if (selectedIndex >= 0 && selectedIndex < currentResults.size()) {
+            String courseCode = currentResults.get(selectedIndex).getCourseCode();
 
-        if (listener != null) {
-            String selectedId = currentResults.get(selectedIndex).getCourseCode();
-            listener.onResultSelected(selectedId);
+            if (viewModel != null) {
+                viewModel.setSelectedCourseCode(courseCode);
+            }
+        }
+    }
+
+    private void notifySearchRequested() {
+        if (controller != null) {
+            String query = searchField.getText().trim();
+            controller.execute(query);
         }
     }
 }
