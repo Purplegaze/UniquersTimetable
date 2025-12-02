@@ -1,7 +1,6 @@
 package usecase.export;
 
 import data_access.CourseDataAccessInterface;
-import data_access.JSONConverter;
 import data_access.TimetableDataAccessInterface;
 import entity.*;
 import org.json.JSONArray;
@@ -20,13 +19,14 @@ public class ExportTimetableInteractor implements ExportTimetableInputBoundary {
                                      CourseDataAccessInterface courseDataAccess,
                                      ExportTimetableDataAccessInterface exportDataAccess
     ) {
+        if (timetableDataAccess == null || courseDataAccess == null || presenter == null || exportDataAccess == null) {
+            throw new IllegalArgumentException("Dependencies cannot be null");
+        }
+
         this.courseDataAccess =  courseDataAccess;
         this.timetableDataAccess = timetableDataAccess;
         this.presenter = presenter;
         this.exportDataAccess = exportDataAccess;
-        if (timetableDataAccess == null || courseDataAccess == null || presenter == null || exportDataAccess == null) {
-            throw new IllegalArgumentException("Dependencies cannot be null");
-        }
     }
 
     @Override
