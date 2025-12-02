@@ -1,6 +1,5 @@
 package usecase.calculatewalkingtime;
 
-import data_access.TimetableDataAccessInterface;
 import entity.Building;
 import entity.Timetable;
 import entity.TimetableBlock;
@@ -14,21 +13,20 @@ import java.util.Map;
  */
 public class CalculateWalkingInteractor implements CalculateWalkingInputBoundary {
 
-    private final CalculateWalkingDataAccessInterface walkingDAO;
-    private final TimetableDataAccessInterface timetableDAO;
+    private final CalculateWalkingDataAccessInterface dataAccess;
     private final CalculateWalkingOutputBoundary presenter;
 
-    public CalculateWalkingInteractor(CalculateWalkingDataAccessInterface walkingDAO,
-                                      TimetableDataAccessInterface timetableDAO,
+    public CalculateWalkingInteractor(CalculateWalkingDataAccessInterface dataAccess,
                                       CalculateWalkingOutputBoundary presenter) {
-        this.walkingDAO = walkingDAO;
-        this.timetableDAO = timetableDAO;
+        this.dataAccess = dataAccess;
         this.presenter = presenter;
     }
 
     @Override
-    public void execute() {
-        Timetable timetable = timetableDAO.getTimetable();
+    public void execute(CalculateWalkingInputData inputData) {
+
+        // Use the timetable passed in from the controller
+        Timetable timetable = inputData.getTimetable();
 
         if (timetable == null || timetable.getBlocks().isEmpty()) {
             presenter.prepareFailView("No courses found in timetable.");
@@ -37,39 +35,52 @@ public class CalculateWalkingInteractor implements CalculateWalkingInputBoundary
 
         Map<String, Integer> walkingTimes = new HashMap<>();
 
+        boolean hasLongWalk = false;
+
+
         for (TimetableBlock current : timetable.getBlocks()) {
 
             TimetableBlock next = current.getNextCourse();
+            if (next == null) {
+                continue;
+            }
 
-            if (next != null && current.getTimeSlot().immediatelyPrecedes(next.getTimeSlot())) {
+            if (!current.getTimeSlot().immediatelyPrecedes(next.getTimeSlot())) {
+                continue;
+            }
 
                 Building from = current.getTimeSlot().getBuilding();
                 Building to = next.getTimeSlot().getBuilding();
 
-                String key = current.getTimeSlot().getDayName() + ": " +
-                        current.getCourse().getCourseCode()
-                        + " → "
-                        + next.getCourse().getCourseCode();
+            String key = current.getTimeSlot().getDayName() + ": " +
+                    current.getTimeSlot().getStartTime().getHour() + "-" +
+                    current.getCourse().getCourseCode()
+                    + " → "
+                    + next.getCourse().getCourseCode();
 
-                if (from.getBuildingCode() == null || to.getBuildingCode() == null ||
-                        from.getBuildingCode().equalsIgnoreCase("TBD") ||
-                        to.getBuildingCode().equalsIgnoreCase("TBD")) {
-                    walkingTimes.put(key, -1);
-                    continue;
-                }
+            if (from.getBuildingCode() == null || to.getBuildingCode() == null ||
+                    from.getBuildingCode().equalsIgnoreCase("TBD") ||
+                    to.getBuildingCode().equalsIgnoreCase("TBD")) {
 
-                double rawTime = walkingDAO.calculateWalking(from, to);
+                walkingTimes.put(key, -1);
+                continue;
+            }
 
-                int roundedTime = (int) Math.round(rawTime);
+            int rounded = (int) Math.round(dataAccess.calculateWalking(from, to));
+            walkingTimes.put(key, rounded);
 
-                walkingTimes.put(key, roundedTime);
+            if (rounded > 10) {
+                hasLongWalk = true;
             }
         }
 
         if (walkingTimes.isEmpty()) {
             presenter.prepareFailView("No back-to-back classes found.");
-        } else {
-            presenter.prepareSuccessView(new CalculateWalkingOutputData(walkingTimes));
+            return;
         }
+
+        presenter.prepareSuccessView(
+                new CalculateWalkingOutputData(walkingTimes, hasLongWalk)
+        );
     }
 }
