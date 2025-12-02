@@ -62,12 +62,6 @@ public class AddCourseInteractor implements AddCourseInputBoundary {
             // Create Section entity with selected time slots (with real enrollment capacity)
             Section section = createSection(course, originalSection, inputData);
 
-            // Validate section has time slots
-            if (section.getTimes().isEmpty()) {
-                presenter.presentError("Invalid input: Section has no time slots");
-                return;
-            }
-
             // Check term compatibility
             if (!isTermCompatible(course)) {
                 String currentTerm = timetableDataAccess.getCurrentTerm();

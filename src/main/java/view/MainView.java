@@ -1,5 +1,7 @@
 package view;
 
+import interface_adapter.calculatewalkingtime.CalculateWalkingViewModel;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -11,7 +13,6 @@ public class MainView extends JFrame {
     private TimetableView timetableView;
     private SearchPanel searchPanel;
     private WalkingTimeView walkingTimeView;
-    private ExportImportPanel exportImportPanel;
 
     public MainView() {
         setTitle("UofT Timetable Builder");
@@ -28,8 +29,7 @@ public class MainView extends JFrame {
     private void initializeComponents() {
         timetableView = new TimetableView();
         searchPanel = new SearchPanel();
-        walkingTimeView = new WalkingTimeView();
-        exportImportPanel = new ExportImportPanel();
+        walkingTimeView = new WalkingTimeView(new CalculateWalkingViewModel());
     }
 
     private void layoutComponents() {
@@ -42,7 +42,6 @@ public class MainView extends JFrame {
         sideBar.setLayout(new BorderLayout());
         sideBar.add(searchPanel, BorderLayout.CENTER);
         sideBar.add(walkingTimeView, BorderLayout.SOUTH);
-        sideBar.add(exportImportPanel, BorderLayout.NORTH);
 
         add(sideBar, BorderLayout.EAST);
     }
@@ -56,8 +55,6 @@ public class MainView extends JFrame {
     }
 
     public WalkingTimeView getWalkingTimeView() {return walkingTimeView;}
-
-    public ExportImportPanel getExportImportPanel() {return exportImportPanel;}
 
     public void display() {
         setVisible(true);
