@@ -1,5 +1,7 @@
 package view;
 
+import interface_adapter.calculatewalkingtime.CalculateWalkingViewModel;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -27,7 +29,7 @@ public class MainView extends JFrame {
     private void initializeComponents() {
         timetableView = new TimetableView();
         searchPanel = new SearchPanel();
-        walkingTimeView = new WalkingTimeView();
+        walkingTimeView = new WalkingTimeView(new CalculateWalkingViewModel());
     }
 
     private void layoutComponents() {
