@@ -294,4 +294,3 @@ public class SearchPanel extends JPanel implements PropertyChangeListener {
         }
     }
 }
-}
