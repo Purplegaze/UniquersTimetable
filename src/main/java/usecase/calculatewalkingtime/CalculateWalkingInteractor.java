@@ -35,39 +35,52 @@ public class CalculateWalkingInteractor implements CalculateWalkingInputBoundary
 
         Map<String, Integer> walkingTimes = new HashMap<>();
 
+        boolean hasLongWalk = false;
+
+
         for (TimetableBlock current : timetable.getBlocks()) {
 
             TimetableBlock next = current.getNextCourse();
+            if (next == null) {
+                continue;
+            }
 
-            if (next != null && current.getTimeSlot().immediatelyPrecedes(next.getTimeSlot())) {
+            if (!current.getTimeSlot().immediatelyPrecedes(next.getTimeSlot())) {
+                continue;
+            }
 
                 Building from = current.getTimeSlot().getBuilding();
                 Building to = next.getTimeSlot().getBuilding();
 
-                String key = current.getTimeSlot().getDayName() + ": " +
-                        current.getCourse().getCourseCode()
-                        + " → "
-                        + next.getCourse().getCourseCode();
+            String key = current.getTimeSlot().getDayName() + ": " +
+                    current.getTimeSlot().getStartTime().getHour() + "-" +
+                    current.getCourse().getCourseCode()
+                    + " → "
+                    + next.getCourse().getCourseCode();
 
-                if (from.getBuildingCode() == null || to.getBuildingCode() == null ||
-                        from.getBuildingCode().equalsIgnoreCase("TBD") ||
-                        to.getBuildingCode().equalsIgnoreCase("TBD")) {
-                    walkingTimes.put(key, -1);
-                    continue;
-                }
+            if (from.getBuildingCode() == null || to.getBuildingCode() == null ||
+                    from.getBuildingCode().equalsIgnoreCase("TBD") ||
+                    to.getBuildingCode().equalsIgnoreCase("TBD")) {
 
-                double rawTime = dataAccess.calculateWalking(from, to);
-                int roundedTime = (int) Math.round(rawTime);
+                walkingTimes.put(key, -1);
+                continue;
+            }
 
-                walkingTimes.put(key, roundedTime);
+            int rounded = (int) Math.round(dataAccess.calculateWalking(from, to));
+            walkingTimes.put(key, rounded);
+
+            if (rounded > 10) {
+                hasLongWalk = true;
             }
         }
 
         if (walkingTimes.isEmpty()) {
             presenter.prepareFailView("No back-to-back classes found.");
-        } else {
-            presenter.prepareSuccessView(new CalculateWalkingOutputData(walkingTimes));
+            return;
         }
-    }
 
+        presenter.prepareSuccessView(
+                new CalculateWalkingOutputData(walkingTimes, hasLongWalk)
+        );
+    }
 }

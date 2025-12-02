@@ -6,6 +6,7 @@ import data_access.InMemoryTimetableDataAccess;
 import data_access.JSONCourseDataAccess;
 import data_access.TimetableDataAccessInterface;
 import entity.Course;
+import entity.Timetable;
 import interface_adapter.calculatewalkingtime.CalculateWalkingController;
 import interface_adapter.calculatewalkingtime.CalculateWalkingInterface;
 import interface_adapter.calculatewalkingtime.CalculateWalkingPresenter;
@@ -91,31 +92,42 @@ public class Main {
                 AddCourseViewModel addCourseViewModel = new AddCourseViewModel();
                 DeleteSectionViewModel deleteSectionViewModel = new DeleteSectionViewModel();
 
-                FilterCoursesViewModel filterCoursesViewModel = new FilterCoursesViewModel();
-                FilterCoursesOutputBoundary filterCoursesPresenter =
-                        new FilterCoursesPresenter(searchViewModel);
-                FilterCoursesInputBoundary filterCoursesInteractor =
-                        new FilterCoursesInteractor(courseDataAccess.getAllCourses(), filterCoursesPresenter);
-                FilterCoursesController filterCoursesController =
-                        new FilterCoursesController(filterCoursesInteractor);
-
-                // Create UI views
                 MainView mainView = new MainView();
                 TimetableView timetableView = mainView.getTimetableView();
-                timetableView.setAddCourseViewModel(addCourseViewModel);
-                timetableView.setDeleteSectionViewModel(deleteSectionViewModel);
-
+                WalkingTimeView walkingTimeView = mainView.getWalkingTimeView();
                 SearchPanel searchPanel = mainView.getSearchPanel();
 
-                WalkingTimeView walkingTimeView = mainView.getWalkingTimeView();
 
-                CalculateWalkingInterface walkingViewAdapter = new WalkingTimeViewAdapter(walkingTimeView);
+
+                FilterCoursesOutputBoundary filterCoursesPresenter = new FilterCoursesPresenter(searchViewModel);
+
+                FilterCoursesInputBoundary filterCoursesInteractor = new FilterCoursesInteractor(courseDataAccess.getAllCourses(), filterCoursesPresenter);
+
+                FilterCoursesController filterCoursesController = new FilterCoursesController(filterCoursesInteractor);
+
+                CalculateWalkingInterface walkingViewAdapter = new WalkingTimeViewAdapter(walkingTimeView, timetableView);
+
+                CalculateWalkingOutputBoundary walkingPresenter = new CalculateWalkingPresenter(walkingViewAdapter);
+
+                CalculateWalkingDataAccessInterface walkingDataAccess = new WalkingTimeDataAccessObject();
+
+                CalculateWalkingInputBoundary walkingInteractor = new CalculateWalkingInteractor(walkingDataAccess, walkingPresenter);
+
+                CalculateWalkingController walkingController = new CalculateWalkingController(walkingInteractor);
+
+                walkingTimeView.setWalkingController(walkingController);
+
+                walkingTimeView.setTimetable(timetableDataAccess.getTimetable());
+
+
+                // Create UI views
+                timetableView.setAddCourseViewModel(addCourseViewModel);
+                timetableView.setDeleteSectionViewModel(deleteSectionViewModel);
 
                 // Create presenters
                 AddCourseOutputBoundary addCoursePresenter = new AddCoursePresenter(addCourseViewModel);
                 SearchCourseOutputBoundary searchCoursePresenter = new SearchCoursePresenter(searchViewModel);
                 DeleteSectionOutputBoundary deleteSectionPresenter = new DeleteSectionPresenter(deleteSectionViewModel);
-                CalculateWalkingOutputBoundary walkingPresenter = new CalculateWalkingPresenter(walkingViewAdapter);
 
                 // View Model and Presenter for ViewCourse Use Case
                 ViewCourseViewModel viewCourseViewModel = new ViewCourseViewModel();
@@ -128,9 +140,6 @@ public class Main {
                         new SearchCourseInteractor(courseDataAccess, searchCoursePresenter);
                 DeleteSectionInputBoundary deleteCourseInteractor =
                         new DeleteSectionInteractor(timetableDataAccess, deleteSectionPresenter);
-                CalculateWalkingDataAccessInterface walkingDataAccess = new WalkingTimeDataAccessObject();
-                CalculateWalkingInputBoundary walkingInteractor =
-                        new CalculateWalkingInteractor(walkingDataAccess, walkingPresenter);
 
 
                 // Interactor for ViewCourse, injecting the rating reader
@@ -142,7 +151,14 @@ public class Main {
                 SearchCourseController searchCourseController = new SearchCourseController(searchCourseInteractor);
                 DeleteSectionController deleteSectionController = new DeleteSectionController(deleteCourseInteractor);
                 ViewCourseController viewCourseController = new ViewCourseController(viewCourseInteractor);
-                CalculateWalkingController walkingController = new CalculateWalkingController(walkingInteractor);
+
+                addCourseViewModel.addPropertyChangeListener(evt -> {
+                    if ("slotsAdded".equals(evt.getPropertyName())) {
+                        Timetable timetable = timetableDataAccess.getTimetable();
+                        walkingTimeView.setTimetable(timetable);
+                        walkingController.execute(timetable);
+                    }
+                });
 
                 searchPanel.setController(searchCourseController);
                 searchPanel.setViewModel(searchViewModel);

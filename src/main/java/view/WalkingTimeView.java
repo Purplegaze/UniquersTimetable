@@ -17,16 +17,15 @@ public class WalkingTimeView extends JPanel {
     private final JButton calculateButton = new JButton("Calculate Walking Times");
 
     public WalkingTimeView() {
-
         setLayout(new BorderLayout(10, 10));
 
-        // Title
         JLabel title = new JLabel("Walking Time Calculator");
         title.setFont(new Font("Arial", Font.BOLD, 18));
         title.setHorizontalAlignment(SwingConstants.CENTER);
 
         walkingTimesArea.setEditable(false);
         walkingTimesArea.setFont(new Font("Arial", Font.PLAIN, 14));
+        walkingTimesArea.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
 
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(title, BorderLayout.NORTH);
@@ -41,12 +40,10 @@ public class WalkingTimeView extends JPanel {
         calculateButton.addActionListener(this::handleCalculateClicked);
     }
 
-    /** Called by main to provide controller */
     public void setWalkingController(CalculateWalkingController controller) {
         this.walkingController = controller;
     }
 
-    /** Called by main to update timetable when user adds/drops classes */
     public void setTimetable(Timetable timetable) {
         this.currentTimetable = timetable;
     }
@@ -67,11 +64,32 @@ public class WalkingTimeView extends JPanel {
 
     public void displayWalkingTimes(String text) {
         errorLabel.setText("");
-        walkingTimesArea.setText(text);
+
+        boolean hasLongWalk = text.contains("[LONG_WALK_WARNING]");
+
+        String cleaned = text.replace("[LONG_WALK_WARNING]", "");
+        walkingTimesArea.setText(cleaned);
+
+        walkingTimesArea.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+
+        if (hasLongWalk) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "You have back-to-back classes with more than 10 minutes of walking.",
+                    "Back-to-back warning",
+                    JOptionPane.WARNING_MESSAGE
+            );
+        }
     }
 
     public void showErrorMessage(String message) {
         walkingTimesArea.setText("");
         errorLabel.setText("Error: " + message);
+        JOptionPane.showMessageDialog(
+                this,
+                message,
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+        );
     }
 }

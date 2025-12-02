@@ -348,4 +348,36 @@ public class TimetableView extends JPanel {
         add(timePanel, BorderLayout.WEST);
         add(gridPanel, BorderLayout.CENTER);
     }
+
+    public void highlightCoursesOnDay(String day, String... courseCodes) {
+        clearHighlights();
+
+        for (Map.Entry<String, JPanel> entry : slotPanels.entrySet()) {
+            String slotKey = entry.getKey();
+            JPanel slot    = entry.getValue();
+
+            int dash = slotKey.indexOf('-');
+            if (dash < 0) continue;
+            String slotDay = slotKey.substring(0, dash);
+
+            if (!slotDay.equals(day)) continue;
+
+            String courseKey = slotCourseKeys.get(slotKey);
+            if (courseKey == null) continue;
+
+            for (String code : courseCodes) {
+                if (courseKey.startsWith(code + "-")) {
+                    slot.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
+                    break;
+                }
+            }
+        }
+    }
+
+    public void clearHighlights() {
+        for (JPanel slot : slotPanels.values()) {
+            slot.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        }
+    }
+
 }
