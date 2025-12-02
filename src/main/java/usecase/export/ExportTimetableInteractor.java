@@ -41,9 +41,7 @@ public class ExportTimetableInteractor implements ExportTimetableInputBoundary {
 
             List<Section> sectionsInTimetable = timetableDataAccess.getAllSections();
 
-            JSONObject courses = JSONConverter.logSections(sectionsInTimetable);
-
-            exportDataAccess.save(filepath, courses);
+            exportDataAccess.save(filepath, sectionsInTimetable);
 
             presenter.presentSuccess(new ExportTimetableOutputData(filepath));
         } catch (Exception e) {
