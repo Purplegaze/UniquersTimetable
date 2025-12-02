@@ -1,10 +1,6 @@
 package app;
 
-import data_access.CourseDataAccessInterface;
-import data_access.CourseEvalDataReader;
-import data_access.InMemoryTimetableDataAccess;
-import data_access.JSONCourseDataAccess;
-import data_access.TimetableDataAccessInterface;
+import data_access.*;
 import entity.Course;
 import entity.Timetable;
 import interface_adapter.calculatewalkingtime.CalculateWalkingController;

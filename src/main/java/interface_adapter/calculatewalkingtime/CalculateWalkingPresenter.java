@@ -33,11 +33,7 @@ public class CalculateWalkingPresenter implements CalculateWalkingOutputBoundary
             int minutes = entry.getValue();
 
             if (minutes > 10) {
-                String day = raw.substring(0, raw.indexOf(':'));
-
-                int hour = extractStartHour(raw);
-
-                longWalkEntries.add(day + "-" + hour);
+                longWalkEntries.add(raw);
             }
         }
 
