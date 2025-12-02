@@ -1,4 +1,4 @@
-package use_case.filter_courses;
+package usecase.filter_courses;
 
 public class FilterCoursesInputData {
     private final String query;

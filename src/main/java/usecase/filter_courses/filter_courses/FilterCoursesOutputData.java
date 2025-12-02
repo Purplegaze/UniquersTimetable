@@ -1,7 +1,7 @@
-package use_case.filter_courses;
+package usecase.filter_courses;
 
-import java.util.List;
 import entity.Course;
+import java.util.List;
 
 public class FilterCoursesOutputData {
     private final List<Course> courses;

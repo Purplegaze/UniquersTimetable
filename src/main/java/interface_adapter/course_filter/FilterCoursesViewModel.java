@@ -1,9 +1,10 @@
-package interface_adapter.course_filter;
+package interface_adapter.filter_courses;
 
-import java.util.List;
 import entity.Course;
+import java.util.List;
 
 public class FilterCoursesViewModel {
+
     private List<Course> courses;
 
     public List<Course> getCourses() {
@@ -14,4 +15,3 @@ public class FilterCoursesViewModel {
         this.courses = courses;
     }
 }
-
