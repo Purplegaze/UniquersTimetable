@@ -3,7 +3,9 @@ package usecase.importsections;
 import data_access.CourseDataAccessInterface;
 import data_access.TimetableDataAccessInterface;
 import entity.*;
+import usecase.addcourse.AddCourseOutputData;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,9 +36,6 @@ public class ImportTimetableInteractor implements ImportTimetableInputBoundary {
             String filepath = inputData.getFilepath();
             ImportTimetableOutputData outputData = new ImportTimetableOutputData(filepath);
 
-
-            ImportTimetableInputBoundary boundary = this;
-
             if (filepath == null) {
                 presenter.presentCancel();
                 return;
@@ -55,6 +54,24 @@ public class ImportTimetableInteractor implements ImportTimetableInputBoundary {
                         Section section = course.getSectionByCode(sectionCode);
                         timetableDataAccess.addSection(section);
                         outputData.incrementSectionsAdded();
+                        // Convert TimeSlots to TimeSlotData
+                        List<AddCourseOutputData.TimeSlotData> timeSlotDatas = new ArrayList<>();
+                        for (TimeSlot timeSlot : section.getTimes()) {
+                            timeSlotDatas.add(new AddCourseOutputData.TimeSlotData(
+                                    timeSlot.getDayName(),
+                                    timeSlot.getStartTime().getHour(),
+                                    timeSlot.getEndTime().getHour(),
+                                    timeSlot.getBuilding() != null ? timeSlot.getBuilding().getBuildingCode() : "TBD"
+                            ));
+                        }
+                        AddCourseOutputData addCourseOutputData = new AddCourseOutputData(
+                                courseCode,
+                                sectionCode,
+                                "N/A",
+                                timeSlotDatas,
+                                false
+                        );
+                        outputData.addToAddCourseOutputData(addCourseOutputData);
                         added = true;
                     }
                     catch (Course.SectionNotFoundException e) {

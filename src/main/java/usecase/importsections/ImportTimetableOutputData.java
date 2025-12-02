@@ -1,5 +1,7 @@
 package usecase.importsections;
 
+import usecase.addcourse.AddCourseOutputData;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +9,8 @@ public class ImportTimetableOutputData {
     private final String filepath;
 
     private final List<String> sectionsNotFound = new ArrayList<>();
+
+    private final List<AddCourseOutputData> addCourseOutputDataList = new ArrayList<>();
 
     int coursesAdded = 0;
     int sectionsAdded = 0;
@@ -19,6 +23,14 @@ public class ImportTimetableOutputData {
 
     public void addToSectionsNotFound(String sectionCode) {
         sectionsNotFound.add(sectionCode);
+    }
+
+    public void addToAddCourseOutputData(AddCourseOutputData addCourseOutputData) {
+        addCourseOutputDataList.add(addCourseOutputData);
+    }
+
+    public List<AddCourseOutputData> getCoursesToAdd() {
+        return addCourseOutputDataList;
     }
 
     public void incrementCoursesAdded(){

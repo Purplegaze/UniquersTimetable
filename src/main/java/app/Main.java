@@ -137,7 +137,7 @@ public class Main {
                 SearchCourseOutputBoundary searchCoursePresenter = new SearchCoursePresenter(searchViewModel);
                 DeleteSectionOutputBoundary deleteSectionPresenter = new DeleteSectionPresenter(deleteSectionViewModel);
                 ExportTimetableOutputBoundary exportPresenter = new ExportTimetablePresenter(exportTimetableViewModel);
-                ImportTimetableOutputBoundary importPresenter = new ImportTimetablePresenter(importTimetableViewModel);
+                ImportTimetableOutputBoundary importPresenter = new ImportTimetablePresenter(importTimetableViewModel, addCourseViewModel);
 
                 // View Model and Presenter for ViewCourse Use Case
                 ViewCourseViewModel viewCourseViewModel = new ViewCourseViewModel();
