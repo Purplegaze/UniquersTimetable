@@ -125,6 +125,11 @@ public class ExportImportPanel extends JPanel implements PropertyChangeListener 
 //                InputStream fis = new FileInputStream(tempFile);
 //
 //            }
+
+            if (controller == null) {
+                throw new NullPointerException("Controller is null");
+            }
+
             FileDialog fileDialog = new FileDialog((Frame) SwingUtilities.getWindowAncestor(this), "Save", FileDialog.SAVE);
             String currentDirectory = System.getProperty("user.dir");
             //System.out.println(currentDirectory);
