@@ -151,7 +151,7 @@ public class Main {
                 DeleteSectionInputBoundary deleteCourseInteractor =
                         new DeleteSectionInteractor(timetableDataAccess, deleteSectionPresenter);
                 ExportTimetableInputBoundary exportTimetableInteractor =
-                        new ExportTimetableInteractor(exportPresenter, timetableDataAccess, courseDataAccess, exportDataAccess);
+                        new ExportTimetableInteractor(exportPresenter, timetableDataAccess, exportDataAccess);
                 ImportTimetableInputBoundary importTimetableInteractor =
                         new ImportTimetableInteractor(importPresenter, timetableDataAccess, courseDataAccess, importDataAccess);
 
