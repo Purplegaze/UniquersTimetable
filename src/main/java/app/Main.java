@@ -218,7 +218,6 @@ public class Main {
                     if ("slotsAdded".equals(evt.getPropertyName())) {
                         Timetable timetable = timetableDataAccess.getTimetable();
                         walkingTimeView.setTimetable(timetable);
-                        walkingController.execute(timetable);
                     }
                 });
 
@@ -232,10 +231,10 @@ public class Main {
 
                 // Observe ViewModel to display SectionView when a course is loaded with ratings
                 viewCourseViewModel.addPropertyChangeListener(evt -> {
-                    if ("course".equals(evt.getPropertyName())) {
-                        Course course = (Course) evt.getNewValue();
-                        if (course != null) {
-                            // Display the SectionView using the course (now with ratings) and the add controller
+                    if ("state".equals(evt.getPropertyName())) {
+                        // Check if we have a valid course loaded in the ViewModel
+                        if (viewCourseViewModel.getCourseCode() != null && !viewCourseViewModel.getCourseCode().isEmpty()) {
+                            // Display the SectionView using the existing viewModel and controller
                             new SectionView(viewCourseViewModel, addCourseController).display();
                         }
                     } else if ("error".equals(evt.getPropertyName())) {
