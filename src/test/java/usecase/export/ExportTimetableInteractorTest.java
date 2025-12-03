@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -145,7 +146,8 @@ public class ExportTimetableInteractorTest {
 
     private static boolean deleteTempFile() throws IOException {
         try {
-            Files.delete(Paths.get(TEMP_LOCATION));
+            Path path = Paths.get(TEMP_LOCATION);
+            Files.delete(path);
             return true;
         }
         catch (NoSuchFileException e) {
@@ -169,8 +171,8 @@ public class ExportTimetableInteractorTest {
         );
 
         ExportTimetableInputData inputData = new ExportTimetableInputData(TEMP_LOCATION);
-        deleteTempFile();
         interactor.execute(inputData);
+        deleteTempFile();
 
         assertEquals(dummyPresenter.getStatus(), SUCCESS_VALUE);
 
