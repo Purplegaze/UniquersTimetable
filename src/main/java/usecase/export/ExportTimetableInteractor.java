@@ -5,6 +5,10 @@ import entity.*;
 
 import java.util.List;
 
+/**
+ * Interactor for exporting a timetable.
+ * Currently, only JSON import is supported.
+ */
 public class ExportTimetableInteractor implements ExportTimetableInputBoundary {
     private final ExportTimetableOutputBoundary presenter;
     private final TimetableDataAccessInterface timetableDataAccess;
@@ -23,6 +27,10 @@ public class ExportTimetableInteractor implements ExportTimetableInputBoundary {
         this.exportDataAccess = exportDataAccess;
     }
 
+    /**
+     * Execute the interactor
+     * @param inputData the input data, which contains the filepath requested by the user.
+     */
     @Override
     public void execute(ExportTimetableInputData inputData) {
         try {
