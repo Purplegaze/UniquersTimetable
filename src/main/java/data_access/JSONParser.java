@@ -20,7 +20,7 @@ import java.util.*;
 /**
  * Parser for the 2017 timetable data.
  * This is currently in a semi-refactored state.
- * Known things that caused exceptions that need to be refactored f (initially band-aided with try-catch):
+ * Known things that caused exceptions that may be refactored further to avoid try/catch:
  * - Assigned room is "" instead of null
  * - Types are unpredictable -- instructors or schedule is an empty array instead of a JSONObject
  * - enrolled/capacity value can be null
