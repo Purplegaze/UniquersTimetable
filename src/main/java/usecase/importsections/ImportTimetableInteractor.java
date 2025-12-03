@@ -54,6 +54,7 @@ public class ImportTimetableInteractor implements ImportTimetableInputBoundary {
                         Section section = course.getSectionByCode(sectionCode);
                         timetableDataAccess.addSection(section);
                         outputData.incrementSectionsAdded();
+
                         // Convert TimeSlots to TimeSlotData
                         List<AddCourseOutputData.TimeSlotData> timeSlotDatas = new ArrayList<>();
                         for (TimeSlot timeSlot : section.getTimes()) {
@@ -64,6 +65,7 @@ public class ImportTimetableInteractor implements ImportTimetableInputBoundary {
                                     timeSlot.getBuilding() != null ? timeSlot.getBuilding().getBuildingCode() : "TBD"
                             ));
                         }
+
                         AddCourseOutputData addCourseOutputData = new AddCourseOutputData(
                                 courseCode,
                                 sectionCode,
