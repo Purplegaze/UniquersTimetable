@@ -1,11 +1,7 @@
 package interface_adapter.viewcourse;
 
-import entity.Course;
-import entity.Section;
-import entity.TimeSlot;
 import usecase.viewcourse.ViewCourseOutputBoundary;
 import usecase.viewcourse.ViewCourseOutputData;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,70 +14,47 @@ public class ViewCoursePresenter implements ViewCourseOutputBoundary {
 
     @Override
     public void prepareSuccessView(ViewCourseOutputData outputData) {
-        Course course = outputData.getCourse();
+        // Map OutputData sections to ViewModel sections
+        List<ViewCourseViewModel.SectionViewModel> sectionVMs = new ArrayList<>();
 
-        // Extract basic course info
-        String courseCode = course.getCourseCode();
-        String courseName = course.getCourseName();
-        String term = course.getTerm();
+        for (ViewCourseOutputData.SectionData secData : outputData.getSections()) {
 
-        Float recommendation = null;
-        Float workload = null;
-        if (course.getCourseRating() != null) {
-            recommendation = course.getCourseRating().getRating("Recommendation");
-            workload = course.getCourseRating().getRating("Workload");
-        }
-
-        // Convert Section entities to SectionViewModels
-        List<ViewCourseViewModel.SectionViewModel> sectionViewModels = new ArrayList<>();
-
-        for (Section section : course.getSections()) {
-
-            // 2a. Convert TimeSlots within each section
-            List<ViewCourseViewModel.TimeSlotViewModel> timeSlotViewModels = new ArrayList<>();
-            for (TimeSlot ts : section.getTimes()) {
-                String dayName = getDayName(ts.getDayOfWeek());
-                int startHour = ts.getStartTime().getHour();
-                int endHour = ts.getEndTime().getHour();
-                String location = (ts.getBuilding() != null) ? ts.getBuilding().getBuildingCode() : "TBD";
-
-                timeSlotViewModels.add(new ViewCourseViewModel.TimeSlotViewModel(
-                        dayName, startHour, endHour, location
+            // Map TimeSlots
+            List<ViewCourseViewModel.TimeSlotViewModel> timeSlotVMs = new ArrayList<>();
+            for (ViewCourseOutputData.TimeSlotData tsData : secData.getTimeSlots()) {
+                timeSlotVMs.add(new ViewCourseViewModel.TimeSlotViewModel(
+                        tsData.getDay(),
+                        tsData.getStart(),
+                        tsData.getEnd(),
+                        tsData.getLocation()
                 ));
             }
 
-            // Create the SectionViewModel
-            sectionViewModels.add(new ViewCourseViewModel.SectionViewModel(
-                    section.getSectionId(),
-                    new ArrayList<>(section.getInstructors()),
-                    section.getEnrolledStudents(),
-                    section.getCapacity(),
-                    section.isFull(),
-                    courseCode,
-                    timeSlotViewModels
+            // Create Section ViewModel
+            sectionVMs.add(new ViewCourseViewModel.SectionViewModel(
+                    secData.getSectionId(),
+                    secData.getInstructors(),
+                    secData.getEnrolled(),
+                    secData.getCapacity(),
+                    secData.isFull(),
+                    outputData.getCourseCode(),
+                    timeSlotVMs
             ));
         }
 
-        // Pass the formatted data to the ViewModel
-        viewModel.setCourseData(courseCode, courseName, term, recommendation, workload, sectionViewModels);
+        // Pass simple data to ViewModel
+        viewModel.setCourseData(
+                outputData.getCourseCode(),
+                outputData.getCourseName(),
+                outputData.getTerm(),
+                outputData.getRecommendation(),
+                outputData.getWorkload(),
+                sectionVMs
+        );
     }
 
     @Override
     public void prepareFailView(String error) {
         viewModel.setError(error);
-    }
-
-    // Convert integer day to string
-    private String getDayName(int dayOfWeek) {
-        return switch(dayOfWeek) {
-            case 1 -> "Monday";
-            case 2 -> "Tuesday";
-            case 3 -> "Wednesday";
-            case 4 -> "Thursday";
-            case 5 -> "Friday";
-            case 6 -> "Saturday";
-            case 7 -> "Sunday";
-            default -> "Unknown";
-        };
     }
 }
