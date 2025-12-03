@@ -1,8 +1,11 @@
 package data_access;
 import entity.*;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalTime;
@@ -20,6 +23,12 @@ import java.util.*;
 public class JSONParser {
     private final ArrayList<Course> courses;
 
+    // Day codes
+    final String[] dayArray = {"MO", "TU", "WE", "TH", "FR", "SA", "SU"};
+    final List<String> days = Arrays.asList(dayArray);
+
+    private final static String BUILDING_FILE = "src/main/resources/buildings_geocoded.json";
+
     public JSONParser() {
         this("2017_ttb_archive.json");
     }
@@ -27,21 +36,9 @@ public class JSONParser {
     public JSONParser(String filename) {
         this.courses = new ArrayList<>();
 
-        String[] dayArray = {"MO", "TU", "WE", "TH", "FR", "SA", "SU"};
-        final List<String> days = Arrays.asList(dayArray);
-
         try {
-            List<Building> buildings = BuildingLoader.loadBuildings("src/main/resources/buildings_geocoded.json");
-
-            Map<String, Building> buildingMap = new HashMap<String, Building>();
-            for (Building building : buildings) {
-                buildingMap.put(building.getBuildingCode(), building);
-            }
-
-
-            String jsonString = Files.readString(Paths.get(getClass().getClassLoader().getResource(filename).toURI()));
-
-            JSONObject jsonObject = new JSONObject(jsonString);
+            Map<String, Building> buildingMap = getBuildingMap();
+            JSONObject jsonObject = getJsonObject(filename);
 
             Set keys = jsonObject.keySet();
             for (Object key : keys) {
@@ -152,6 +149,23 @@ public class JSONParser {
         catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @NotNull
+    private JSONObject getJsonObject(String filename) throws IOException, URISyntaxException {
+        String jsonString = Files.readString(Paths.get(getClass().getClassLoader().getResource(filename).toURI()));
+        return new JSONObject(jsonString);
+    }
+
+    @NotNull
+    private static Map<String, Building> getBuildingMap() throws Exception {
+        List<Building> buildings = BuildingLoader.loadBuildings(BUILDING_FILE);
+
+        Map<String, Building> buildingMap = new HashMap<String, Building>();
+        for (Building building : buildings) {
+            buildingMap.put(building.getBuildingCode(), building);
+        }
+        return buildingMap;
     }
 
     public List<Course> getCourses() {
