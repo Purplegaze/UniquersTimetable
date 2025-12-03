@@ -19,8 +19,7 @@ import java.util.*;
 
 /**
  * Parser for the 2017 timetable data.
- * This is currently in a semi-refactored state.
- * Known things that caused exceptions that may be refactored further to avoid try/catch:
+ * Accounts for some unpredictabilities of the dataset, e.g.
  * - Assigned room is "" instead of null
  * - Types are unpredictable -- instructors or schedule is an empty array instead of a JSONObject
  * - enrolled/capacity value can be null
@@ -121,7 +120,7 @@ public class JSONParser {
 
                     // Create section object.
                     final Section section = new Section(
-                            sectionKey.toString(),
+                            sectionKey,
                             times,
                             enrolled,
                             instructors,
