@@ -10,16 +10,12 @@ import java.util.*;
 
 /**
  * Parser for the 2017 timetable data.
- * This is currently in an EXTREMELY SPAGHETTI state as we needed it working ASAP to test the other use cases.
- * It will be cleaned up later.
+ * This is currently in a semi-refactored state.
  *
- * CURRENTLY UNIMPLEMENTED: Rating, credits
- *
- * Known things that cause exceptions (currently band-aided with try-catch):
+ * Known things that caused exceptions that need to be refactored f (initially band-aided with try-catch):
  * - Assigned room is "" instead of null
- * - instructors or schedule is an empty array instead of a JSONObject
- * - TODO: Ask on Piazza what the cleanest way of handling unpredictable JSON types is.
- * - enrolled/capacity value can be null??
+ * - Types are unpredictable -- instructors or schedule is an empty array instead of a JSONObject
+ * - enrolled/capacity value can be null
  */
 public class JSONParser {
     private final ArrayList<Course> courses;
