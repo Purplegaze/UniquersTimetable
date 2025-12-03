@@ -58,8 +58,8 @@ public class JSONParser {
 
                 // Iterate through everything in the "meetings" layer
                 final JSONObject sectionsData = courseData.getJSONObject("meetings");
-                for (Object sectionKey : sectionsData.keySet()) {
-                    final JSONObject sectionData = sectionsData.getJSONObject((String) sectionKey);
+                for (String sectionKey : sectionsData.keySet()) {
+                    final JSONObject sectionData = sectionsData.getJSONObject(sectionKey);
 
                     // Get list of instructors of the section.
                     final List<String> instructors = new ArrayList<>();
