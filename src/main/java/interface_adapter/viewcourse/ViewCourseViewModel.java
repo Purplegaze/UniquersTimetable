@@ -1,31 +1,38 @@
 package interface_adapter.viewcourse;
 
-import entity.Course;
-import entity.Section;
-import entity.TimeSlot;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ViewCourseViewModel {
-    private Course currentCourse;
+    // 1. Store primitives
+    private String courseCode;
+    private String courseName;
+    private String term;
+    private Float recommendation;
+    private Float workload;
+    private List<SectionViewModel> sectionViewModels;
+
     private String error;
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
-    public void setCourse(Course course) {
-        this.currentCourse = course;
+    public void setCourseData(String courseCode, String courseName, String term,
+                              Float recommendation, Float workload,
+                              List<SectionViewModel> sectionViewModels) {
+        this.courseCode = courseCode;
+        this.courseName = courseName;
+        this.term = term;
+        this.recommendation = recommendation;
+        this.workload = workload;
+        this.sectionViewModels = sectionViewModels;
         this.error = null;
-        support.firePropertyChange("course", null, course);
+        support.firePropertyChange("state", null, this);
     }
 
     public void setError(String error) {
         this.error = error;
         support.firePropertyChange("error", null, error);
-    }
-
-    public Course getCourse() {
-        return currentCourse;
     }
 
     public String getError() {
@@ -36,120 +43,83 @@ public class ViewCourseViewModel {
         support.addPropertyChangeListener(pcl);
     }
 
+    // 3. Update getters to return the stored primitive fields
     public String getCourseCode() {
-        return currentCourse != null ? currentCourse.getCourseCode() : "";
+        return courseCode != null ? courseCode : "";
     }
 
     public String getCourseName() {
-        return currentCourse != null ? currentCourse.getCourseName() : "";
+        return courseName != null ? courseName : "";
     }
 
     public String getTerm() {
-        return currentCourse != null ? currentCourse.getTerm() : "";
+        return term != null ? term : "";
     }
 
     public boolean hasRating() {
-        return currentCourse != null && currentCourse.getCourseRating() != null;
+        return recommendation != null || workload != null;
     }
 
     public Float getRecommendation() {
-        if (currentCourse != null && currentCourse.getCourseRating() != null) {
-            return currentCourse.getCourseRating().getRating("Recommendation");
-        }
-        return null;
+        return recommendation;
     }
 
     public Float getWorkload() {
-        if (currentCourse != null && currentCourse.getCourseRating() != null) {
-            return currentCourse.getCourseRating().getRating("Workload");
-        }
-        return null;
+        return workload;
     }
 
     public List<SectionViewModel> getSectionViewModels() {
-        if (currentCourse == null) {
-            return new ArrayList<>();
-        }
-
-        List<SectionViewModel> result = new ArrayList<>();
-        for (Section section : currentCourse.getSections()) {
-            result.add(new SectionViewModel(section));
-        }
-        return result;
+        return sectionViewModels != null ? sectionViewModels : new ArrayList<>();
     }
 
+    // 4. Refactor Inner Class: SectionViewModel
     public static class SectionViewModel {
-        private final Section section;
+        private final String sectionId;
+        private final List<String> instructors;
+        private final int enrolledStudents;
+        private final int capacity;
+        private final boolean isFull;
+        private final String courseCode;
+        private final List<TimeSlotViewModel> timeSlots;
 
-        public SectionViewModel(Section section) {
-            this.section = section;
+        public SectionViewModel(String sectionId, List<String> instructors, int enrolledStudents,
+                                int capacity, boolean isFull, String courseCode,
+                                List<TimeSlotViewModel> timeSlots) {
+            this.sectionId = sectionId;
+            this.instructors = instructors;
+            this.enrolledStudents = enrolledStudents;
+            this.capacity = capacity;
+            this.isFull = isFull;
+            this.courseCode = courseCode;
+            this.timeSlots = timeSlots;
         }
 
-        public String getSectionId() {
-            return section.getSectionId();
-        }
-
-        public List<String> getInstructors() {
-            return new ArrayList<>(section.getInstructors());
-        }
-
-        public int getEnrolledStudents() {
-            return section.getEnrolledStudents();
-        }
-
-        public int getCapacity() {
-            return section.getCapacity();
-        }
-
-        public boolean isFull() {
-            return section.isFull();
-        }
-
-        public List<TimeSlotViewModel> getTimeSlotViewModels() {
-            List<TimeSlotViewModel> result = new ArrayList<>();
-            for (TimeSlot ts : section.getTimes()) {
-                result.add(new TimeSlotViewModel(ts));
-            }
-            return result;
-        }
-
-        // 用于 Controller
-        public String getCourseCode() {
-            return section.getCourse() != null ? section.getCourse().getCourseCode() : "";
-        }
+        public String getSectionId() { return sectionId; }
+        public List<String> getInstructors() { return instructors; }
+        public int getEnrolledStudents() { return enrolledStudents; }
+        public int getCapacity() { return capacity; }
+        public boolean isFull() { return isFull; }
+        public List<TimeSlotViewModel> getTimeSlotViewModels() { return timeSlots; }
+        public String getCourseCode() { return courseCode; }
     }
 
+    // 5. Refactor Inner Class: TimeSlotViewModel
     public static class TimeSlotViewModel {
-        private final TimeSlot timeSlot;
+        private final String dayName;
+        private final int startHour;
+        private final int endHour;
+        private final String location;
 
-        public TimeSlotViewModel(TimeSlot timeSlot) {
-            this.timeSlot = timeSlot;
+        public TimeSlotViewModel(String dayName, int startHour, int endHour, String location) {
+            this.dayName = dayName;
+            this.startHour = startHour;
+            this.endHour = endHour;
+            this.location = location;
         }
 
-        public String getDayName() {
-            return switch(timeSlot.getDayOfWeek()) {
-                case 1 -> "Monday";
-                case 2 -> "Tuesday";
-                case 3 -> "Wednesday";
-                case 4 -> "Thursday";
-                case 5 -> "Friday";
-                case 6 -> "Saturday";
-                case 7 -> "Sunday";
-                default -> "Unknown";
-            };
-        }
-
-        public int getStartHour() {
-            return timeSlot.getStartTime().getHour();
-        }
-
-        public int getEndHour() {
-            return timeSlot.getEndTime().getHour();
-        }
-
-        public String getLocation() {
-            return timeSlot.getBuilding() != null ?
-                    timeSlot.getBuilding().getBuildingCode() : "TBD";
-        }
+        public String getDayName() { return dayName; }
+        public int getStartHour() { return startHour; }
+        public int getEndHour() { return endHour; }
+        public String getLocation() { return location; }
     }
 }

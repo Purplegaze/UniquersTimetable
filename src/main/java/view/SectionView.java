@@ -190,6 +190,8 @@ public class SectionView extends JDialog {
                 ));
             }
 
+            dispose();
+
             controller.addCourse(
                     viewModel.getCourseCode(),
                     section.getSectionId(),
@@ -197,10 +199,8 @@ public class SectionView extends JDialog {
                     timeDatas
             );
 
-            dispose();
-
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this,
+            JOptionPane.showMessageDialog(null,
                     "Error adding section: " + ex.getMessage(),
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
